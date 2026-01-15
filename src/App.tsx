@@ -1,48 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { CleanTimelineMap } from './components/CleanTimelineMap';
-import { SectorClustersAnalysis } from './components/SectorClustersAnalysis';
-import NewsPage from './pages/NewsPage';
 import FuturesPage from './pages/FuturesPage';
-import WorkspacePage from './pages/WorkspacePage';
-import SimulatorPage from './pages/SimulatorPage';
-import ScalpingVisualizerPage from './pages/ScalpingVisualizerPage';
-import CScalpTerminalPage from './pages/CScalpTerminalPage';
-import TerminalAnatomyPage from './pages/TerminalAnatomyPage';
-import FuturesScreenerPage from './pages/FuturesScreenerPage';
+import StocksPage from './pages/StocksPage';
 import SpecificationsPage from './pages/SpecificationsPage';
-import { Clock, TrendingUp, Newspaper, BarChart3, Monitor, Zap, Activity, Terminal, Layers, Search, FileText } from 'lucide-react';
+import { CScalpSettingsPage } from './pages/CScalpSettingsPage';
+import { Menu, X, BarChart3, TrendingUp, Clock, FileText, Sliders } from 'lucide-react';
 
-function Navigation() {
+function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const location = useLocation();
   
-  const navItems = [
-    { path: '/', label: 'Trading Timeline', icon: Clock },
-    { path: '/clusters', label: 'Sector Clusters', icon: TrendingUp },
-    { path: '/futures', label: 'Futures', icon: BarChart3 },
-    { path: '/futures-screener', label: 'Futures Screener', icon: Search },
+  const menuItems = [
+    { path: '/timeline', label: 'Торговый Таймлайн', icon: Clock },
     { path: '/specs', label: 'Характеристики', icon: FileText },
-    { path: '/workspace', label: 'Workspace', icon: Monitor },
-    { path: '/simulator', label: 'Simulator', icon: Zap },
-    { path: '/visualizer', label: 'Terminal Visualizer', icon: Activity },
-    { path: '/cscalp', label: 'CScalp Terminal', icon: Terminal },
-    { path: '/anatomy', label: 'Terminal Anatomy', icon: Layers },
-    { path: '/news', label: 'News & Events', icon: Newspaper }
+    { path: '/cscalp-config', label: 'Настройки CScalp', icon: Sliders }
   ];
   
+  if (!isOpen) return null;
+  
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-white/10">
-      <div className="max-w-[1800px] mx-auto px-8 py-4">
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-3">
-            <img src="/moex-logo.svg" alt="MOEX" className="h-8" />
-            <span className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
-              MOEX Analytics
-            </span>
+    <>
+      {/* Overlay */}
+      <div
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+        onClick={onClose}
+      />
+      
+      {/* Sidebar */}
+      <div className="fixed left-0 top-0 bottom-0 w-80 bg-slate-900 border-r border-slate-800 z-50 shadow-2xl">
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
+                MOEX
+              </span>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5 text-slate-400" />
+            </button>
           </div>
           
-          <div className="flex-1 flex items-center gap-2">
-            {navItems.map((item) => {
+          <nav className="space-y-2">
+            {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
               
@@ -50,21 +55,77 @@ function Navigation() {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                  onClick={onClose}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                     isActive
-                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg'
-                      : 'text-slate-400 hover:text-white hover:bg-white/5'
+                      ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-5 h-5" />
                   <span className="text-sm font-semibold">{item.label}</span>
                 </Link>
               );
             })}
-          </div>
+          </nav>
         </div>
       </div>
-    </nav>
+    </>
+  );
+}
+
+function Navigation() {
+  const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+  const tabs = [
+    { path: '/futures', label: 'Фьючерсы' },
+    { path: '/stocks', label: 'Акции' }
+  ];
+  
+  return (
+    <>
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-xl border-b border-slate-800">
+        <div className="max-w-[1800px] mx-auto px-8 py-4">
+          <div className="flex items-center justify-between">
+            {/* Left: Hamburger Menu */}
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
+            >
+              <Menu className="w-6 h-6 text-slate-400 hover:text-white" />
+            </button>
+            
+            {/* Center: Tabs */}
+            <div className="flex items-center gap-2">
+              {tabs.map((tab) => {
+                const isActive = location.pathname === tab.path || 
+                                (tab.path === '/futures' && location.pathname.startsWith('/futures'));
+                
+                return (
+                  <Link
+                    key={tab.path}
+                    to={tab.path}
+                    className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all ${
+                      isActive
+                        ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg'
+                        : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                    }`}
+                  >
+                    {tab.label}
+                  </Link>
+                );
+              })}
+            </div>
+            
+            {/* Right: Placeholder for future actions */}
+            <div className="w-10" />
+          </div>
+        </div>
+      </nav>
+      
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+    </>
   );
 }
 
@@ -72,17 +133,12 @@ function AppContent() {
   return (
     <div className="pt-20">
       <Routes>
-        <Route path="/" element={<CleanTimelineMap />} />
-        <Route path="/clusters" element={<SectorClustersAnalysis />} />
+        <Route path="/" element={<FuturesPage />} />
+        <Route path="/timeline" element={<CleanTimelineMap />} />
         <Route path="/futures" element={<FuturesPage />} />
-        <Route path="/futures-screener" element={<FuturesScreenerPage />} />
+        <Route path="/stocks" element={<StocksPage />} />
         <Route path="/specs" element={<SpecificationsPage />} />
-        <Route path="/workspace" element={<WorkspacePage />} />
-        <Route path="/simulator" element={<SimulatorPage />} />
-        <Route path="/visualizer" element={<ScalpingVisualizerPage />} />
-        <Route path="/cscalp" element={<CScalpTerminalPage />} />
-        <Route path="/anatomy" element={<TerminalAnatomyPage />} />
-        <Route path="/news" element={<NewsPage />} />
+        <Route path="/cscalp-config" element={<CScalpSettingsPage />} />
       </Routes>
     </div>
   );

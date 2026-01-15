@@ -178,6 +178,7 @@ interface MarketDataMap {
     prevPrice: number;
     change: number;
     changePercent: number;
+    volume?: number; // Optional, not always available from API
   };
 }
 
@@ -212,7 +213,7 @@ export const SectorClustersAnalysis: React.FC = () => {
       try {
         // Fetch both securities and marketdata for fallback chain
         const response = await fetch(
-          'https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities.json?iss.meta=off&securities.columns=SECID,PREVADMITTEDQUOTE,PREVPRICE&marketdata.columns=SECID,LAST,MARKETPRICE'
+          '/iss/engines/stock/markets/shares/boards/TQBR/securities.json?iss.meta=off&securities.columns=SECID,PREVADMITTEDQUOTE,PREVPRICE&marketdata.columns=SECID,LAST,MARKETPRICE'
         );
         
         const json = await response.json();
@@ -281,7 +282,8 @@ export const SectorClustersAnalysis: React.FC = () => {
               price: currentPrice,
               prevPrice: baseline,
               change,
-              changePercent
+              changePercent,
+              volume: 0 // Volume not available from this endpoint
             };
           }
         });
@@ -322,7 +324,7 @@ export const SectorClustersAnalysis: React.FC = () => {
           try {
             // Use candles endpoint for intraday data (10-minute intervals)
             const response = await fetch(
-              `https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/${ticker.symbol}/candles.json?from=${fromStr}&till=${toStr}&interval=10&iss.meta=off&iss.only=candles&candles.columns=begin,open,close,high,low,value`
+              `/iss/engines/stock/markets/shares/boards/TQBR/securities/${ticker.symbol}/candles.json?from=${fromStr}&till=${toStr}&interval=10&iss.meta=off&iss.only=candles&candles.columns=begin,open,close,high,low,value`
             );
             
             const json = await response.json();

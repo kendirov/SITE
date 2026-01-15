@@ -113,7 +113,20 @@ export const CleanTimelineMap: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-slate-950 text-white pt-20">
+      {/* Page Header */}
+      <div className="max-w-[1600px] mx-auto px-8 py-6 border-b border-slate-800">
+        <div className="flex items-center gap-4 mb-6">
+          <Clock className="w-10 h-10 text-blue-400" />
+          <div>
+            <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
+              Расписание Торгов
+            </h1>
+            <p className="text-slate-400 mt-1">Интерактивный таймлайн торговых сессий Московской Биржи</p>
+          </div>
+        </div>
+      </div>
+
       {/* Market Controls */}
       <div className="max-w-[1600px] mx-auto px-8 py-6">
         <div className="flex justify-end gap-3">
@@ -170,7 +183,7 @@ export const CleanTimelineMap: React.FC = () => {
       {/* Main Timeline Container */}
       <div className="max-w-[1600px] mx-auto px-8 py-12">
         <div className="relative overflow-x-auto scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
-          <style jsx>{`
+          <style>{`
             .scrollbar-hide::-webkit-scrollbar {
               display: none;
             }
@@ -375,7 +388,7 @@ export const CleanTimelineMap: React.FC = () => {
                       <div className="flex items-start gap-2">
                         <span className="text-blue-400 text-xs font-bold mt-0.5">💡</span>
                         <div>
-                          <p className="text-[10px] text-blue-400 font-semibold uppercase tracking-wider mb-1">Pro Tip</p>
+                          <p className="text-[10px] text-blue-400 font-semibold uppercase tracking-wider mb-1">Совет</p>
                           <p className="text-xs text-slate-300 leading-relaxed">
                             {getProTip(phase)}
                           </p>

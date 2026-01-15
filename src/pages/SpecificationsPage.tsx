@@ -1,11 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import { Loader2, AlertCircle, RefreshCcw, FileText } from 'lucide-react';
-import { fetchStocksSpecifications, ProcessedStockSpec, COMMISSION_RATE } from '../api/stocks';
+import React, { useEffect, useState, useMemo } from 'react';
+import { Loader2, AlertCircle, RefreshCcw, FileText, ChevronUp, ChevronDown, Search } from 'lucide-react';
+import { fetchStocksSpecifications, ProcessedStockSpec } from '../api/stocks';
+
+// Комиссии для разных типов сделок
+const MAKER_RATE = 0.0002; // 0.02% для лимитных заявок
+const TAKER_RATE = 0.00045; // 0.045% для рыночных заявок
+
+type SortKey = 'secId' | 'minStep' | 'costOfStep' | 'lotSize' | 'makerCommission' | 'makerSteps' | 'takerCommission' | 'takerSteps' | 'valToday' | 'largeLot1Pct';
+type SortDirection = 'asc' | 'desc';
+
+interface SortConfig {
+  key: SortKey | null;
+  direction: SortDirection;
+}
+
+interface ExtendedStockSpec extends ProcessedStockSpec {
+  makerCommission: number; // Комиссия Maker в рублях
+  makerSteps: number; // Комиссия Maker в пунктах
+  takerCommission: number; // Комиссия Taker в рублях
+  takerSteps: number; // Комиссия Taker в пунктах
+}
 
 export const SpecificationsPage: React.FC = () => {
   const [stocks, setStocks] = useState<ProcessedStockSpec[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'desc' });
+  const [searchQuery, setSearchQuery] = useState('');
 
   const loadData = async () => {
     setIsLoading(true);
@@ -32,21 +53,125 @@ export const SpecificationsPage: React.FC = () => {
     if (num === 0) return '0';
     return num.toLocaleString('ru-RU', {
       minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals
+      maximumFractionDigits: decimals,
+      useGrouping: true
     });
   };
 
-  const formatVolume = (volume: number): string => {
-    if (volume >= 1_000_000_000) return `${(volume / 1_000_000_000).toFixed(1)}B ₽`;
-    if (volume >= 1_000_000) return `${(volume / 1_000_000).toFixed(0)}M ₽`;
-    if (volume >= 1_000) return `${(volume / 1_000).toFixed(0)}K ₽`;
-    return `${formatNumber(volume, 0)} ₽`;
+  const formatLargeNumber = (num: number): string => {
+    return num.toLocaleString('ru-RU', {
+      useGrouping: true,
+      maximumFractionDigits: 0
+    });
   };
 
-  // Определяем высокую комиссию (например, больше 100 рублей)
-  const isHighCommission = (commission: number): boolean => {
-    return commission > 100;
+  // Вычисляем расширенные данные с обеими комиссиями
+  const extendedStocks = useMemo<ExtendedStockSpec[]>(() => {
+    return stocks.map(stock => {
+      // Комиссия Maker
+      const makerCommission = stock.last * stock.lotSize * MAKER_RATE;
+      const makerSteps = stock.costOfStep > 0 ? makerCommission / stock.costOfStep : 0;
+
+      // Комиссия Taker
+      const takerCommission = stock.last * stock.lotSize * TAKER_RATE;
+      const takerSteps = stock.costOfStep > 0 ? takerCommission / stock.costOfStep : 0;
+
+      return {
+        ...stock,
+        makerCommission,
+        makerSteps,
+        takerCommission,
+        takerSteps
+      };
+    });
+  }, [stocks]);
+
+  // Фильтрация по поисковому запросу (по тикеру и названию)
+  const filteredStocks = useMemo(() => {
+    if (!searchQuery.trim()) return extendedStocks;
+    
+    const query = searchQuery.toLowerCase().trim();
+    return extendedStocks.filter(stock => 
+      stock.secId.toLowerCase().includes(query) ||
+      (stock.shortName && stock.shortName.toLowerCase().includes(query))
+    );
+  }, [extendedStocks, searchQuery]);
+
+  // Функция сортировки
+  const handleSort = (key: SortKey) => {
+    setSortConfig((prev) => {
+      if (prev.key === key) {
+        // Переключаем направление при повторном клике
+        return { key, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
+      }
+      // Новый столбец - сортируем по убыванию по умолчанию
+      return { key, direction: 'desc' };
+    });
   };
+
+  // Отсортированные данные
+  const sortedStocks = useMemo(() => {
+    if (!sortConfig.key) return filteredStocks;
+
+    return [...filteredStocks].sort((a, b) => {
+      let aValue: number | string;
+      let bValue: number | string;
+
+      switch (sortConfig.key) {
+        case 'secId':
+          aValue = a.secId;
+          bValue = b.secId;
+          break;
+        case 'minStep':
+          aValue = a.minStep;
+          bValue = b.minStep;
+          break;
+        case 'costOfStep':
+          aValue = a.costOfStep;
+          bValue = b.costOfStep;
+          break;
+        case 'lotSize':
+          aValue = a.lotSize;
+          bValue = b.lotSize;
+          break;
+        case 'makerCommission':
+          aValue = a.makerCommission;
+          bValue = b.makerCommission;
+          break;
+        case 'makerSteps':
+          aValue = a.makerSteps;
+          bValue = b.makerSteps;
+          break;
+        case 'takerCommission':
+          aValue = a.takerCommission;
+          bValue = b.takerCommission;
+          break;
+        case 'takerSteps':
+          aValue = a.takerSteps;
+          bValue = b.takerSteps;
+          break;
+        case 'valToday':
+          aValue = a.valToday;
+          bValue = b.valToday;
+          break;
+        case 'largeLot1Pct':
+          aValue = a.largeLot1Pct;
+          bValue = b.largeLot1Pct;
+          break;
+        default:
+          return 0;
+      }
+
+      // Сравнение
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        const result = aValue.localeCompare(bValue, 'ru-RU');
+        return sortConfig.direction === 'asc' ? result : -result;
+      } else {
+        const result = (aValue as number) - (bValue as number);
+        return sortConfig.direction === 'asc' ? result : -result;
+      }
+    });
+  }, [filteredStocks, sortConfig]);
 
   return (
     <div className="max-w-[1800px] mx-auto px-8 py-8">
@@ -91,131 +216,293 @@ export const SpecificationsPage: React.FC = () => {
 
       {!isLoading && !error && (
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-lg">
-          {/* Table */}
+          {/* Search Bar */}
+          <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Поиск по тикеру или названию..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+              />
+            </div>
+          </div>
+          
+          {/* Table with CSS Grid */}
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              {/* Header Groups */}
-              <thead className="bg-slate-50 dark:bg-slate-800 border-b-2 border-slate-200 dark:border-slate-700">
-                {/* Main Header Row */}
-                <tr>
-                  <th 
-                    colSpan={4} 
-                    className="px-3 py-2 text-left font-bold text-slate-700 dark:text-slate-300 border-r border-slate-300 dark:border-slate-600"
-                  >
-                    ТОРГОВЫЕ ХАРАКТЕРИСТИКИ
-                  </th>
-                  <th 
-                    colSpan={1} 
-                    className="px-3 py-2 text-center font-bold text-slate-700 dark:text-slate-300 border-r border-slate-300 dark:border-slate-600"
-                  >
-                    КОМИССИЯ НА ЛОТ
-                  </th>
-                  <th 
-                    colSpan={2} 
-                    className="px-3 py-2 text-center font-bold text-slate-700 dark:text-slate-300"
-                  >
-                    ЛИКВИДНОСТЬ (База: Сегодня)
-                  </th>
-                </tr>
-                {/* Column Header Row */}
-                <tr className="bg-slate-100 dark:bg-slate-800/50">
-                  <th className="px-3 py-2 text-left font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600">
-                    Тикер
-                  </th>
-                  <th className="px-3 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600">
-                    Шаг (п)
-                  </th>
-                  <th className="px-3 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600">
-                    Цена шага (₽)
-                  </th>
-                  <th className="px-3 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600">
-                    Акций в лоте
-                  </th>
-                  <th className="px-3 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600">
-                    Рубли
-                  </th>
-                  <th className="px-3 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600">
-                    Оборот ₽
-                  </th>
-                  <th className="px-3 py-2 text-right font-semibold text-slate-600 dark:text-slate-400">
-                    Крупный лот 1% (шт)
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                {stocks.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="px-3 py-8 text-center text-slate-500 text-sm">
-                      Нет данных для отображения
-                    </td>
-                  </tr>
-                ) : (
-                  stocks.map((stock, index) => (
-                    <tr
+            <div className="text-xs min-w-fit">
+              {/* Grid container with fixed column widths */}
+              <div 
+                className="grid sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 border-b-2 border-slate-200 dark:border-slate-700 shadow-sm"
+                style={{ gridTemplateColumns: '180px 80px 100px 100px 70px 60px 70px 60px 140px 120px' }}
+              >
+                {/* Level 1: Main Groups */}
+                <div className="col-span-4 px-3 py-2 text-center font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px] border-r-2 border-slate-400 dark:border-slate-600">
+                  ИНСТРУМЕНТ
+                </div>
+                <div className="col-span-2 px-3 py-2 text-center font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px] border-r-2 border-slate-400 dark:border-slate-600">
+                  КОМИССИЯ MAKER (0.02%)
+                </div>
+                <div className="col-span-2 px-3 py-2 text-center font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px] border-r-2 border-slate-400 dark:border-slate-600">
+                  КОМИССИЯ TAKER (0.045%)
+                </div>
+                <div className="col-span-2 px-3 py-2 text-center font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px]">
+                  ЛИКВИДНОСТЬ
+                </div>
+              </div>
+
+              {/* Level 2: Column Headers */}
+              <div 
+                className="grid bg-slate-100 dark:bg-slate-800/50 border-b border-slate-300 dark:border-slate-600 sticky top-[36px] z-10 shadow-sm"
+                style={{ gridTemplateColumns: '180px 80px 100px 100px 70px 60px 70px 60px 140px 120px' }}
+              >
+                {/* Инструмент */}
+                <div 
+                  onClick={() => handleSort('secId')}
+                  className="sticky left-0 z-20 px-4 py-2 text-left font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none bg-slate-100 dark:bg-slate-800/50"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span>Инструмент</span>
+                    {sortConfig.key === 'secId' && (
+                      sortConfig.direction === 'asc' 
+                        ? <ChevronUp className="w-3 h-3 text-blue-500" />
+                        : <ChevronDown className="w-3 h-3 text-blue-500" />
+                    )}
+                  </div>
+                </div>
+                {/* Лот */}
+                <div 
+                  onClick={() => handleSort('lotSize')}
+                  className="px-4 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
+                >
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span>Лот</span>
+                    {sortConfig.key === 'lotSize' && (
+                      sortConfig.direction === 'asc' 
+                        ? <ChevronUp className="w-3 h-3 text-blue-500" />
+                        : <ChevronDown className="w-3 h-3 text-blue-500" />
+                    )}
+                  </div>
+                </div>
+                {/* Шаг */}
+                <div 
+                  onClick={() => handleSort('minStep')}
+                  className="px-4 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
+                >
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span>Шаг</span>
+                    {sortConfig.key === 'minStep' && (
+                      sortConfig.direction === 'asc' 
+                        ? <ChevronUp className="w-3 h-3 text-blue-500" />
+                        : <ChevronDown className="w-3 h-3 text-blue-500" />
+                    )}
+                  </div>
+                </div>
+                {/* Цена ш. */}
+                <div 
+                  onClick={() => handleSort('costOfStep')}
+                  className="px-4 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r-2 border-slate-400 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
+                >
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span>Цена ш.</span>
+                    {sortConfig.key === 'costOfStep' && (
+                      sortConfig.direction === 'asc' 
+                        ? <ChevronUp className="w-3 h-3 text-blue-500" />
+                        : <ChevronDown className="w-3 h-3 text-blue-500" />
+                    )}
+                  </div>
+                </div>
+                {/* Maker ₽ */}
+                <div 
+                  onClick={() => handleSort('makerCommission')}
+                  className="px-3 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
+                >
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span>₽</span>
+                    {sortConfig.key === 'makerCommission' && (
+                      sortConfig.direction === 'asc' 
+                        ? <ChevronUp className="w-3 h-3 text-blue-500" />
+                        : <ChevronDown className="w-3 h-3 text-blue-500" />
+                    )}
+                  </div>
+                </div>
+                {/* Maker п. */}
+                <div 
+                  onClick={() => handleSort('makerSteps')}
+                  className="px-3 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r-2 border-slate-400 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
+                >
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span>п.</span>
+                    {sortConfig.key === 'makerSteps' && (
+                      sortConfig.direction === 'asc' 
+                        ? <ChevronUp className="w-3 h-3 text-blue-500" />
+                        : <ChevronDown className="w-3 h-3 text-blue-500" />
+                    )}
+                  </div>
+                </div>
+                {/* Taker ₽ */}
+                <div 
+                  onClick={() => handleSort('takerCommission')}
+                  className="px-3 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
+                >
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span>₽</span>
+                    {sortConfig.key === 'takerCommission' && (
+                      sortConfig.direction === 'asc' 
+                        ? <ChevronUp className="w-3 h-3 text-blue-500" />
+                        : <ChevronDown className="w-3 h-3 text-blue-500" />
+                    )}
+                  </div>
+                </div>
+                {/* Taker п. */}
+                <div 
+                  onClick={() => handleSort('takerSteps')}
+                  className="px-3 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r-2 border-slate-400 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
+                >
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span>п.</span>
+                    {sortConfig.key === 'takerSteps' && (
+                      sortConfig.direction === 'asc' 
+                        ? <ChevronUp className="w-3 h-3 text-blue-500" />
+                        : <ChevronDown className="w-3 h-3 text-blue-500" />
+                    )}
+                  </div>
+                </div>
+                {/* Оборот */}
+                <div 
+                  onClick={() => handleSort('valToday')}
+                  className="px-4 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
+                >
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span>Оборот</span>
+                    {sortConfig.key === 'valToday' && (
+                      sortConfig.direction === 'asc' 
+                        ? <ChevronUp className="w-3 h-3 text-blue-500" />
+                        : <ChevronDown className="w-3 h-3 text-blue-500" />
+                    )}
+                  </div>
+                </div>
+                {/* 1% Лот */}
+                <div 
+                  onClick={() => handleSort('largeLot1Pct')}
+                  className="px-4 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
+                >
+                  <div className="flex items-center justify-end gap-1.5">
+                    <span>1% Лот</span>
+                    {sortConfig.key === 'largeLot1Pct' && (
+                      sortConfig.direction === 'asc' 
+                        ? <ChevronUp className="w-3 h-3 text-blue-500" />
+                        : <ChevronDown className="w-3 h-3 text-blue-500" />
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Data Rows */}
+              {sortedStocks.length === 0 ? (
+                <div 
+                  className="grid px-4 py-8 text-center text-slate-500 text-sm"
+                  style={{ gridTemplateColumns: '180px 80px 100px 100px 70px 60px 70px 60px 140px 120px' }}
+                >
+                  <div className="col-span-10">
+                    {searchQuery ? 'Ничего не найдено' : 'Нет данных для отображения'}
+                  </div>
+                </div>
+              ) : (
+                sortedStocks.map((stock, index) => {
+                  const rowBgClass = index % 2 === 0 
+                    ? 'bg-white dark:bg-slate-900' 
+                    : 'bg-slate-50 dark:bg-slate-800/30';
+                  
+                  return (
+                    <div
                       key={stock.secId}
-                      className={`transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/50 ${
-                        index % 2 === 0 
-                          ? 'bg-white dark:bg-slate-900' 
-                          : 'bg-slate-50/50 dark:bg-slate-800/30'
-                      }`}
+                      className={`grid border-b border-slate-200 dark:border-slate-800 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800/50 ${rowBgClass}`}
+                      style={{ gridTemplateColumns: '180px 80px 100px 100px 70px 60px 70px 60px 140px 120px' }}
                     >
-                      {/* Тикер */}
-                      <td className="px-3 py-2 text-left font-mono font-semibold text-slate-900 dark:text-slate-100 border-r border-slate-200 dark:border-slate-700">
-                        {stock.secId}
-                      </td>
-                      {/* Шаг (п) */}
-                      <td className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">
+                      {/* Инструмент - Тикер + Название (sticky) */}
+                      <div className={`sticky left-0 z-10 px-3 py-2 text-left border-r border-slate-300 dark:border-slate-600 ${rowBgClass}`}>
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-sm font-bold text-slate-900 dark:text-white">{stock.secId}</span>
+                          {stock.shortName && (
+                            <span className="text-[10px] text-gray-500 dark:text-slate-400 uppercase truncate">
+                              {stock.shortName}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      {/* Лот */}
+                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">
+                        {formatLargeNumber(stock.lotSize)}
+                      </div>
+                      {/* Шаг */}
+                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">
                         {formatNumber(stock.minStep, 2)}
-                      </td>
-                      {/* Цена шага (₽) */}
-                      <td className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">
+                      </div>
+                      {/* Цена шага */}
+                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r-2 border-slate-400 dark:border-slate-600">
                         {formatNumber(stock.costOfStep, 2)}
-                      </td>
-                      {/* Акций в лоте */}
-                      <td className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">
-                        {stock.lotSize}
-                      </td>
-                      {/* Комиссия на лот (Рубли) */}
-                      <td 
-                        className={`px-3 py-2 text-right font-mono font-semibold border-r border-slate-200 dark:border-slate-700 ${
-                          isHighCommission(stock.commission)
-                            ? 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                            : 'text-slate-700 dark:text-slate-300'
-                        }`}
-                      >
-                        {formatNumber(stock.commission, 2)}
-                      </td>
-                      {/* Оборот ₽ */}
-                      <td className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">
-                        {formatVolume(stock.valToday)}
-                      </td>
-                      {/* Крупный лот 1% (шт) */}
-                      <td className="px-3 py-2 text-right font-mono font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20">
-                        {stock.largeLot1Pct.toLocaleString('ru-RU')}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                      </div>
+                      {/* Maker Commission - ₽ */}
+                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">
+                        {formatNumber(stock.makerCommission, 2)}
+                      </div>
+                      {/* Maker Commission - п. */}
+                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r-2 border-slate-400 dark:border-slate-600">
+                        {formatNumber(stock.makerSteps, 1)}
+                      </div>
+                      {/* Taker Commission - ₽ */}
+                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">
+                        {formatNumber(stock.takerCommission, 2)}
+                      </div>
+                      {/* Taker Commission - п. */}
+                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r-2 border-slate-400 dark:border-slate-600">
+                        {formatNumber(stock.takerSteps, 1)}
+                      </div>
+                      {/* Оборот */}
+                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">
+                        {Math.round(stock.valToday).toLocaleString('ru-RU', { maximumFractionDigits: 0 })}
+                      </div>
+                      {/* 1% Лот */}
+                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300">
+                        {Math.round(stock.largeLot1Pct).toLocaleString('ru-RU', { maximumFractionDigits: 0 })}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
 
           {/* Legend Footer */}
           <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
             <div className="flex flex-col gap-1 text-xs text-slate-600 dark:text-slate-400">
               <p>
-                <span className="font-semibold">Рубли</span> — расчетная комиссия {(COMMISSION_RATE * 100).toFixed(2)}% на открытие позиции 1 лотом.
+                <span className="font-semibold">Maker (0.02%)</span> — комиссия для лимитных заявок. <span className="font-semibold">Taker (0.045%)</span> — комиссия для рыночных заявок.
               </p>
               <p>
-                <span className="font-semibold">Крупный лот</span> — расчетное кол-во лотов, составляющее 1% от оборота.
+                <span className="font-semibold">Пункты (п.)</span> — количество минимальных шагов цены, которое нужно пройти инструменту, чтобы окупить комиссию за одну сторону сделки. Формула: Комиссия в рублях / Цена шага.
+              </p>
+              <p>
+                <span className="font-semibold">1% лот</span> — расчетное количество лотов, составляющее 1% от оборота за предыдущий торговый день.
               </p>
             </div>
           </div>
 
           {/* Footer with count */}
-          {stocks.length > 0 && (
+          {sortedStocks.length > 0 && (
             <div className="px-4 py-2 border-t border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 text-center bg-slate-50 dark:bg-slate-800">
-              Показано {stocks.length} инструмент{stocks.length === 1 ? '' : stocks.length < 5 ? 'а' : 'ов'}
+              Показано {sortedStocks.length} из {stocks.length} инструмент{stocks.length === 1 ? '' : stocks.length < 5 ? 'ов' : 'ов'}
+              {searchQuery && (
+                <span className="ml-2">• Поиск: "{searchQuery}"</span>
+              )}
+              {sortConfig.key && (
+                <span className="ml-2 text-blue-500">
+                  • Сортировка: {sortConfig.key} ({sortConfig.direction === 'asc' ? 'по возрастанию' : 'по убыванию'})
+                </span>
+              )}
             </div>
           )}
         </div>

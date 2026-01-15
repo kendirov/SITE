@@ -1,5 +1,6 @@
 import React from 'react';
 import { BookOpen, Target, TrendingUp, Layers } from 'lucide-react';
+import { TerminalAnatomy } from '../components/TerminalAnatomy';
 import { AnatomyDiagram } from '../components/AnatomyDiagram';
 
 export const SimulatorPage: React.FC = () => {
@@ -147,10 +148,7 @@ export const SimulatorPage: React.FC = () => {
                 </div>
               </div>
               
-              {/* Terminal Anatomy moved to separate page */}
-              <div className="text-center py-12 text-slate-400">
-                <p>Интерактивный атлас перемещен на отдельную страницу</p>
-              </div>
+              <TerminalAnatomy />
             </div>
 
             {/* Legend */}
