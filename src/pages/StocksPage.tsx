@@ -245,6 +245,36 @@ export const StocksPage: React.FC = () => {
     return trades.toLocaleString('ru-RU');
   };
 
+  // Функция для проверки валидности значения
+  const isValidValue = (value: number | null | undefined): boolean => {
+    return value !== null && value !== undefined && !isNaN(value) && value > 0;
+  };
+
+  // Расчет стоп-лосса (0.3% от цены)
+  const calculateStopLoss = (price: number, lotSize: number): { points: number; rubles: number } | null => {
+    if (!isValidValue(price) || !isValidValue(lotSize)) {
+      return null;
+    }
+    
+    // Приблизительный minStep для акций MOEX (обычно 0.01)
+    const minStep = 0.01;
+    const stopPercent = 0.003; // 0.3%
+    
+    // StopPoints = (Price * 0.003) / MinStep
+    const stopPoints = (price * stopPercent) / minStep;
+    
+    // StepPrice = MinStep * LotSize
+    const stepPrice = minStep * lotSize;
+    
+    // StopRubles = StopPoints * StepPrice
+    const stopRubles = stopPoints * stepPrice;
+    
+    return {
+      points: Math.round(stopPoints),
+      rubles: Math.round(stopRubles)
+    };
+  };
+
   return (
     <div className="max-w-[1800px] mx-auto px-8 py-8">
       {/* Header */}
@@ -364,21 +394,22 @@ export const StocksPage: React.FC = () => {
           {/* Table - CSS Grid */}
           <div className="overflow-x-auto">
             {/* Grid Header */}
-            <div className="grid grid-cols-[1.5fr_100px_80px_100px_140px_120px_100px] gap-4 px-4 py-3 border-b border-slate-800 bg-slate-800/30 sticky top-0 z-10">
-              <div className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Актив</div>
-              <div className="text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">Цена</div>
-              <div className="text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">Изм %</div>
-              <div className="text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">Волатильность</div>
-              <div className="text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">Диапазон</div>
-              <div className="text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">Объем ₽</div>
-              <div className="text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">Сделок</div>
+            <div className="grid grid-cols-[1.5fr_100px_80px_100px_140px_120px_100px_110px] gap-4 px-4 py-3 border-b border-slate-800 bg-slate-800/30 sticky top-0 z-10">
+              <div className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Актив</div>
+              <div className="text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Цена</div>
+              <div className="text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Изм %</div>
+              <div className="text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Волатильность</div>
+              <div className="text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Диапазон</div>
+              <div className="text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Объем ₽</div>
+              <div className="text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Стоп / Риск</div>
+              <div className="text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Сделок</div>
             </div>
 
             {/* Grid Body */}
             <div className="divide-y divide-slate-800/50">
               {filteredAndSortedStocks.length === 0 ? (
-                <div className="grid grid-cols-[1.5fr_100px_80px_100px_140px_120px_100px] gap-4 px-4 py-8">
-                  <div className="col-span-7 text-center text-slate-500 text-sm">
+                <div className="grid grid-cols-[1.5fr_100px_80px_100px_140px_120px_100px_110px] gap-4 px-4 py-8">
+                  <div className="col-span-8 text-center text-slate-500 text-sm">
                     Нет данных для отображения
                   </div>
                 </div>
@@ -429,7 +460,7 @@ export const StocksPage: React.FC = () => {
                       <React.Fragment key={stock.secId}>
                         {/* Main Row - CSS Grid */}
                         <div
-                          className={`grid grid-cols-[1.5fr_100px_80px_100px_140px_120px_100px] gap-4 px-4 py-3 ${bgClass} hover:bg-slate-800/50 transition-colors cursor-text ${
+                          className={`grid grid-cols-[1.5fr_100px_80px_100px_140px_120px_100px_110px] gap-4 px-4 py-3 ${bgClass} hover:bg-slate-800/50 transition-colors cursor-text ${
                             isIndex ? 'border-b border-gray-700' : 'border-b border-slate-800/50'
                           }`}
                         >
@@ -466,9 +497,13 @@ export const StocksPage: React.FC = () => {
 
                           {/* Колонка 2: Цена */}
                           <div className="text-right flex items-center justify-end">
-                            <span className={`text-sm font-mono ${priceTextColor}`}>
-                              {formatPrice(stock.price)}
-                            </span>
+                            {isValidValue(stock.price) ? (
+                              <span className={`text-sm font-mono ${priceTextColor}`}>
+                                {formatPrice(stock.price)}
+                              </span>
+                            ) : (
+                              <span className="text-xs text-slate-600">—</span>
+                            )}
                           </div>
 
                           {/* Колонка 3: Изм % */}
@@ -531,7 +566,7 @@ export const StocksPage: React.FC = () => {
                                   : `Объем: ${formatVolume(stock.volume)}`
                               }
                             >
-                              {formatVolume(stock.volume)}
+                              {isValidValue(stock.volume) ? formatVolume(stock.volume) : '—'}
                             </span>
                             {/* Расширенный тултип при наведении */}
                             {rvol > 0 && (
@@ -551,11 +586,37 @@ export const StocksPage: React.FC = () => {
                             )}
                           </div>
 
-                          {/* Колонка 7: Сделок */}
+                          {/* Колонка 7: Стоп / Риск */}
+                          <div className="text-right flex flex-col items-end justify-center">
+                            {(() => {
+                              const stopLoss = calculateStopLoss(stock.price, stock.lotSize);
+                              if (!stopLoss) {
+                                return <span className="text-xs text-slate-600">—</span>;
+                              }
+                              return (
+                                <>
+                                  {/* Верхняя строка: Пункты */}
+                                  <div className="text-sm font-bold font-mono text-gray-200">
+                                    {stopLoss.points} п
+                                  </div>
+                                  {/* Нижняя строка: Рубли */}
+                                  <div className="text-xs text-slate-500">
+                                    ≈ {stopLoss.rubles.toLocaleString('ru-RU')} ₽
+                                  </div>
+                                </>
+                              );
+                            })()}
+                          </div>
+
+                          {/* Колонка 8: Сделок */}
                           <div className="text-right flex items-center justify-end">
-                            <span className={`text-xs font-mono ${tradesClassName}`}>
-                              {isIndex ? formatTrades(totalMarketTrades) : formatTrades(stock.numTrades)}
-                            </span>
+                            {isValidValue(isIndex ? totalMarketTrades : stock.numTrades) ? (
+                              <span className={`text-xs font-mono ${tradesClassName}`}>
+                                {isIndex ? formatTrades(totalMarketTrades) : formatTrades(stock.numTrades)}
+                              </span>
+                            ) : (
+                              <span className="text-xs text-slate-600">—</span>
+                            )}
                           </div>
                         </div>
                         
