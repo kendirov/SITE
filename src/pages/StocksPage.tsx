@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo, memo } from 'react';
-import { BarChart3, Loader2, AlertCircle, RefreshCcw, Search, TrendingUp, TrendingDown, ChevronDown, ChevronRight, Info, ThumbsUp } from 'lucide-react';
+import { BarChart3, Loader2, AlertCircle, RefreshCcw, Search, TrendingUp, TrendingDown, ChevronDown, ChevronRight, Info, ThumbsUp, Download } from 'lucide-react';
 import { fetchAllStocks, fetchIMOEXIndex, fetchHistoricalAverageVolumes, StockTableRow } from '../api/stocks';
+import { downloadCScalpSettings } from '../utils/cscalpGenerator';
 import MicroCandle from '../components/MicroCandle';
 import StockPriceTrend from '../components/StockPriceTrend';
 import VolumeAnalysis from '../components/VolumeAnalysis';
@@ -18,6 +19,10 @@ export const StocksPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'volume' | 'trades' | 'volatility' | 'gainers' | 'losers'>('volume');
   const [hideJunk, setHideJunk] = useState(true); // Фильтр "Скрыть неликвид"
+  
+  // Настройки стоп-лосса
+  const [stopMode, setStopMode] = useState<'percent' | 'points'>('percent');
+  const [stopValue, setStopValue] = useState<number>(0.3);
 
   const loadData = async (isInitial = false) => {
     if (isInitial) {
@@ -250,28 +255,61 @@ export const StocksPage: React.FC = () => {
     return value !== null && value !== undefined && !isNaN(value) && value > 0;
   };
 
-  // Расчет стоп-лосса (0.3% от цены)
-  const calculateStopLoss = (price: number, lotSize: number): { points: number; rubles: number } | null => {
-    if (!isValidValue(price) || !isValidValue(lotSize)) {
+  // Логика изменения стоп-лосса
+  const handleStopChange = (delta: number) => {
+    setStopValue(prev => {
+      let step = 0;
+      
+      // Логика шага (Smart Step)
+      if (stopMode === 'percent') {
+        step = 0.1; // Для процентов всегда шаг 0.1
+      } else {
+        // Для пунктов - динамический шаг
+        if (prev < 20) step = 1;
+        else if (prev < 50) step = 5;
+        else step = 10;
+      }
+
+      const newValue = prev + (delta * step);
+      // Ограничения: мин 0.1, макс 300
+      return Math.max(0.1, Math.min(300, Number(newValue.toFixed(1))));
+    });
+  };
+
+  const toggleStopMode = () => {
+    setStopMode(prev => {
+      const newMode = prev === 'percent' ? 'points' : 'percent';
+      // Сброс на дефолтные адекватные значения при смене режима
+      setStopValue(newMode === 'percent' ? 0.3 : 20); 
+      return newMode;
+    });
+  };
+
+  // Расчет стоп-лосса с учетом настроек
+  const calculateStopLoss = (price: number, lotSize: number | undefined, minStep: number = 0.01): { points: number; rubles: number } | null => {
+    if (!isValidValue(price)) {
       return null;
     }
     
-    // Приблизительный minStep для акций MOEX (обычно 0.01)
-    const minStep = 0.01;
-    const stopPercent = 0.003; // 0.3%
+    // Fallback для lotSize: если не пришел, берем 10 как стандарт для акций MOEX
+    const effectiveLotSize = lotSize && lotSize > 0 ? lotSize : 10;
     
-    // StopPoints = (Price * 0.003) / MinStep
-    const stopPoints = (price * stopPercent) / minStep;
+    let stopPoints: number;
     
-    // StepPrice = MinStep * LotSize
-    const stepPrice = minStep * lotSize;
+    if (stopMode === 'percent') {
+      // Расчет из процентов в пункты
+      stopPoints = Math.round((price * (stopValue / 100)) / minStep);
+    } else {
+      // Прямое значение пунктов
+      stopPoints = Math.round(stopValue);
+    }
     
-    // StopRubles = StopPoints * StepPrice
-    const stopRubles = stopPoints * stepPrice;
+    // Расчет рублей (с учетом лотности!)
+    const riskRub = stopPoints * minStep * effectiveLotSize;
     
     return {
-      points: Math.round(stopPoints),
-      rubles: Math.round(stopRubles)
+      points: stopPoints,
+      rubles: Math.round(riskRub * 100) / 100 // Округляем до 2 знаков после запятой
     };
   };
 
@@ -304,6 +342,22 @@ export const StocksPage: React.FC = () => {
           >
             {isInitialLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCcw className="w-4 h-4" />}
             Обновить
+          </button>
+          <button
+            onClick={async () => {
+              try {
+                await downloadCScalpSettings(allStocks);
+              } catch (error) {
+                console.error('Ошибка при экспорте настроек:', error);
+                alert('Не удалось экспортировать настройки. Проверьте консоль для деталей.');
+              }
+            }}
+            disabled={allStocks.length === 0 || isInitialLoading}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600/20 text-green-400 rounded-lg text-sm font-semibold hover:bg-green-600/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Скачать настройки CScalp для всех акций"
+          >
+            <Download className="w-4 h-4" />
+            Скачать CScalp
           </button>
         </div>
       </div>
@@ -386,6 +440,44 @@ export const StocksPage: React.FC = () => {
                     <option value="gainers">Лидеры Роста</option>
                     <option value="losers">Лидеры Падения</option>
                   </select>
+                </div>
+
+                {/* Risk Control Panel */}
+                <div className="flex items-center gap-3 bg-slate-800/50 p-2 rounded-lg border border-slate-700">
+                  {/* Toggle: % / п */}
+                  <div 
+                    onClick={toggleStopMode}
+                    className="flex items-center gap-2 cursor-pointer select-none px-2 py-1 hover:bg-slate-700 rounded transition-colors"
+                  >
+                    <div className={`w-4 h-4 rounded border flex items-center justify-center ${stopMode === 'points' ? 'bg-blue-500 border-blue-500' : 'border-slate-500'}`}>
+                      {stopMode === 'points' && <div className="w-2 h-2 bg-white rounded-sm" />}
+                    </div>
+                    <span className="text-sm font-medium text-slate-300">
+                      {stopMode === 'percent' ? 'В Процентах %' : 'В Пунктах (п)'}
+                    </span>
+                  </div>
+
+                  {/* Stepper Controls */}
+                  <div className="flex items-center bg-slate-900 rounded-md border border-slate-700">
+                    <button 
+                      onClick={() => handleStopChange(-1)}
+                      className="px-3 py-1 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors border-r border-slate-700 font-mono"
+                    >
+                      -
+                    </button>
+                    <div className="w-16 text-center font-mono font-bold text-white text-sm">
+                      {stopValue.toFixed(stopMode === 'percent' ? 1 : 0)}
+                      <span className="text-slate-500 ml-1 text-xs">
+                        {stopMode === 'percent' ? '%' : 'п'}
+                      </span>
+                    </div>
+                    <button 
+                      onClick={() => handleStopChange(1)}
+                      className="px-3 py-1 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors border-l border-slate-700 font-mono"
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -589,7 +681,9 @@ export const StocksPage: React.FC = () => {
                           {/* Колонка 7: Стоп / Риск */}
                           <div className="text-right flex flex-col items-end justify-center">
                             {(() => {
-                              const stopLoss = calculateStopLoss(stock.price, stock.lotSize);
+                              // Используем minStep из данных или fallback 0.01
+                              const minStep = 0.01; // Стандартный шаг для акций MOEX
+                              const stopLoss = calculateStopLoss(stock.price, stock.lotSize, minStep);
                               if (!stopLoss) {
                                 return <span className="text-xs text-slate-600">—</span>;
                               }
