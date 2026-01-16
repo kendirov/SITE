@@ -4,7 +4,7 @@ import { fetchAllFuturesContracts, groupFuturesByAsset, CATEGORY_NAMES, FuturesT
 import ForwardCurve from '../components/ForwardCurve';
 import PriceTrend from '../components/PriceTrend';
 import VolumeAnalysis from '../components/VolumeAnalysis';
-import MicroCandle from '../components/MicroCandle';
+import RangeSlider from '../components/RangeSlider';
 
 type CategoryFilter = 'all' | 'energy' | 'currency' | 'metals' | 'stocks' | 'indices';
 
@@ -244,18 +244,16 @@ const FuturesRow = memo<FuturesRowProps>(({
         </span>
       </td>
       
-      {/* Колонка 8: Динамика (MicroCandle) */}
+      {/* Колонка 8: Диапазон (Range Slider) */}
       <td className="px-3 py-2 text-right">
         {future.high > 0 && future.low > 0 && future.price > 0 ? (
           <div className="flex justify-end">
-            <MicroCandle
+            <RangeSlider
               low={future.low}
               high={future.high}
               open={future.changePercent !== 0 ? future.price / (1 + future.changePercent / 100) : future.price}
-              close={future.price}
               current={future.price}
-              width={40}
-              height={24}
+              width={80}
             />
           </div>
         ) : (
@@ -696,14 +694,12 @@ export const FuturesPage: React.FC = () => {
                           <td className="px-3 py-2 text-right">
                             {group.mainContract && group.mainContract.high > 0 && group.mainContract.low > 0 && group.mainContract.price > 0 ? (
                               <div className="flex justify-end">
-                                <MicroCandle
+                                <RangeSlider
                                   low={group.mainContract.low}
                                   high={group.mainContract.high}
                                   open={group.mainContract.changePercent !== 0 ? group.mainContract.price / (1 + (group.mainContract.changePercent || 0) / 100) : group.mainContract.price}
-                                  close={group.mainContract.price}
                                   current={group.mainContract.price}
-                                  width={40}
-                                  height={24}
+                                  width={80}
                                 />
                               </div>
                             ) : (

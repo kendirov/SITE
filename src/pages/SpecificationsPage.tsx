@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Loader2, AlertCircle, RefreshCcw, FileText, ChevronUp, ChevronDown, Search } from 'lucide-react';
+import { Loader2, AlertCircle, RefreshCcw, FileText, ChevronUp, ChevronDown, Search, X } from 'lucide-react';
 import { fetchStocksSpecifications, ProcessedStockSpec } from '../api/stocks';
 
 // Комиссии для разных типов сделок
@@ -27,6 +27,7 @@ export const SpecificationsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'desc' });
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedStock, setSelectedStock] = useState<ExtendedStockSpec | null>(null);
 
   const loadData = async () => {
     setIsLoading(true);
@@ -86,16 +87,15 @@ export const SpecificationsPage: React.FC = () => {
     });
   }, [stocks]);
 
-  // Фильтрация по поисковому запросу (по тикеру и названию)
-  const filteredStocks = useMemo(() => {
-    if (!searchQuery.trim()) return extendedStocks;
-    
-    const query = searchQuery.toLowerCase().trim();
-    return extendedStocks.filter(stock => 
-      stock.secId.toLowerCase().includes(query) ||
-      (stock.shortName && stock.shortName.toLowerCase().includes(query))
+  // Функция проверки совпадения с поисковым запросом
+  const matchesSearch = (stock: ExtendedStockSpec, query: string): boolean => {
+    if (!query.trim()) return false;
+    const lowerQuery = query.toLowerCase().trim();
+    return (
+      stock.secId.toLowerCase().includes(lowerQuery) ||
+      (stock.shortName && stock.shortName.toLowerCase().includes(lowerQuery))
     );
-  }, [extendedStocks, searchQuery]);
+  };
 
   // Функция сортировки
   const handleSort = (key: SortKey) => {
@@ -109,11 +109,13 @@ export const SpecificationsPage: React.FC = () => {
     });
   };
 
-  // Отсортированные данные
+  // Отсортированные данные с логикой "Matches First"
   const sortedStocks = useMemo(() => {
-    if (!sortConfig.key) return filteredStocks;
-
-    return [...filteredStocks].sort((a, b) => {
+    let sorted = [...extendedStocks];
+    
+    // Сначала применяем сортировку по выбранному столбцу (если есть)
+    if (sortConfig.key) {
+      sorted = sorted.sort((a, b) => {
       let aValue: number | string;
       let bValue: number | string;
 
@@ -170,8 +172,26 @@ export const SpecificationsPage: React.FC = () => {
         const result = (aValue as number) - (bValue as number);
         return sortConfig.direction === 'asc' ? result : -result;
       }
-    });
-  }, [filteredStocks, sortConfig]);
+      });
+    }
+    
+    // Затем применяем логику "Matches First" (если есть поисковый запрос)
+    if (searchQuery.trim()) {
+      const query = searchQuery.trim();
+      sorted = sorted.sort((a, b) => {
+        const aMatches = matchesSearch(a, query);
+        const bMatches = matchesSearch(b, query);
+        
+        // Совпадения идут первыми
+        if (aMatches && !bMatches) return -1;
+        if (!aMatches && bMatches) return 1;
+        // Если оба совпадают или оба не совпадают - сохраняем текущий порядок
+        return 0;
+      });
+    }
+    
+    return sorted;
+  }, [extendedStocks, sortConfig, searchQuery]);
 
   return (
     <div className="max-w-[1800px] mx-auto px-8 py-8">
@@ -216,16 +236,16 @@ export const SpecificationsPage: React.FC = () => {
 
       {!isLoading && !error && (
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-lg">
-          {/* Search Bar */}
-          <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+          {/* Compact Search Bar */}
+          <div className="px-4 py-2 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-end">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
               <input
                 type="text"
-                placeholder="Поиск по тикеру или названию..."
+                placeholder="Поиск..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                className="w-40 focus:w-60 h-8 pl-7 pr-2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
               />
             </div>
           </div>
@@ -236,17 +256,17 @@ export const SpecificationsPage: React.FC = () => {
               {/* Grid container with fixed column widths */}
               <div 
                 className="grid sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 border-b-2 border-slate-200 dark:border-slate-700 shadow-sm"
-                style={{ gridTemplateColumns: '180px 80px 100px 100px 70px 60px 70px 60px 140px 120px' }}
+                style={{ gridTemplateColumns: '1fr 80px 100px 100px 70px 60px 70px 60px 140px 150px' }}
               >
                 {/* Level 1: Main Groups */}
                 <div className="col-span-4 px-3 py-2 text-center font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px] border-r-2 border-slate-400 dark:border-slate-600">
                   ИНСТРУМЕНТ
                 </div>
                 <div className="col-span-2 px-3 py-2 text-center font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px] border-r-2 border-slate-400 dark:border-slate-600">
-                  КОМИССИЯ MAKER (0.02%)
+                  КОМИССИЯ MAKER (Лимитка) 0.02%
                 </div>
                 <div className="col-span-2 px-3 py-2 text-center font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px] border-r-2 border-slate-400 dark:border-slate-600">
-                  КОМИССИЯ TAKER (0.045%)
+                  КОМИССИЯ TAKER (Рыночная) 0.045%
                 </div>
                 <div className="col-span-2 px-3 py-2 text-center font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px]">
                   ЛИКВИДНОСТЬ
@@ -256,7 +276,7 @@ export const SpecificationsPage: React.FC = () => {
               {/* Level 2: Column Headers */}
               <div 
                 className="grid bg-slate-100 dark:bg-slate-800/50 border-b border-slate-300 dark:border-slate-600 sticky top-[36px] z-10 shadow-sm"
-                style={{ gridTemplateColumns: '180px 80px 100px 100px 70px 60px 70px 60px 140px 120px' }}
+                style={{ gridTemplateColumns: '1fr 80px 100px 100px 70px 60px 70px 60px 140px 150px' }}
               >
                 {/* Инструмент */}
                 <div 
@@ -404,10 +424,10 @@ export const SpecificationsPage: React.FC = () => {
               {sortedStocks.length === 0 ? (
                 <div 
                   className="grid px-4 py-8 text-center text-slate-500 text-sm"
-                  style={{ gridTemplateColumns: '180px 80px 100px 100px 70px 60px 70px 60px 140px 120px' }}
+                  style={{ gridTemplateColumns: '1fr 80px 100px 100px 70px 60px 70px 60px 140px 150px' }}
                 >
                   <div className="col-span-10">
-                    {searchQuery ? 'Ничего не найдено' : 'Нет данных для отображения'}
+                    Нет данных для отображения
                   </div>
                 </div>
               ) : (
@@ -416,12 +436,26 @@ export const SpecificationsPage: React.FC = () => {
                     ? 'bg-white dark:bg-slate-900' 
                     : 'bg-slate-50 dark:bg-slate-800/30';
                   
+                  const isMatch = matchesSearch(stock, searchQuery);
+                  const prevIsMatch = index > 0 ? matchesSearch(sortedStocks[index - 1], searchQuery) : true;
+                  const showDivider = searchQuery.trim() && !isMatch && prevIsMatch;
+                  
                   return (
-                    <div
-                      key={stock.secId}
-                      className={`grid border-b border-slate-200 dark:border-slate-800 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800/50 ${rowBgClass}`}
-                      style={{ gridTemplateColumns: '180px 80px 100px 100px 70px 60px 70px 60px 140px 120px' }}
-                    >
+                    <React.Fragment key={stock.secId}>
+                      {/* Разделитель между найденными и остальными */}
+                      {showDivider && (
+                        <div 
+                          className="grid border-b border-dashed border-gray-700 dark:border-slate-600"
+                          style={{ gridTemplateColumns: '1fr 80px 100px 100px 70px 60px 70px 60px 140px 150px' }}
+                        >
+                          <div className="col-span-10 h-0"></div>
+                        </div>
+                      )}
+                      <div
+                        onClick={() => setSelectedStock(stock)}
+                        className={`grid border-b border-slate-200 dark:border-slate-800 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800/50 cursor-pointer ${rowBgClass}`}
+                        style={{ gridTemplateColumns: '1fr 80px 100px 100px 70px 60px 70px 60px 140px 150px' }}
+                      >
                       {/* Инструмент - Тикер + Название (sticky) */}
                       <div className={`sticky left-0 z-10 px-3 py-2 text-left border-r border-slate-300 dark:border-slate-600 ${rowBgClass}`}>
                         <div className="flex flex-col gap-0.5">
@@ -446,19 +480,19 @@ export const SpecificationsPage: React.FC = () => {
                         {formatNumber(stock.costOfStep, 2)}
                       </div>
                       {/* Maker Commission - ₽ */}
-                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">
+                      <div className="px-3 py-2 text-right font-mono text-yellow-500 font-semibold border-r border-slate-200 dark:border-slate-700">
                         {formatNumber(stock.makerCommission, 2)}
                       </div>
                       {/* Maker Commission - п. */}
-                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r-2 border-slate-400 dark:border-slate-600">
+                      <div className="px-3 py-2 text-right font-mono text-yellow-500 font-semibold border-r-2 border-slate-400 dark:border-slate-600">
                         {formatNumber(stock.makerSteps, 1)}
                       </div>
                       {/* Taker Commission - ₽ */}
-                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">
+                      <div className="px-3 py-2 text-right font-mono text-yellow-500 font-semibold border-r border-slate-200 dark:border-slate-700">
                         {formatNumber(stock.takerCommission, 2)}
                       </div>
                       {/* Taker Commission - п. */}
-                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r-2 border-slate-400 dark:border-slate-600">
+                      <div className="px-3 py-2 text-right font-mono text-yellow-500 font-semibold border-r-2 border-slate-400 dark:border-slate-600">
                         {formatNumber(stock.takerSteps, 1)}
                       </div>
                       {/* Оборот */}
@@ -466,10 +500,11 @@ export const SpecificationsPage: React.FC = () => {
                         {Math.round(stock.valToday).toLocaleString('ru-RU', { maximumFractionDigits: 0 })}
                       </div>
                       {/* 1% Лот */}
-                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300">
+                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 w-[150px]">
                         {Math.round(stock.largeLot1Pct).toLocaleString('ru-RU', { maximumFractionDigits: 0 })}
                       </div>
                     </div>
+                    </React.Fragment>
                   );
                 })
               )}
@@ -480,7 +515,10 @@ export const SpecificationsPage: React.FC = () => {
           <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
             <div className="flex flex-col gap-1 text-xs text-slate-600 dark:text-slate-400">
               <p>
-                <span className="font-semibold">Maker (0.02%)</span> — комиссия для лимитных заявок. <span className="font-semibold">Taker (0.045%)</span> — комиссия для рыночных заявок.
+                <span className="font-semibold text-emerald-400">Maker (Лимитка) 0.02%</span> — комиссия для лимитных заявок.
+              </p>
+              <p>
+                <span className="font-semibold text-rose-400">Taker (Рыночная) 0.045%</span> — комиссия для рыночных заявок.
               </p>
               <p>
                 <span className="font-semibold">Пункты (п.)</span> — количество минимальных шагов цены, которое нужно пройти инструменту, чтобы окупить комиссию за одну сторону сделки. Формула: Комиссия в рублях / Цена шага.
@@ -495,9 +533,6 @@ export const SpecificationsPage: React.FC = () => {
           {sortedStocks.length > 0 && (
             <div className="px-4 py-2 border-t border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 text-center bg-slate-50 dark:bg-slate-800">
               Показано {sortedStocks.length} из {stocks.length} инструмент{stocks.length === 1 ? '' : stocks.length < 5 ? 'ов' : 'ов'}
-              {searchQuery && (
-                <span className="ml-2">• Поиск: "{searchQuery}"</span>
-              )}
               {sortConfig.key && (
                 <span className="ml-2 text-blue-500">
                   • Сортировка: {sortConfig.key} ({sortConfig.direction === 'asc' ? 'по возрастанию' : 'по убыванию'})
@@ -505,6 +540,101 @@ export const SpecificationsPage: React.FC = () => {
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Modal with Stock Details */}
+      {selectedStock && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedStock(null)}>
+          <div 
+            className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="sticky top-0 bg-slate-900 border-b border-slate-700 px-6 py-4 flex items-center justify-between z-10">
+              <div>
+                <h2 className="text-2xl font-bold text-white">{selectedStock.secId}</h2>
+                {selectedStock.shortName && (
+                  <p className="text-sm text-slate-400 mt-1">{selectedStock.shortName}</p>
+                )}
+              </div>
+              <button
+                onClick={() => setSelectedStock(null)}
+                className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-slate-400" />
+              </button>
+            </div>
+
+            {/* Content - Grid Layout for Specs */}
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Лот */}
+                <div className="bg-white/5 rounded-lg p-3 border border-slate-700">
+                  <div className="text-xs text-gray-500 uppercase mb-1">Лот</div>
+                  <div className="text-base font-medium text-white">{formatLargeNumber(selectedStock.lotSize)}</div>
+                </div>
+
+                {/* Шаг */}
+                <div className="bg-white/5 rounded-lg p-3 border border-slate-700">
+                  <div className="text-xs text-gray-500 uppercase mb-1">Минимальный шаг</div>
+                  <div className="text-base font-medium text-white">{formatNumber(selectedStock.minStep, 2)}</div>
+                </div>
+
+                {/* Цена шага */}
+                <div className="bg-white/5 rounded-lg p-3 border border-slate-700">
+                  <div className="text-xs text-gray-500 uppercase mb-1">Цена шага</div>
+                  <div className="text-base font-medium text-white">{formatNumber(selectedStock.costOfStep, 2)} ₽</div>
+                </div>
+
+                {/* Последняя цена */}
+                <div className="bg-white/5 rounded-lg p-3 border border-slate-700">
+                  <div className="text-xs text-gray-500 uppercase mb-1">Последняя цена</div>
+                  <div className="text-base font-medium text-white">{formatNumber(selectedStock.last, 2)} ₽</div>
+                </div>
+
+                {/* Maker Commission - ₽ */}
+                <div className="bg-white/5 rounded-lg p-3 border border-slate-700">
+                  <div className="text-xs text-gray-500 uppercase mb-1">Maker (Лимитка) - ₽</div>
+                  <div className="text-base font-medium text-yellow-500">{formatNumber(selectedStock.makerCommission, 2)} ₽</div>
+                </div>
+
+                {/* Maker Commission - п. */}
+                <div className="bg-white/5 rounded-lg p-3 border border-slate-700">
+                  <div className="text-xs text-gray-500 uppercase mb-1">Maker (Лимитка) - п.</div>
+                  <div className="text-base font-medium text-yellow-500">{formatNumber(selectedStock.makerSteps, 1)}</div>
+                </div>
+
+                {/* Taker Commission - ₽ */}
+                <div className="bg-white/5 rounded-lg p-3 border border-slate-700">
+                  <div className="text-xs text-gray-500 uppercase mb-1">Taker (Рыночная) - ₽</div>
+                  <div className="text-base font-medium text-yellow-500">{formatNumber(selectedStock.takerCommission, 2)} ₽</div>
+                </div>
+
+                {/* Taker Commission - п. */}
+                <div className="bg-white/5 rounded-lg p-3 border border-slate-700">
+                  <div className="text-xs text-gray-500 uppercase mb-1">Taker (Рыночная) - п.</div>
+                  <div className="text-base font-medium text-yellow-500">{formatNumber(selectedStock.takerSteps, 1)}</div>
+                </div>
+
+                {/* Оборот */}
+                <div className="bg-white/5 rounded-lg p-3 border border-slate-700">
+                  <div className="text-xs text-gray-500 uppercase mb-1">Оборот за день</div>
+                  <div className="text-base font-medium text-white">
+                    {Math.round(selectedStock.valToday).toLocaleString('ru-RU', { maximumFractionDigits: 0 })} ₽
+                  </div>
+                </div>
+
+                {/* 1% Лот */}
+                <div className="bg-white/5 rounded-lg p-3 border border-slate-700">
+                  <div className="text-xs text-gray-500 uppercase mb-1">1% Лот</div>
+                  <div className="text-base font-medium text-white">
+                    {Math.round(selectedStock.largeLot1Pct).toLocaleString('ru-RU', { maximumFractionDigits: 0 })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -109,6 +109,11 @@ const PriceTrend: React.FC<PriceTrendProps> = ({ secId }) => {
       }>;
   }, [candles]);
 
+  // Определяем время начала торговой сессии (FORTS обычно 07:00 или 09:00/10:00)
+  // Используем 10:00 как стандартное время начала основной сессии
+  const SESSION_START_HOUR = 10; // 10:00 MSK
+  const SESSION_START_MINUTE = 0;
+
   // Получаем OPEN, HIGH, LOW из данных
   const referenceLines = useMemo(() => {
     if (!chartData || chartData.length === 0) return null;
@@ -116,7 +121,7 @@ const PriceTrend: React.FC<PriceTrendProps> = ({ secId }) => {
     const firstCandle = chartData[0];
     const openPrice = firstCandle?.open || 0;
     
-    // Находим HIGH и LOW за весь период
+    // Находим HIGH и LOW за весь период (для совместимости)
     let highPrice = 0;
     let lowPrice = Infinity;
     
@@ -128,6 +133,80 @@ const PriceTrend: React.FC<PriceTrendProps> = ({ secId }) => {
     if (lowPrice === Infinity) lowPrice = 0;
     
     return { open: openPrice, high: highPrice, low: lowPrice };
+  }, [chartData]);
+
+  // Рассчитываем Session High/Low (только с начала сегодняшней сессии)
+  const sessionLevels = useMemo(() => {
+    if (!chartData || chartData.length === 0) return null;
+
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    
+    // Фильтруем свечи только с начала сегодняшней сессии
+    const sessionCandles = chartData.filter(candle => {
+      try {
+        const candleDate = new Date(candle.fullTime);
+        if (isNaN(candleDate.getTime())) return false;
+        
+        const candleDateStr = candleDate.toISOString().split('T')[0];
+        const candleHour = candleDate.getHours();
+        const candleMinute = candleDate.getMinutes();
+        
+        // Проверяем, что это сегодня и время >= начала сессии
+        if (candleDateStr === today) {
+          const candleTimeMinutes = candleHour * 60 + candleMinute;
+          const sessionStartMinutes = SESSION_START_HOUR * 60 + SESSION_START_MINUTE;
+          return candleTimeMinutes >= sessionStartMinutes;
+        }
+        return false;
+      } catch {
+        return false;
+      }
+    });
+
+    if (sessionCandles.length === 0) return null;
+
+    let sessionHigh = 0;
+    let sessionLow = Infinity;
+
+    sessionCandles.forEach(candle => {
+      if (candle.high > sessionHigh) sessionHigh = candle.high;
+      if (candle.low < sessionLow) sessionLow = candle.low;
+    });
+
+    if (sessionLow === Infinity) sessionLow = 0;
+
+    return { high: sessionHigh, low: sessionLow };
+  }, [chartData]);
+
+  // Находим индекс свечи, соответствующей началу сессии (для вертикальной линии)
+  const sessionStartIndex = useMemo(() => {
+    if (!chartData || chartData.length === 0) return -1;
+
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    const sessionStartMinutes = SESSION_START_HOUR * 60 + SESSION_START_MINUTE;
+
+    for (let i = 0; i < chartData.length; i++) {
+      const candle = chartData[i];
+      try {
+        const candleDate = new Date(candle.fullTime);
+        if (isNaN(candleDate.getTime())) continue;
+        
+        const candleDateStr = candleDate.toISOString().split('T')[0];
+        const candleHour = candleDate.getHours();
+        const candleMinute = candleDate.getMinutes();
+        const candleTimeMinutes = candleHour * 60 + candleMinute;
+        
+        if (candleDateStr === today && candleTimeMinutes >= sessionStartMinutes) {
+          return i;
+        }
+      } catch {
+        continue;
+      }
+    }
+
+    return -1;
   }, [chartData]);
 
   // Определяем цвет линии: зеленый если выше OPEN, красный если ниже
@@ -343,22 +422,33 @@ const PriceTrend: React.FC<PriceTrendProps> = ({ secId }) => {
                 label={{ value: "OPEN", position: "right", fill: "#94a3b8", fontSize: 10 }}
               />
             )}
-            {referenceLines && referenceLines.high > 0 && (
+            {/* Session High/Low (только с начала сегодняшней сессии) */}
+            {sessionLevels && sessionLevels.high > 0 && (
               <ReferenceLine 
-                y={referenceLines.high} 
+                y={sessionLevels.high} 
                 stroke="#10b981" 
                 strokeDasharray="3 3" 
                 strokeWidth={1.5}
-                label={{ value: "HIGH", position: "right", fill: "#10b981", fontSize: 10 }}
+                label={{ value: "Session High", position: "right", fill: "#10b981", fontSize: 10 }}
               />
             )}
-            {referenceLines && referenceLines.low > 0 && (
+            {sessionLevels && sessionLevels.low > 0 && (
               <ReferenceLine 
-                y={referenceLines.low} 
+                y={sessionLevels.low} 
                 stroke="#ef4444" 
                 strokeDasharray="3 3" 
                 strokeWidth={1.5}
-                label={{ value: "LOW", position: "right", fill: "#ef4444", fontSize: 10 }}
+                label={{ value: "Session Low", position: "right", fill: "#ef4444", fontSize: 10 }}
+              />
+            )}
+            {/* Разделитель сессии (вертикальная пунктирная линия) */}
+            {sessionStartIndex >= 0 && chartData[sessionStartIndex] && (
+              <ReferenceLine 
+                x={chartData[sessionStartIndex].time}
+                stroke="#64748b" 
+                strokeDasharray="5 5" 
+                strokeWidth={1.5}
+                label={{ value: "10:00", position: "top", fill: "#64748b", fontSize: 9 }}
               />
             )}
             <Area

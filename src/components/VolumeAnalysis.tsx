@@ -66,9 +66,23 @@ const VolumeAnalysis: React.FC<VolumeAnalysisProps> = ({ secId }) => {
       });
   }, [secId]);
 
+  // Вспомогательная функция форматирования объема
+  const formatVolume = (vol: number): string => {
+    if (vol >= 1_000_000_000) {
+      return `${(vol / 1_000_000_000).toFixed(2)} млрд ₽`;
+    }
+    if (vol >= 1_000_000) {
+      return `${(vol / 1_000_000).toFixed(2)} млн ₽`;
+    }
+    if (vol >= 1_000) {
+      return `${(vol / 1_000).toFixed(1)} тыс ₽`;
+    }
+    return `${vol.toLocaleString('ru-RU')} ₽`;
+  };
+
   // Расчет данных для графика
   const chartData = useMemo(() => {
-    if (!candles || candles.length === 0) return { data: [], averageVolumeByNow: 0, todayVolume: 0, rvol: 0, insight: '' };
+    if (!candles || candles.length === 0) return { data: [], averageVolumeByNow: 0, todayVolume: 0, rvol: 0, insight: '', insightColor: 'text-slate-500' };
 
     try {
       const now = new Date();
@@ -108,19 +122,30 @@ const VolumeAnalysis: React.FC<VolumeAnalysisProps> = ({ secId }) => {
       // Берем последние 10 торговых дней (исключаем сегодня)
       const last10Days = sortedDays.filter(d => d !== currentDate).slice(0, 10);
       
-      // Вычисляем средний объем к текущему часу за последние 10 дней
+      // Время начала торговой сессии (FORTS обычно 10:00 MSK)
+      const SESSION_START_HOUR = 10;
+      const SESSION_START_MINUTE = 0;
+      const nowMinutes = now.getHours() * 60 + now.getMinutes();
+      const sessionStartMinutes = SESSION_START_HOUR * 60 + SESSION_START_MINUTE;
+      
+      // Текущее время с начала сессии (в минутах)
+      const elapsedMinutesFromSession = Math.max(0, nowMinutes - sessionStartMinutes);
+      
+      // Вычисляем накопленный объем к текущему моменту времени за последние N дней
       const volumesByNow: number[] = [];
       
       last10Days.forEach(day => {
         const dayCandles = candlesByDay.get(day) || [];
-        // Суммируем объемы с начала дня (10:00) до текущего часа
-        const dayStart = new Date(`${day}T10:00:00`);
-        const dayEnd = new Date(`${day}T${String(currentHour).padStart(2, '0')}:59:59`);
+        const dayStart = new Date(`${day}T${String(SESSION_START_HOUR).padStart(2, '0')}:${String(SESSION_START_MINUTE).padStart(2, '0')}:00`);
+        const dayEnd = new Date(dayStart.getTime() + elapsedMinutesFromSession * 60 * 1000);
         
-        // Фильтруем свечи по времени и проверяем валидность (volume > 0 и close > 0)
+        // Фильтруем свечи по времени (с начала сессии до текущего момента времени)
         const validCandles = dayCandles.filter(c => {
           try {
             const candleTime = new Date(c.time);
+            if (isNaN(candleTime.getTime())) return false;
+            
+            // Свеча должна быть после начала сессии и до текущего момента
             const inTimeRange = candleTime >= dayStart && candleTime <= dayEnd;
             const hasVolume = Number(c.volume) > 0;
             const hasPrice = Number(c.close) > 0;
@@ -148,15 +173,16 @@ const VolumeAnalysis: React.FC<VolumeAnalysisProps> = ({ secId }) => {
         ? volumesByNow.reduce((sum, v) => sum + v, 0) / volumesByNow.length
         : 0;
 
-      // Сегодняшний объем до текущего часа
+      // Сегодняшний накопленный объем с начала сессии до текущего момента
       const todayCandles = candlesByDay.get(currentDate) || [];
-      const todayStart = new Date(`${currentDate}T10:00:00`);
-      const todayEnd = new Date(`${currentDate}T${String(currentHour).padStart(2, '0')}:59:59`);
+      const todayStart = new Date(`${currentDate}T${String(SESSION_START_HOUR).padStart(2, '0')}:${String(SESSION_START_MINUTE).padStart(2, '0')}:00`);
+      const todayEnd = new Date(todayStart.getTime() + elapsedMinutesFromSession * 60 * 1000);
       
       const todayVolume = todayCandles
         .filter(c => {
           try {
             const candleTime = new Date(c.time);
+            if (isNaN(candleTime.getTime())) return false;
             return candleTime >= todayStart && candleTime <= todayEnd;
           } catch {
             return false;
@@ -167,7 +193,7 @@ const VolumeAnalysis: React.FC<VolumeAnalysisProps> = ({ secId }) => {
           return sum + (isNaN(vol) || !isFinite(vol) ? 0 : vol);
         }, 0);
 
-      // Полные дневные объемы для прошлых дней
+      // Полные дневные объемы для прошлых дней (для графика)
       const pastDaysVolumes = last10Days.map(day => {
         const dayCandles = candlesByDay.get(day) || [];
         const fullDayVolume = dayCandles.reduce((sum, c) => {
@@ -187,9 +213,9 @@ const VolumeAnalysis: React.FC<VolumeAnalysisProps> = ({ secId }) => {
         };
       });
 
-      // RVOL расчет
+      // RVOL расчет: (Current Cumulative Volume @ Time T) / (Average Cumulative Volume @ Time T over last N days)
       const rvol = averageVolumeByNow > 0 
-        ? (todayVolume / averageVolumeByNow) * 100 
+        ? (todayVolume / averageVolumeByNow) 
         : 0;
 
       // Формируем данные для графика (сортируем по дате: старые -> новые)
@@ -210,18 +236,34 @@ const VolumeAnalysis: React.FC<VolumeAnalysisProps> = ({ secId }) => {
       // Генерируем инсайт
       let insight = '';
       let insightEmoji = '';
+      let insightColor = 'text-white';
+      
       if (!hasEnoughData) {
-        insightEmoji = '📊';
-        insight = 'Недостаточно данных для анализа';
-      } else if (rvol > 120) {
+        // Fallback: показываем текущий объем за день
+        if (todayVolume > 0) {
+          insightEmoji = '📊';
+          insight = `Today's Vol: ${formatVolume(todayVolume)}`;
+          insightColor = 'text-slate-300';
+        } else {
+          insightEmoji = '📊';
+          insight = 'Недостаточно данных для анализа';
+          insightColor = 'text-slate-500';
+        }
+      } else if (rvol > 1.2) {
+        // RVOL > 1.2 (объем на 20% выше нормы)
         insightEmoji = '🔥';
-        insight = `Аномальная активность: ${rvol.toFixed(0)}% от нормы к этому часу`;
-      } else if (rvol < 80) {
+        insight = `Повышенный объем: ${(rvol * 100).toFixed(0)}% от нормы`;
+        insightColor = 'text-emerald-400';
+      } else if (rvol < 0.8) {
+        // RVOL < 0.8 (объем ниже нормы)
         insightEmoji = '😴';
-        insight = `Пониженный интерес: ${rvol.toFixed(0)}% от среднего объема`;
+        insight = `Пониженный объем: ${(rvol * 100).toFixed(0)}% от нормы`;
+        insightColor = 'text-slate-400';
       } else {
+        // Нормальный объем (0.8 <= RVOL <= 1.2)
         insightEmoji = '📊';
-        insight = `Нормальная активность: ${rvol.toFixed(0)}% от среднего объема`;
+        insight = `Нормальный объем: ${(rvol * 100).toFixed(0)}% от нормы`;
+        insightColor = 'text-slate-300';
       }
 
       return {
@@ -229,11 +271,12 @@ const VolumeAnalysis: React.FC<VolumeAnalysisProps> = ({ secId }) => {
         averageVolumeByNow,
         todayVolume,
         rvol,
-        insight: `${insightEmoji} ${insight}`
+        insight: `${insightEmoji} ${insight}`,
+        insightColor
       };
     } catch (err) {
       console.error('Error calculating volume analysis:', err);
-      return { data: [], averageVolumeByNow: 0, todayVolume: 0, rvol: 0, insight: '' };
+      return { data: [], averageVolumeByNow: 0, todayVolume: 0, rvol: 0, insight: '', insightColor: 'text-slate-500' };
     }
   }, [candles]);
 
@@ -290,12 +333,12 @@ const VolumeAnalysis: React.FC<VolumeAnalysisProps> = ({ secId }) => {
 
   // Определяем цвет для сегодняшнего бара (выделяем ярким цветом)
   const getTodayBarColor = () => {
-    if (chartData.rvol > 120) {
-      return '#FBBF24'; // Желтый/янтарный для высокой активности
-    } else if (chartData.rvol < 80) {
-      return '#64748b'; // Серый для низкой активности
+    if (chartData.rvol > 1.2) {
+      return '#10b981'; // Зеленый для повышенного объема
+    } else if (chartData.rvol < 0.8) {
+      return '#64748b'; // Серый для пониженного объема
     }
-    return '#3b82f6'; // Синий для нормальной активности
+    return '#3b82f6'; // Синий для нормального объема
   };
 
   return (
@@ -305,7 +348,7 @@ const VolumeAnalysis: React.FC<VolumeAnalysisProps> = ({ secId }) => {
           Анализ Объемов (RVOL)
         </div>
         {chartData.insight && (
-          <div className="text-sm font-semibold text-white">
+          <div className={`text-sm font-semibold ${chartData.insightColor || 'text-white'}`}>
             {chartData.insight}
           </div>
         )}

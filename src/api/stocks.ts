@@ -285,10 +285,16 @@ export async function fetchIMOEXIndex(): Promise<StockTableRow | null> {
 }
 
 // Функция для получения всех акций с пагинацией
-export async function fetchAllStocks(): Promise<StockTableRow[]> {
+// Возвращает объект с данными акций и временем обновления
+export interface FetchAllStocksResult {
+  stocks: StockTableRow[];
+  updateTime: string | null; // Время обновления данных от биржи (UPDATETIME)
+}
+
+export async function fetchAllStocks(): Promise<FetchAllStocksResult> {
   try {
     const baseUrl = '/iss/engines/stock/markets/shares/boards/TQBR/securities.json';
-    const params = 'iss.meta=off&iss.only=securities,marketdata&securities.columns=SECID,SHORTNAME,SECNAME,LOTSIZE,ISSUESIZE&marketdata.columns=SECID,LAST,VALTODAY,VOLTODAY,NUMTRADES,LASTTOPREVPRICE,TRADINGSTATUS,PREVPRICE,HIGH,LOW';
+    const params = 'iss.meta=off&iss.only=securities,marketdata&securities.columns=SECID,SHORTNAME,SECNAME,LOTSIZE,ISSUESIZE&marketdata.columns=SECID,LAST,VALTODAY,VOLTODAY,NUMTRADES,LASTTOPREVPRICE,TRADINGSTATUS,PREVPRICE,HIGH,LOW,UPDATETIME';
     
     // Собираем все данные через пагинацию
     let allSecuritiesData: any[][] = [];
@@ -457,9 +463,27 @@ export async function fetchAllStocks(): Promise<StockTableRow[]> {
     // Сортируем по объему (по убыванию) - это будет сортировка по умолчанию
     allStocks.sort((a, b) => b.volume - a.volume);
     
-    return allStocks;
+    // Получаем время обновления из первой строки (если не получили ранее)
+    let updateTime: string | null = null;
+    if (marketdataData.length > 0 && marketdataColumns) {
+      const updatetimeIndex = marketdataColumns.indexOf('UPDATETIME');
+      if (updatetimeIndex !== -1) {
+        const firstRow = marketdataData[0];
+        if (firstRow && firstRow[updatetimeIndex]) {
+          updateTime = firstRow[updatetimeIndex];
+        }
+      }
+    }
+    
+    return {
+      stocks: allStocks,
+      updateTime
+    };
   } catch (error) {
     console.error('Failed to fetch stocks:', error);
-    return [];
+    return {
+      stocks: [],
+      updateTime: null
+    };
   }
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, memo } from 'react';
-import { BarChart3, Loader2, AlertCircle, RefreshCcw, Search, TrendingUp, TrendingDown, ChevronDown, ChevronRight } from 'lucide-react';
+import { BarChart3, Loader2, AlertCircle, RefreshCcw, Search, TrendingUp, TrendingDown, ChevronDown, ChevronRight, Info } from 'lucide-react';
 import { fetchAllStocks, fetchIMOEXIndex, StockTableRow } from '../api/stocks';
 import MicroCandle from '../components/MicroCandle';
 import StockPriceTrend from '../components/StockPriceTrend';
@@ -12,6 +12,7 @@ export const StocksPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [lastUpdateTime, setLastUpdateTime] = useState<Date | null>(null);
+  const [dataUpdateTime, setDataUpdateTime] = useState<string | null>(null); // Время обновления данных от биржи
   
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'volume' | 'trades' | 'volatility' | 'gainers' | 'losers'>('volume');
@@ -24,13 +25,15 @@ export const StocksPage: React.FC = () => {
     setError(null);
     try {
       // Загружаем акции и индекс параллельно
-      const [stocks, index] = await Promise.all([
+      const [stocksResult, index] = await Promise.all([
         fetchAllStocks(),
         fetchIMOEXIndex()
       ]);
-      setAllStocks(stocks);
+      setAllStocks(stocksResult.stocks);
       setImoexIndex(index);
       setLastUpdateTime(new Date());
+      // Сохраняем время обновления данных от биржи
+      setDataUpdateTime(stocksResult.updateTime);
     } catch (err) {
       console.error('Failed to load stocks data:', err);
       setError('Не удалось загрузить данные. Попробуйте позже.');
@@ -195,6 +198,17 @@ export const StocksPage: React.FC = () => {
     return result;
   }, [allStocks, imoexIndex, searchQuery, sortBy, hideJunk]);
 
+  // Форматирование времени обновления данных от биржи
+  const formatDataTime = (timeStr: string): string => {
+    try {
+      // Формат от MOEX: "2025-01-15 10:30:45" или "10:30:45"
+      const timePart = timeStr.includes(' ') ? timeStr.split(' ')[1] : timeStr;
+      return timePart.substring(0, 8); // HH:MM:SS
+    } catch {
+      return timeStr;
+    }
+  };
+
   const formatPrice = (price: number) => price.toFixed(2);
   const formatVolume = (volume: number) => {
     // Русское форматирование объемов
@@ -271,6 +285,19 @@ export const StocksPage: React.FC = () => {
 
       {!error && allStocks.length > 0 && (
         <div className="bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden">
+          {/* Status Bar - Предупреждение о задержке */}
+          <div className="px-4 py-2 bg-yellow-500/10 border-b border-yellow-500/20 flex items-center gap-2">
+            <Info className="w-4 h-4 text-yellow-500 flex-shrink-0" />
+            <span className="text-sm text-yellow-500 font-medium">
+              Данные MOEX (Задержка 15 мин)
+            </span>
+            {dataUpdateTime && (
+              <span className="text-xs text-yellow-400/80 font-mono ml-auto">
+                Обновлено: {formatDataTime(dataUpdateTime)}
+              </span>
+            )}
+          </div>
+          
           {/* Control Bar */}
           <div className="p-4 border-b border-slate-800">
             <div className="flex flex-col gap-4">
@@ -364,48 +391,24 @@ export const StocksPage: React.FC = () => {
                       ? stock.volume / globalMaxVolume
                       : 0;
                     
-                    // Цветовая градация ТОЛЬКО для колонки "Объем"
-                    // Убрали золотую подсветку за большой объем - только для Hot акций
+                    // Цвет для колонки "Объем" - нейтральный серый
                     let volumeTextColor = 'text-gray-300'; // Default
                     if (isIndex) {
-                      // Индекс: спокойный серый
                       volumeTextColor = 'text-gray-400';
-                    } else if (isHot) {
-                      // Hot акции: фиолетовый (аномалия)
-                      volumeTextColor = 'text-purple-400 font-bold';
-                    } else if (liquidityScore > 0.1) {
-                      // Середняк: > 10% от Лидера -> Белый
-                      volumeTextColor = 'text-gray-200';
-                    } else {
-                      // Болото: < 10% от Лидера -> Темно-серый
-                      volumeTextColor = 'text-gray-600';
                     }
                     
-                    // Цвет для колонки "Цена" - только для Hot акций
-                    let priceTextColor = 'text-gray-300'; // Default
-                    if (isIndex) {
-                      // Индекс: обычный белый (не желтый!)
-                      priceTextColor = 'text-gray-100';
-                    } else if (isHot) {
-                      // Hot акции: ярко-фиолетовый
-                      priceTextColor = 'text-purple-400 font-bold';
-                    }
-                    // Остальные: остаются text-gray-300
+                    // Цвет для колонки "Цена" - ВСЕГДА белый/светло-серый
+                    const priceTextColor = isIndex ? 'text-gray-100' : 'text-gray-200';
                     
-                    // Цвет для тикера/названия
-                    let tickerTextColor = 'text-white'; // Default
-                    if (isHot) {
-                      tickerTextColor = 'text-purple-400 font-bold'; // Ярко-фиолетовый для Hot акций
-                    } else if (isIndex) {
-                      tickerTextColor = 'text-gray-100'; // Обычный белый или светло-голубой
-                    }
+                    // Цвет для тикера/названия - жирный белый для тикера, темно-серый для описания
+                    const tickerTextColor = isIndex ? 'text-gray-100' : 'text-white';
                     
-                    // Зебра (чередование цветов строк)
-                    const bgClass = isIndex 
+                    // Фон строки - убрана зебра, только легкое выделение для "In Play"
+                    const bgClass = isHot 
+                      ? 'bg-amber-500/5 border-l-4 border-amber-500' 
+                      : isIndex 
                       ? 'bg-amber-500/10 border-amber-500/30' 
-                      : index % 2 === 0 
-                      ? 'bg-gray-900' 
-                      : 'bg-gray-800/30';
+                      : 'bg-transparent';
                     
                     // Стили для колонки "Сделок"
                     const tradesClassName = isIndex
@@ -416,29 +419,29 @@ export const StocksPage: React.FC = () => {
                       <React.Fragment key={stock.secId}>
                         {/* Main Row - CSS Grid */}
                         <div
-                          onClick={() => toggleRow(stock.secId)}
-                          className={`grid grid-cols-[1.5fr_100px_80px_100px_140px_120px_100px] gap-4 px-4 py-3 ${bgClass} hover:bg-slate-800/50 transition-colors cursor-pointer ${
+                          className={`grid grid-cols-[1.5fr_100px_80px_100px_140px_120px_100px] gap-4 px-4 py-3 ${bgClass} hover:bg-slate-800/50 transition-colors cursor-text ${
                             isIndex ? 'border-b border-gray-700' : 'border-b border-slate-800/50'
                           }`}
                         >
                           {/* Колонка 1: Актив */}
                           <div className="flex items-center gap-2">
                             {isExpanded ? (
-                              <ChevronDown className={`w-4 h-4 flex-shrink-0 ${isIndex ? 'text-amber-400' : 'text-slate-400'}`} />
+                              <ChevronDown 
+                                onClick={() => toggleRow(stock.secId)}
+                                className={`w-4 h-4 flex-shrink-0 ${isIndex ? 'text-amber-400' : 'text-slate-400'} cursor-pointer hover:opacity-80 transition-opacity`} 
+                              />
                             ) : (
-                              <ChevronRight className={`w-4 h-4 flex-shrink-0 ${isIndex ? 'text-amber-400' : 'text-slate-400'}`} />
+                              <ChevronRight 
+                                onClick={() => toggleRow(stock.secId)}
+                                className={`w-4 h-4 flex-shrink-0 ${isIndex ? 'text-amber-400' : 'text-slate-400'} cursor-pointer hover:opacity-80 transition-opacity`} 
+                              />
                             )}
                             <div className="flex items-center gap-2 min-w-0">
-                              {isHot && (
-                                <span className="text-lg flex-shrink-0" title="В игре: аномальный объем или памп">
-                                  🔥
-                                </span>
-                              )}
                               <div className="min-w-0">
-                                <div className={`text-sm font-semibold ${tickerTextColor} truncate`}>
+                                <div className={`text-sm font-bold ${tickerTextColor} truncate`}>
                                   {stock.shortName}
                                 </div>
-                                <div className={`text-xs font-mono ${isIndex ? 'text-gray-400' : 'text-slate-500'}`}>
+                                <div className={`text-xs font-mono ${isIndex ? 'text-gray-400' : 'text-gray-500'}`}>
                                   {stock.secId}
                                 </div>
                               </div>
@@ -447,15 +450,7 @@ export const StocksPage: React.FC = () => {
 
                           {/* Колонка 2: Цена */}
                           <div className="text-right flex items-center justify-end">
-                            <span className={`text-sm font-mono ${
-                              isHot 
-                                ? 'text-purple-400 font-bold' 
-                                : stock.changePercent > 0 
-                                ? 'text-emerald-400 font-semibold' 
-                                : stock.changePercent < 0 
-                                ? 'text-red-400 font-semibold' 
-                                : priceTextColor
-                            }`}>
+                            <span className={`text-sm font-mono ${priceTextColor}`}>
                               {formatPrice(stock.price)}
                             </span>
                           </div>
@@ -463,12 +458,10 @@ export const StocksPage: React.FC = () => {
                           {/* Колонка 3: Изм % */}
                           <div className="text-right flex items-center justify-end">
                             <div className={`flex items-center justify-end gap-1 text-sm ${
-                              isHot
-                                ? 'text-purple-400 font-bold'
-                                : stock.changePercent > 0 
-                                ? 'text-emerald-400 font-semibold' 
+                              stock.changePercent > 0 
+                                ? 'text-emerald-400' 
                                 : stock.changePercent < 0 
-                                ? 'text-red-400 font-semibold' 
+                                ? 'text-rose-400' 
                                 : 'text-slate-400'
                             }`}>
                               {stock.changePercent > 0 ? (
