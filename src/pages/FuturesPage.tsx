@@ -745,6 +745,87 @@ export const FuturesPage: React.FC = () => {
                       </tr>
                         )}
                         
+                        {/* Related Assets Section */}
+                        {isExpanded && (
+                          <tr>
+                            <td colSpan={8} className="p-4 bg-slate-800/20 border-t border-slate-800">
+                              <div className="mb-3">
+                                <h3 className="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
+                                  <span>Связанные контракты</span>
+                                  <span className="text-xs text-slate-500 font-normal">
+                                    ({group.futures.length} {group.futures.length === 1 ? 'контракт' : group.futures.length < 5 ? 'контракта' : 'контрактов'})
+                                  </span>
+                                </h3>
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                                  {group.futures.map((future) => {
+                                    const metadata = getFutureMetadata(future);
+                                    const isMain = future.secId === group.mainContract?.secId;
+                                    
+                                    return (
+                                      <div
+                                        key={future.secId}
+                                        className={`p-2 rounded-lg border transition-colors ${
+                                          isMain
+                                            ? 'bg-blue-500/20 border-blue-500/50'
+                                            : 'bg-slate-700/30 border-slate-600/50 hover:bg-slate-700/50'
+                                        }`}
+                                      >
+                                        <div className="flex items-center gap-1.5 mb-1">
+                                          <span className={`text-xs font-bold font-mono ${
+                                            isMain ? 'text-blue-400' : 'text-slate-300'
+                                          }`}>
+                                            {future.secId}
+                                          </span>
+                                          {metadata.type === 'mini' && (
+                                            <span className="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 text-[9px] font-bold rounded uppercase border border-blue-500/30">
+                                              Mini
+                                            </span>
+                                          )}
+                                          {metadata.type === 'perpetual' && (
+                                            <span className="px-1.5 py-0.5 bg-purple-500/20 text-purple-400 text-[9px] font-bold rounded uppercase border border-purple-500/30">
+                                              Perp
+                                            </span>
+                                          )}
+                                          {metadata.type === 'standard' && !isMain && (
+                                            <span className="px-1.5 py-0.5 bg-slate-600/20 text-slate-400 text-[9px] font-bold rounded uppercase border border-slate-600/30">
+                                              Std
+                                            </span>
+                                          )}
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                          <span className={`text-xs font-mono ${
+                                            future.changePercent > 0
+                                              ? 'text-emerald-400'
+                                              : future.changePercent < 0
+                                              ? 'text-red-400'
+                                              : 'text-slate-400'
+                                          }`}>
+                                            {formatPrice(future.price)}
+                                          </span>
+                                          <span className={`text-[10px] font-mono ${
+                                            future.changePercent > 0
+                                              ? 'text-emerald-400'
+                                              : future.changePercent < 0
+                                              ? 'text-red-400'
+                                              : 'text-slate-500'
+                                          }`}>
+                                            {future.changePercent > 0 ? '+' : ''}{future.changePercent.toFixed(2)}%
+                                          </span>
+                                        </div>
+                                        {future.expiryDate && !future.isPerpetual && (
+                                          <div className="text-[9px] text-slate-500 font-mono mt-1">
+                                            {formatDate(future.expiryDate)}
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+
                         {/* Volume Analysis */}
                         {isExpanded && group.mainContract && group.mainContract.secId && (
                           <tr>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, ReferenceLine } from 'recharts';
 import { fetchFuturesCandles, CandleData } from '../api/futures';
 
 interface PriceTrendProps {
@@ -109,22 +109,43 @@ const PriceTrend: React.FC<PriceTrendProps> = ({ secId }) => {
       }>;
   }, [candles]);
 
-  // Определяем цвет линии: зеленый если выросли, красный если упали
+  // Получаем OPEN, HIGH, LOW из данных
+  const referenceLines = useMemo(() => {
+    if (!chartData || chartData.length === 0) return null;
+    
+    const firstCandle = chartData[0];
+    const openPrice = firstCandle?.open || 0;
+    
+    // Находим HIGH и LOW за весь период
+    let highPrice = 0;
+    let lowPrice = Infinity;
+    
+    chartData.forEach(candle => {
+      if (candle.high > highPrice) highPrice = candle.high;
+      if (candle.low < lowPrice) lowPrice = candle.low;
+    });
+    
+    if (lowPrice === Infinity) lowPrice = 0;
+    
+    return { open: openPrice, high: highPrice, low: lowPrice };
+  }, [chartData]);
+
+  // Определяем цвет линии: зеленый если выше OPEN, красный если ниже
   const lineColor = useMemo(() => {
     if (!chartData || chartData.length < 2) return '#3b82f6'; // Синий по умолчанию
     
     try {
-      const firstPrice = chartData[0]?.price;
       const lastPrice = chartData[chartData.length - 1]?.price;
+      const openPrice = referenceLines?.open || chartData[0]?.open || 0;
       
       // Проверяем валидность цен
-      if (!firstPrice || !lastPrice || isNaN(firstPrice) || isNaN(lastPrice)) {
+      if (!lastPrice || !openPrice || isNaN(lastPrice) || isNaN(openPrice)) {
         return '#3b82f6';
       }
       
-      if (lastPrice > firstPrice) {
+      if (lastPrice > openPrice) {
         return '#10b981'; // Зеленый
-      } else if (lastPrice < firstPrice) {
+      } else if (lastPrice < openPrice) {
         return '#ef4444'; // Красный
       }
       return '#3b82f6'; // Синий (нейтральный)
@@ -132,7 +153,27 @@ const PriceTrend: React.FC<PriceTrendProps> = ({ secId }) => {
       console.error('Error calculating line color:', err);
       return '#3b82f6';
     }
-  }, [chartData]);
+  }, [chartData, referenceLines]);
+
+  // Вычисляем изменение в % и пунктах
+  const priceChange = useMemo(() => {
+    if (!chartData || chartData.length < 2 || !referenceLines) return null;
+    
+    const firstPrice = chartData[0]?.price || 0;
+    const lastPrice = chartData[chartData.length - 1]?.price || 0;
+    const openPrice = referenceLines.open || firstPrice;
+    
+    if (!firstPrice || !lastPrice || !openPrice) return null;
+    
+    const changePercent = ((lastPrice - openPrice) / openPrice) * 100;
+    const changePoints = lastPrice - openPrice;
+    
+    return {
+      percent: changePercent,
+      points: changePoints,
+      isPositive: changePercent > 0
+    };
+  }, [chartData, referenceLines]);
 
   // Кастомный Tooltip с защитой от ошибок
   const CustomTooltip = ({ active, payload }: any) => {
@@ -196,13 +237,62 @@ const PriceTrend: React.FC<PriceTrendProps> = ({ secId }) => {
     );
   }
 
+  // Кастомный активный dot с пульсацией
+  const PulsingDot = (props: any) => {
+    const { cx, cy, payload } = props;
+    if (!cx || !cy) return null;
+    
+    // Показываем пульсирующую точку только на последней точке
+    const isLastPoint = payload && chartData && payload === chartData[chartData.length - 1];
+    
+    return (
+      <g>
+        {isLastPoint && (
+          <circle
+            cx={cx}
+            cy={cy}
+            r={6}
+            fill={lineColor}
+            opacity={0.3}
+            className="animate-ping"
+          />
+        )}
+        <circle
+          cx={cx}
+          cy={cy}
+          r={isLastPoint ? 5 : 4}
+          fill={lineColor}
+          stroke="#0f172a"
+          strokeWidth={2}
+        />
+      </g>
+    );
+  };
+
   try {
     return (
-      <div className="h-[200px] bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-        <div className="mb-2">
+      <div className="h-[250px] bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+        {/* Header with price change */}
+        <div className="mb-3 flex items-center justify-between">
           <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
             Динамика Цены
           </span>
+          {priceChange && (
+            <div className="flex items-center gap-3">
+              <div className="text-right">
+                <div className={`text-lg font-bold font-mono ${
+                  priceChange.isPositive ? 'text-emerald-500' : 'text-red-500'
+                }`}>
+                  {priceChange.isPositive ? '+' : ''}{priceChange.percent.toFixed(2)}%
+                </div>
+                <div className={`text-xs font-mono ${
+                  priceChange.isPositive ? 'text-emerald-400' : 'text-red-400'
+                }`}>
+                  {priceChange.isPositive ? '+' : ''}{priceChange.points.toFixed(2)} п.
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
@@ -214,6 +304,10 @@ const PriceTrend: React.FC<PriceTrendProps> = ({ secId }) => {
                 <stop offset="5%" stopColor={lineColor} stopOpacity={0.3} />
                 <stop offset="95%" stopColor={lineColor} stopOpacity={0} />
               </linearGradient>
+              {/* Пунктирные линии для reference lines */}
+              <pattern id="dashPattern" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
+                <path d="M 0,4 l 4,-4" stroke="#64748b" strokeWidth="1" opacity="0.5"/>
+              </pattern>
             </defs>
             <XAxis
               dataKey="time"
@@ -239,14 +333,43 @@ const PriceTrend: React.FC<PriceTrendProps> = ({ secId }) => {
               animationDuration={0}
               offset={10}
             />
+            {/* Reference Lines */}
+            {referenceLines && referenceLines.open > 0 && (
+              <ReferenceLine 
+                y={referenceLines.open} 
+                stroke="#94a3b8" 
+                strokeDasharray="3 3" 
+                strokeWidth={1.5}
+                label={{ value: "OPEN", position: "right", fill: "#94a3b8", fontSize: 10 }}
+              />
+            )}
+            {referenceLines && referenceLines.high > 0 && (
+              <ReferenceLine 
+                y={referenceLines.high} 
+                stroke="#10b981" 
+                strokeDasharray="3 3" 
+                strokeWidth={1.5}
+                label={{ value: "HIGH", position: "right", fill: "#10b981", fontSize: 10 }}
+              />
+            )}
+            {referenceLines && referenceLines.low > 0 && (
+              <ReferenceLine 
+                y={referenceLines.low} 
+                stroke="#ef4444" 
+                strokeDasharray="3 3" 
+                strokeWidth={1.5}
+                label={{ value: "LOW", position: "right", fill: "#ef4444", fontSize: 10 }}
+              />
+            )}
             <Area
               type="monotone"
               dataKey="price"
               stroke={lineColor}
-              strokeWidth={2}
+              strokeWidth={2.5}
               fill={`url(#colorPrice-${secId})`}
               isAnimationActive={false}
-              activeDot={{ r: 4, fill: lineColor }}
+              dot={false}
+              activeDot={<PulsingDot />}
             />
           </AreaChart>
         </ResponsiveContainer>

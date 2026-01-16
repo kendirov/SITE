@@ -163,8 +163,13 @@ const ForwardCurve: React.FC<ForwardCurveProps> = ({ futures }) => {
             return sum + (isNaN(vol) || !isFinite(vol) ? 0 : vol);
           }, 0);
           
+          // Форматируем дату для оси X (краткое название месяца)
+          const monthNames = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+          const monthName = monthNames[date.getMonth()];
+          
           return {
             date: `${month}.${year}`,
+            dateLabel: `${monthName} ${year}`,
             fullDate: dateKey,
             price: group.avgPrice,
             secId: representative.secId || '',
@@ -250,10 +255,19 @@ const ForwardCurve: React.FC<ForwardCurveProps> = ({ futures }) => {
         return `${vol.toLocaleString()} ₽`;
       };
       
+      const spread = data.spread !== undefined ? data.spread : null;
+      
       return (
         <div className="bg-slate-800 border border-slate-700 rounded-lg p-2 shadow-lg min-w-[180px]">
           <p className="text-xs font-semibold text-white mb-1">{data.shortName || data.secId || '—'}</p>
           <p className="text-xs font-mono text-white font-semibold mb-1">{formatNumber(data.price)}</p>
+          {spread !== null && !isNaN(spread) && (
+            <div className={`text-[10px] font-mono mt-1 ${
+              spread > 0 ? 'text-emerald-400' : spread < 0 ? 'text-red-400' : 'text-slate-400'
+            }`}>
+              {spread > 0 ? '+' : ''}{spread.toFixed(2)}% от предыдущего
+            </div>
+          )}
           <div className="flex items-center justify-between gap-2 text-[10px] text-slate-400 mt-2 pt-2 border-t border-slate-700">
             <span>Объем:</span>
             <span className="font-mono text-slate-300">{formatVolume(data.volume)}</span>
@@ -280,16 +294,25 @@ const ForwardCurve: React.FC<ForwardCurveProps> = ({ futures }) => {
     );
   }
 
+  // Вычисляем разницу между контрактами для tooltip
+  const chartDataWithSpread = useMemo(() => {
+    return chartData.map((item, index) => {
+      const prevItem = index > 0 ? chartData[index - 1] : null;
+      const spread = prevItem ? ((item.price - prevItem.price) / prevItem.price) * 100 : 0;
+      return { ...item, spread };
+    });
+  }, [chartData]);
+
   return (
     <div className="h-[200px] bg-slate-800/50 border border-slate-700 rounded-lg p-4">
       <div className="mb-2">
         <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
-          Форвардная кривая
+          Срочная структура
         </span>
       </div>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
-          data={chartData}
+          data={chartDataWithSpread}
           margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
         >
           <XAxis
@@ -298,6 +321,9 @@ const ForwardCurve: React.FC<ForwardCurveProps> = ({ futures }) => {
             tickLine={false}
             tick={{ fill: '#64748b', fontSize: 9, fontFamily: 'monospace' }}
             interval={0}
+            angle={-45}
+            textAnchor="end"
+            height={60}
           />
           <YAxis
             axisLine={false}
@@ -321,8 +347,8 @@ const ForwardCurve: React.FC<ForwardCurveProps> = ({ futures }) => {
             dataKey="price"
             stroke={lineColor}
             strokeWidth={2.5}
-            dot={{ r: 4, fill: lineColor, stroke: '#0f172a', strokeWidth: 1 }}
-            activeDot={{ r: 6, fill: lineColor, stroke: '#0f172a', strokeWidth: 1.5 }}
+            dot={{ r: 5, fill: lineColor, stroke: '#0f172a', strokeWidth: 1.5 }}
+            activeDot={{ r: 7, fill: lineColor, stroke: '#0f172a', strokeWidth: 2 }}
             isAnimationActive={false}
             connectNulls={false}
           />
