@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, memo } from 'react';
-import { BarChart3, Loader2, AlertCircle, RefreshCcw, Search, TrendingUp, TrendingDown, ChevronDown, ChevronRight, Info, Zap } from 'lucide-react';
+import { BarChart3, Loader2, AlertCircle, RefreshCcw, Search, TrendingUp, TrendingDown, ChevronDown, ChevronRight, Info, ThumbsUp } from 'lucide-react';
 import { fetchAllStocks, fetchIMOEXIndex, fetchHistoricalAverageVolumes, StockTableRow } from '../api/stocks';
 import MicroCandle from '../components/MicroCandle';
 import StockPriceTrend from '../components/StockPriceTrend';
@@ -387,17 +387,16 @@ export const StocksPage: React.FC = () => {
                     const isExpanded = expandedRows.has(stock.secId);
                     const isIndex = stock.isIndex === true || stock.secId === 'IMOEX' || stock.secId === 'IMOEX2';
                     
-                    // Истинные "Stocks In Play" (RVOL Logic)
-                    // Надежная формула на основе среднего объема текущего рынка
+                    // Логика "Recommended" (Рекомендовано для торговли)
+                    // Крепкие, ликвидные акции, с которыми комфортно работать
                     const volatility = stock.low > 0 ? ((stock.high - stock.low) / stock.low) * 100 : 0;
                     const rvol = avgVolume > 0 ? stock.volume / avgVolume : 0;
                     
-                    // Новые критерии для "Супер Активности" (Super Active)
-                    const isHot = !isIndex && 
+                    // Критерии для получения рекомендации
+                    const isRecommended = !isIndex && 
                       stock.volume > 15_000_000 && // Ликвидность: Объем > 15 млн ₽
-                      avgVolume > 0 &&
-                      stock.volume > avgVolume * 2 && // Относительный объем: в 2 раза выше среднего по рынку
-                      volatility > 1.5; // Движение: Волатильность > 1.5%
+                      volatility > 1.5 && // Волатильность: Акция ходит (> 1.5%)
+                      stock.numTrades > 500; // Активность: В стакане есть люди (> 500 сделок)
                     
                     // Формула Ликвидности (Liquidity Tiers) - только для колонки "Объем"
                     const liquidityScore = !isIndex && globalMaxVolume > 0 && stock.volume > 0
@@ -416,10 +415,8 @@ export const StocksPage: React.FC = () => {
                     // Цвет для тикера/названия - жирный белый для тикера, темно-серый для описания
                     const tickerTextColor = isIndex ? 'text-gray-100' : 'text-white';
                     
-                    // Фон строки - убрана зебра, только легкое выделение для "In Play"
-                    const bgClass = isHot 
-                      ? 'bg-amber-500/5 border-l-4 border-amber-500'
-                      : isIndex 
+                    // Фон строки - стандартный прозрачный фон для всех акций
+                    const bgClass = isIndex 
                       ? 'bg-amber-500/10 border-amber-500/30' 
                       : 'bg-transparent';
                     
@@ -455,14 +452,9 @@ export const StocksPage: React.FC = () => {
                                   <div className={`text-sm font-bold ${tickerTextColor} truncate`}>
                                     {stock.shortName}
                                   </div>
-                                  {/* Бейдж "SUPER" для активных акций */}
-                                  {isHot && (
-                                    <div className="flex items-center gap-1 border border-amber-500/30 rounded px-1 py-0.5">
-                                      <Zap className="w-2.5 h-2.5 text-amber-500" />
-                                      <span className="text-[10px] text-amber-500 font-semibold uppercase tracking-tight">
-                                        SUPER
-                                      </span>
-                                    </div>
+                                  {/* Иконка "Recommended" для рекомендованных акций */}
+                                  {isRecommended && (
+                                    <ThumbsUp className="w-3 h-3 text-sky-400 fill-current flex-shrink-0" />
                                   )}
                                 </div>
                                 <div className={`text-xs font-mono ${isIndex ? 'text-gray-400' : 'text-gray-500'}`}>
