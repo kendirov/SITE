@@ -1,8 +1,12 @@
 {
-    "rewrites": [
-      {
-        "source": "/iss/:path*",
-        "destination": "https://iss.moex.com/iss/:path*"
-      }
-    ]
-  }
+  "rewrites": [
+    {
+      "source": "/iss/:path*",
+      "destination": "https://iss.moex.com/iss/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
