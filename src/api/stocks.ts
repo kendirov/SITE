@@ -487,3 +487,103 @@ export async function fetchAllStocks(): Promise<FetchAllStocksResult> {
     };
   }
 }
+
+// Функция для получения исторических средних объемов за последние 5 рабочих дней
+// Возвращает Record<secId, averageDailyVolume>
+export async function fetchHistoricalAverageVolumes(): Promise<Record<string, number>> {
+  try {
+    // Генерируем массив дат за последние 10 дней (чтобы найти 5 рабочих дней)
+    const dates: string[] = [];
+    const today = new Date();
+    let daysBack = 0;
+    
+    while (dates.length < 5 && daysBack < 14) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - daysBack);
+      
+      // Пропускаем выходные (суббота = 6, воскресенье = 0)
+      const dayOfWeek = date.getDay();
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        const dateStr = date.toISOString().split('T')[0]; // YYYY-MM-DD
+        dates.push(dateStr);
+      }
+      
+      daysBack++;
+    }
+    
+    if (dates.length === 0) {
+      console.warn('No working days found for historical volume calculation');
+      return {};
+    }
+    
+    // Запрашиваем данные параллельно для всех дат
+    const historyPromises = dates.map(async (date) => {
+      try {
+        const url = `https://iss.moex.com/iss/history/engines/stock/markets/shares/boards/TQBR/securities.json?date=${date}&iss.meta=off&iss.only=history&history.columns=SECID,VALTODAY`;
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+          return null;
+        }
+        
+        const data = await response.json();
+        const historyData = data.history?.data || [];
+        const columns = data.history?.columns || [];
+        
+        const secIdIndex = columns.indexOf('SECID');
+        const valTodayIndex = columns.indexOf('VALTODAY');
+        
+        if (secIdIndex === -1 || valTodayIndex === -1) {
+          return null;
+        }
+        
+        // Создаем Map<secId, volume> для этой даты
+        const dayVolumes = new Map<string, number>();
+        historyData.forEach((row: any[]) => {
+          const secId = row[secIdIndex];
+          const volume = Number(row[valTodayIndex]) || 0;
+          if (secId && volume > 0) {
+            dayVolumes.set(secId, volume);
+          }
+        });
+        
+        return dayVolumes;
+      } catch (err) {
+        console.error(`Failed to fetch history for date ${date}:`, err);
+        return null;
+      }
+    });
+    
+    const historyResults = await Promise.all(historyPromises);
+    
+    // Фильтруем пустые результаты и собираем объемы по тикерам
+    const volumesByTicker = new Map<string, number[]>();
+    
+    historyResults.forEach((dayVolumes) => {
+      if (dayVolumes) {
+        dayVolumes.forEach((volume, secId) => {
+          if (!volumesByTicker.has(secId)) {
+            volumesByTicker.set(secId, []);
+          }
+          volumesByTicker.get(secId)!.push(volume);
+        });
+      }
+    });
+    
+    // Рассчитываем средний дневной объем (ADV) для каждого тикера
+    const result: Record<string, number> = {};
+    volumesByTicker.forEach((volumes, secId) => {
+      if (volumes.length > 0) {
+        const sum = volumes.reduce((acc, v) => acc + v, 0);
+        const avg = sum / volumes.length;
+        result[secId] = avg;
+      }
+    });
+    
+    console.log(`Calculated ADV for ${Object.keys(result).length} stocks from ${dates.length} trading days`);
+    return result;
+  } catch (error) {
+    console.error('Failed to fetch historical average volumes:', error);
+    return {};
+  }
+}

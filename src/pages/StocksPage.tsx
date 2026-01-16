@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, memo } from 'react';
-import { BarChart3, Loader2, AlertCircle, RefreshCcw, Search, TrendingUp, TrendingDown, ChevronDown, ChevronRight, Info } from 'lucide-react';
-import { fetchAllStocks, fetchIMOEXIndex, StockTableRow } from '../api/stocks';
+import { BarChart3, Loader2, AlertCircle, RefreshCcw, Search, TrendingUp, TrendingDown, ChevronDown, ChevronRight, Info, Zap } from 'lucide-react';
+import { fetchAllStocks, fetchIMOEXIndex, fetchHistoricalAverageVolumes, StockTableRow } from '../api/stocks';
 import MicroCandle from '../components/MicroCandle';
 import StockPriceTrend from '../components/StockPriceTrend';
 import VolumeAnalysis from '../components/VolumeAnalysis';
@@ -13,6 +13,7 @@ export const StocksPage: React.FC = () => {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [lastUpdateTime, setLastUpdateTime] = useState<Date | null>(null);
   const [dataUpdateTime, setDataUpdateTime] = useState<string | null>(null); // Время обновления данных от биржи
+  const [historicalVolumes, setHistoricalVolumes] = useState<Record<string, number>>({}); // ADV (Average Daily Volume) по тикерам
   
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'volume' | 'trades' | 'volatility' | 'gainers' | 'losers'>('volume');
@@ -57,6 +58,18 @@ export const StocksPage: React.FC = () => {
   };
 
   useEffect(() => {
+    // Загружаем исторические объемы один раз при монтировании
+    const loadHistoricalData = async () => {
+      try {
+        const volumes = await fetchHistoricalAverageVolumes();
+        setHistoricalVolumes(volumes);
+      } catch (err) {
+        console.error('Failed to load historical volumes:', err);
+        // Продолжаем работу без исторических данных (fallback на старую логику)
+      }
+    };
+    
+    loadHistoricalData();
     loadData(true);
     // Refresh every 5 seconds
     const interval = setInterval(() => loadData(false), 5000);
@@ -375,16 +388,16 @@ export const StocksPage: React.FC = () => {
                     const isIndex = stock.isIndex === true || stock.secId === 'IMOEX' || stock.secId === 'IMOEX2';
                     
                     // Истинные "Stocks In Play" (RVOL Logic)
-                    // Значок 🔥 только при выполнении жестких условий
-                    const MIN_LIQUIDITY_THRESHOLD = 20_000_000; // 20 млн ₽ - минимальная ликвидность
+                    // Надежная формула на основе среднего объема текущего рынка
                     const volatility = stock.low > 0 ? ((stock.high - stock.low) / stock.low) * 100 : 0;
                     const rvol = avgVolume > 0 ? stock.volume / avgVolume : 0;
                     
+                    // Новые критерии для "Супер Активности" (Super Active)
                     const isHot = !isIndex && 
-                      stock.volume > MIN_LIQUIDITY_THRESHOLD && // Liquidity: Объем > 20 млн ₽
+                      stock.volume > 15_000_000 && // Ликвидность: Объем > 15 млн ₽
                       avgVolume > 0 &&
-                      rvol >= 3 && // RVOL: Объем > avgVolume * 3
-                      volatility > 2; // Movement: Волатильность > 2%
+                      stock.volume > avgVolume * 2 && // Относительный объем: в 2 раза выше среднего по рынку
+                      volatility > 1.5; // Движение: Волатильность > 1.5%
                     
                     // Формула Ликвидности (Liquidity Tiers) - только для колонки "Объем"
                     const liquidityScore = !isIndex && globalMaxVolume > 0 && stock.volume > 0
@@ -405,7 +418,7 @@ export const StocksPage: React.FC = () => {
                     
                     // Фон строки - убрана зебра, только легкое выделение для "In Play"
                     const bgClass = isHot 
-                      ? 'bg-amber-500/5 border-l-4 border-amber-500' 
+                      ? 'bg-amber-500/5 border-l-4 border-amber-500'
                       : isIndex 
                       ? 'bg-amber-500/10 border-amber-500/30' 
                       : 'bg-transparent';
@@ -437,9 +450,20 @@ export const StocksPage: React.FC = () => {
                               />
                             )}
                             <div className="flex items-center gap-2 min-w-0">
-                              <div className="min-w-0">
-                                <div className={`text-sm font-bold ${tickerTextColor} truncate`}>
-                                  {stock.shortName}
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                  <div className={`text-sm font-bold ${tickerTextColor} truncate`}>
+                                    {stock.shortName}
+                                  </div>
+                                  {/* Бейдж "SUPER" для активных акций */}
+                                  {isHot && (
+                                    <div className="flex items-center gap-1 border border-amber-500/30 rounded px-1 py-0.5">
+                                      <Zap className="w-2.5 h-2.5 text-amber-500" />
+                                      <span className="text-[10px] text-amber-500 font-semibold uppercase tracking-tight">
+                                        SUPER
+                                      </span>
+                                    </div>
+                                  )}
                                 </div>
                                 <div className={`text-xs font-mono ${isIndex ? 'text-gray-400' : 'text-gray-500'}`}>
                                   {stock.secId}
@@ -506,8 +530,33 @@ export const StocksPage: React.FC = () => {
                           </div>
 
                           {/* Колонка 6: Объем ₽ */}
-                          <div className="text-right flex items-center justify-end">
-                            <span className={`text-xs font-mono ${volumeTextColor}`}>{formatVolume(stock.volume)}</span>
+                          <div className="text-right flex items-center justify-end group relative">
+                            <span 
+                              className={`text-xs font-mono ${volumeTextColor} cursor-help`}
+                              title={
+                                rvol > 0 
+                                  ? `RVOL: ${rvol.toFixed(2)}x | Объем: ${formatVolume(stock.volume)}`
+                                  : `Объем: ${formatVolume(stock.volume)}`
+                              }
+                            >
+                              {formatVolume(stock.volume)}
+                            </span>
+                            {/* Расширенный тултип при наведении */}
+                            {rvol > 0 && (
+                              <div className="absolute bottom-full right-0 mb-2 px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-lg shadow-xl text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
+                                <div className="text-[10px] text-slate-400 mb-1">
+                                  Relative Volume (RVOL)
+                                </div>
+                                <div className={`text-xs font-semibold ${
+                                  rvol > 3 ? 'text-amber-400' : rvol > 2 ? 'text-yellow-400' : 'text-slate-300'
+                                }`}>
+                                  {rvol.toFixed(2)}x
+                                </div>
+                                <div className="text-[10px] text-slate-500 mt-1">
+                                  Средний по рынку: {formatVolume(avgVolume)}
+                                </div>
+                              </div>
+                            )}
                           </div>
 
                           {/* Колонка 7: Сделок */}

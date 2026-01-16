@@ -123,4 +123,34 @@ export function getPhasePosition(phase: TimePhase): { top: string; height: strin
   };
 }
 
+/**
+ * Рассчитывает прогресс торгового дня MOEX (основная сессия: 10:00 - 18:40)
+ * @returns число от 0.01 до 1.0, где 1.0 = конец торгового дня
+ */
+export function getDayProgress(): number {
+  const moscowTime = getMoscowTime();
+  const currentMinutes = moscowTime.getHours() * 60 + moscowTime.getMinutes();
+  
+  const sessionStart = 10 * 60; // 10:00
+  const sessionEnd = 18 * 60 + 40; // 18:40
+  
+  // Если до начала сессии
+  if (currentMinutes < sessionStart) {
+    return 0.01; // Минимальное значение во избежание деления на ноль
+  }
+  
+  // Если после конца сессии
+  if (currentMinutes >= sessionEnd) {
+    return 1.0;
+  }
+  
+  // Рассчитываем прогресс от 0.01 до 1.0
+  const elapsed = currentMinutes - sessionStart;
+  const total = sessionEnd - sessionStart;
+  const progress = elapsed / total;
+  
+  // Ограничиваем минимальным значением 0.01
+  return Math.max(0.01, Math.min(1.0, progress));
+}
+
 
