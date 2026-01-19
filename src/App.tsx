@@ -5,7 +5,8 @@ import FuturesPage from './pages/FuturesPage';
 import StocksPage from './pages/StocksPage';
 import SpecificationsPage from './pages/SpecificationsPage';
 import { CScalpSettingsPage } from './pages/CScalpSettingsPage';
-import { Menu, X, BarChart3, TrendingUp, Clock, FileText, Sliders } from 'lucide-react';
+import WorkspacePage from './pages/WorkspacePage';
+import { Menu, X, BarChart3, TrendingUp, Clock, FileText, Sliders, Layout } from 'lucide-react';
 
 function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const location = useLocation();
@@ -13,7 +14,8 @@ function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) 
   const menuItems = [
     { path: '/timeline', label: 'Торговый Таймлайн', icon: Clock },
     { path: '/specs', label: 'Характеристики', icon: FileText },
-    { path: '/cscalp-config', label: 'Настройки CScalp', icon: Sliders }
+    { path: '/cscalp-config', label: 'Настройки CScalp', icon: Sliders },
+    { path: '/workspace', label: 'Рабочее пространство', icon: Layout }
   ];
   
   if (!isOpen) return null;
@@ -139,6 +141,7 @@ function AppContent() {
         <Route path="/stocks" element={<StocksPage />} />
         <Route path="/specs" element={<SpecificationsPage />} />
         <Route path="/cscalp-config" element={<CScalpSettingsPage />} />
+        <Route path="/workspace" element={<WorkspacePage />} />
       </Routes>
     </div>
   );
