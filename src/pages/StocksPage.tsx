@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, memo } from 'react';
-import { BarChart3, Loader2, AlertCircle, RefreshCcw, Search, TrendingUp, TrendingDown, ChevronDown, ChevronRight, Info, ThumbsUp, Download } from 'lucide-react';
+import { BarChart3, Loader2, AlertCircle, RefreshCcw, Search, TrendingUp, TrendingDown, ChevronDown, ChevronRight, Info, ThumbsUp, Download, ShieldCheck } from 'lucide-react';
 import { fetchAllStocks, fetchIMOEXIndex, fetchHistoricalAverageVolumes, StockTableRow } from '../api/stocks';
 import { downloadCScalpSettings } from '../utils/cscalpGenerator';
 import MicroCandle from '../components/MicroCandle';
@@ -381,6 +381,7 @@ export const StocksPage: React.FC = () => {
       )}
 
       {!error && allStocks.length > 0 && (
+        <>
         <div className="bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden">
           {/* Status Bar - Предупреждение о задержке */}
           <div className="px-4 py-2 bg-yellow-500/10 border-b border-yellow-500/20 flex items-center gap-2">
@@ -782,6 +783,7 @@ export const StocksPage: React.FC = () => {
             </div>
           </div>
         </div>
+        </>
       )}
     </div>
   );

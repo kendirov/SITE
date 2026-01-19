@@ -10,6 +10,7 @@ export interface StockSpecification {
   prevPrice: number;
   valToday: number; // Оборот сегодня
   prevValue: number; // Вчерашний оборот (PREVVALUE)
+  numTrades: number; // Количество сделок за день
 }
 
 export interface ProcessedStockSpec {
@@ -22,6 +23,7 @@ export interface ProcessedStockSpec {
   commission: number; // LAST * LOTSIZE * COMMISSION_RATE
   valToday: number; // Оборот сегодня
   largeLot1Pct: number; // (PREVVALUE * 0.01) / (LAST * LOTSIZE) - округлено до целого, использует вчерашний оборот
+  numTrades?: number; // Количество сделок за день
 }
 
 export const COMMISSION_RATE = 0.0004; // 0.04% - усредненная комиссия пропов
@@ -30,7 +32,7 @@ export const COMMISSION_RATE = 0.0004; // 0.04% - усредненная ком�
 export async function fetchStocksSpecifications(): Promise<ProcessedStockSpec[]> {
   try {
     const response = await fetch(
-      'https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities.json?iss.meta=off&iss.only=securities,marketdata&securities.columns=SECID,SHORTNAME,LOTSIZE,MINSTEP,PREVPRICE&marketdata.columns=SECID,LAST,VALTODAY,PREVVALUE'
+      'https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities.json?iss.meta=off&iss.only=securities,marketdata&securities.columns=SECID,SHORTNAME,LOTSIZE,MINSTEP,PREVPRICE&marketdata.columns=SECID,LAST,VALTODAY,PREVVALUE,NUMTRADES'
     );
 
     if (!response.ok) {
@@ -42,7 +44,7 @@ export async function fetchStocksSpecifications(): Promise<ProcessedStockSpec[]>
     const marketdata = data.marketdata?.data || [];
 
     // Create a map for quick lookup of market data
-    const marketdataMap = new Map<string, { last: number; valToday: number; prevValue: number }>();
+    const marketdataMap = new Map<string, { last: number; valToday: number; prevValue: number; numTrades: number }>();
     const secColumns: string[] = data.securities.columns || [];
     const mdColumns: string[] = data.marketdata?.columns || [];
 
@@ -56,7 +58,8 @@ export async function fetchStocksSpecifications(): Promise<ProcessedStockSpec[]>
         marketdataMap.set(secId, {
           last: md.LAST || 0,
           valToday: md.VALTODAY || 0,
-          prevValue: md.PREVVALUE || 0
+          prevValue: md.PREVVALUE || 0,
+          numTrades: md.NUMTRADES || 0
         });
       }
     });
@@ -69,7 +72,7 @@ export async function fetchStocksSpecifications(): Promise<ProcessedStockSpec[]>
       });
 
       const secId = sec.SECID as string;
-      const market = marketdataMap.get(secId) || { last: 0, valToday: 0, prevValue: 0 };
+      const market = marketdataMap.get(secId) || { last: 0, valToday: 0, prevValue: 0, numTrades: 0 };
 
       return {
         secId: secId || '',
@@ -79,7 +82,8 @@ export async function fetchStocksSpecifications(): Promise<ProcessedStockSpec[]>
         last: market.last || sec.PREVPRICE || 0,
         prevPrice: sec.PREVPRICE || 0,
         valToday: market.valToday || 0,
-        prevValue: market.prevValue || 0
+        prevValue: market.prevValue || 0,
+        numTrades: market.numTrades || 0
       };
     }).filter((stock: StockSpecification) => {
       // Фильтруем только те акции, у которых есть базовая информация
@@ -107,7 +111,8 @@ export async function fetchStocksSpecifications(): Promise<ProcessedStockSpec[]>
         costOfStep,
         commission,
         valToday: stock.valToday,
-        largeLot1Pct
+        largeLot1Pct,
+        numTrades: stock.numTrades || 0
       };
     });
 
@@ -128,6 +133,7 @@ export interface StockTableRow {
   volume: number; // Объем в рублях (VALTODAY)
   numTrades: number; // Количество сделок
   lotSize: number; // Размер лота
+  minStep: number; // Минимальный шаг цены
   tradingStatus: string; // Статус торгов
   prevPrice: number; // Предыдущая цена
   high: number; // Максимум дня
@@ -272,6 +278,7 @@ export async function fetchIMOEXIndex(): Promise<StockTableRow | null> {
       volume,
       numTrades,
       lotSize: 1,
+      minStep: 0.01,
       tradingStatus: 'T',
       prevPrice,
       high,
@@ -294,7 +301,7 @@ export interface FetchAllStocksResult {
 export async function fetchAllStocks(): Promise<FetchAllStocksResult> {
   try {
     const baseUrl = '/iss/engines/stock/markets/shares/boards/TQBR/securities.json';
-    const params = 'iss.meta=off&iss.only=securities,marketdata&securities.columns=SECID,SHORTNAME,SECNAME,LOTSIZE,ISSUESIZE&marketdata.columns=SECID,LAST,VALTODAY,VOLTODAY,NUMTRADES,LASTTOPREVPRICE,TRADINGSTATUS,PREVPRICE,HIGH,LOW,UPDATETIME';
+    const params = 'iss.meta=off&iss.only=securities,marketdata&securities.columns=SECID,SHORTNAME,SECNAME,LOTSIZE,MINSTEP,ISSUESIZE&marketdata.columns=SECID,LAST,VALTODAY,VOLTODAY,NUMTRADES,LASTTOPREVPRICE,TRADINGSTATUS,PREVPRICE,HIGH,LOW,UPDATETIME';
     
     // Собираем все данные через пагинацию
     let allSecuritiesData: any[][] = [];
@@ -418,6 +425,7 @@ export async function fetchAllStocks(): Promise<FetchAllStocksResult> {
         const shortName = (secColIndex['SHORTNAME'] !== undefined && row[secColIndex['SHORTNAME']]) || secId;
         const secName = (secColIndex['SECNAME'] !== undefined && row[secColIndex['SECNAME']]) || shortName;
         const lotSize = (secColIndex['LOTSIZE'] !== undefined && row[secColIndex['LOTSIZE']]) || 1;
+        const minStep = (secColIndex['MINSTEP'] !== undefined && row[secColIndex['MINSTEP']]) || 0.01;
         const issueSize = (secColIndex['ISSUESIZE'] !== undefined && row[secColIndex['ISSUESIZE']]) || 0;
         
         const market = marketdataMap.get(secId) || {};
@@ -446,6 +454,7 @@ export async function fetchAllStocks(): Promise<FetchAllStocksResult> {
           volume,
           numTrades,
           lotSize,
+          minStep,
           tradingStatus,
           prevPrice,
           high,

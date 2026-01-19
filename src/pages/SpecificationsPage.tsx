@@ -6,7 +6,7 @@ import { fetchStocksSpecifications, ProcessedStockSpec } from '../api/stocks';
 const MAKER_RATE = 0.0002; // 0.02% для лимитных заявок
 const TAKER_RATE = 0.00045; // 0.045% для рыночных заявок
 
-type SortKey = 'secId' | 'minStep' | 'costOfStep' | 'lotSize' | 'makerCommission' | 'makerSteps' | 'takerCommission' | 'takerSteps' | 'valToday' | 'largeLot1Pct';
+type SortKey = 'secId' | 'last' | 'minStep' | 'costOfStep' | 'lotSize' | 'numTrades' | 'makerCommission' | 'makerSteps' | 'takerCommission' | 'takerSteps' | 'valToday' | 'largeLot1Pct';
 type SortDirection = 'asc' | 'desc';
 
 interface SortConfig {
@@ -25,9 +25,10 @@ export const SpecificationsPage: React.FC = () => {
   const [stocks, setStocks] = useState<ProcessedStockSpec[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'desc' });
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'asc' }); // По умолчанию по тикеру (будет установлено в useMemo)
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStock, setSelectedStock] = useState<ExtendedStockSpec | null>(null);
+  const [isBeginnerMode, setIsBeginnerMode] = useState(false);
 
   const loadData = async () => {
     setIsLoading(true);
@@ -93,7 +94,7 @@ export const SpecificationsPage: React.FC = () => {
     const lowerQuery = query.toLowerCase().trim();
     return (
       stock.secId.toLowerCase().includes(lowerQuery) ||
-      (stock.shortName && stock.shortName.toLowerCase().includes(lowerQuery))
+      !!(stock.shortName && stock.shortName.toLowerCase().includes(lowerQuery))
     );
   };
 
@@ -109,20 +110,58 @@ export const SpecificationsPage: React.FC = () => {
     });
   };
 
+  // Фильтрация для режима новичка
+  const filteredStocks = useMemo(() => {
+    if (!isBeginnerMode) {
+      return extendedStocks;
+    }
+    
+    return extendedStocks.filter(stock => {
+      // 1. Дешевый шаг цены (Самое важное: дешевый шаг)
+      if (stock.minStep > 0.1) {
+        return false;
+      }
+      
+      // 2. Есть ликвидность (numTrades > 1000)
+      if (!stock.numTrades || stock.numTrades <= 1000) {
+        return false;
+      }
+      
+      // 3. Не мусор (volume > 1_000_000, используем valToday как объем)
+      if (!stock.valToday || stock.valToday <= 1_000_000) {
+        return false;
+      }
+      
+      return true;
+    });
+  }, [extendedStocks, isBeginnerMode]);
+
   // Отсортированные данные с логикой "Matches First"
   const sortedStocks = useMemo(() => {
-    let sorted = [...extendedStocks];
+    let sorted = [...filteredStocks];
     
-    // Сначала применяем сортировку по выбранному столбцу (если есть)
-    if (sortConfig.key) {
-      sorted = sorted.sort((a, b) => {
+    // Если режим новичка активен и не выбрана ручная сортировка, принудительно сортируем по стоимости шага (от дешевых к дорогим)
+    // Иначе, если не выбрана сортировка, сортируем по тикеру (алфавит)
+    const effectiveSortKey = isBeginnerMode && !sortConfig.key 
+      ? 'costOfStep' 
+      : sortConfig.key || 'secId';
+    const effectiveSortDirection = isBeginnerMode && !sortConfig.key 
+      ? 'asc' 
+      : sortConfig.direction;
+    
+    // Применяем сортировку
+    sorted = sorted.sort((a, b) => {
       let aValue: number | string;
       let bValue: number | string;
 
-      switch (sortConfig.key) {
+      switch (effectiveSortKey) {
         case 'secId':
           aValue = a.secId;
           bValue = b.secId;
+          break;
+        case 'last':
+          aValue = a.last;
+          bValue = b.last;
           break;
         case 'minStep':
           aValue = a.minStep;
@@ -135,6 +174,10 @@ export const SpecificationsPage: React.FC = () => {
         case 'lotSize':
           aValue = a.lotSize;
           bValue = b.lotSize;
+          break;
+        case 'numTrades':
+          aValue = a.numTrades || 0;
+          bValue = b.numTrades || 0;
           break;
         case 'makerCommission':
           aValue = a.makerCommission;
@@ -167,13 +210,12 @@ export const SpecificationsPage: React.FC = () => {
       // Сравнение
       if (typeof aValue === 'string' && typeof bValue === 'string') {
         const result = aValue.localeCompare(bValue, 'ru-RU');
-        return sortConfig.direction === 'asc' ? result : -result;
+        return effectiveSortDirection === 'asc' ? result : -result;
       } else {
         const result = (aValue as number) - (bValue as number);
-        return sortConfig.direction === 'asc' ? result : -result;
+        return effectiveSortDirection === 'asc' ? result : -result;
       }
-      });
-    }
+    });
     
     // Затем применяем логику "Matches First" (если есть поисковый запрос)
     if (searchQuery.trim()) {
@@ -191,7 +233,7 @@ export const SpecificationsPage: React.FC = () => {
     }
     
     return sorted;
-  }, [extendedStocks, sortConfig, searchQuery]);
+  }, [filteredStocks, sortConfig, searchQuery, isBeginnerMode]);
 
   return (
     <div className="max-w-[1800px] mx-auto px-8 py-8">
@@ -206,14 +248,28 @@ export const SpecificationsPage: React.FC = () => {
             <p className="text-slate-400">Технические характеристики инструментов TQBR</p>
           </div>
         </div>
-        <button
-          onClick={loadData}
-          disabled={isLoading}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600/20 text-blue-400 rounded-lg text-sm font-semibold hover:bg-blue-600/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCcw className="w-4 h-4" />}
-          Обновить
-        </button>
+        <div className="flex items-center gap-3">
+          {/* Кнопка "Для новичков" */}
+          <button
+            onClick={() => setIsBeginnerMode(!isBeginnerMode)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all border ${
+              isBeginnerMode
+                ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50'
+                : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700'
+            }`}
+          >
+            <span className="text-lg">🐣</span>
+            <span>Для новичков (Шаг &lt; 0.1)</span>
+          </button>
+          <button
+            onClick={loadData}
+            disabled={isLoading}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600/20 text-blue-400 rounded-lg text-sm font-semibold hover:bg-blue-600/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCcw className="w-4 h-4" />}
+            Обновить
+          </button>
+        </div>
       </div>
 
       {isLoading && (
@@ -250,41 +306,21 @@ export const SpecificationsPage: React.FC = () => {
             </div>
           </div>
           
-          {/* Table with CSS Grid */}
+          {/* Table with CSS Grid - Risk Management Focus */}
           <div className="overflow-x-auto">
             <div className="text-xs min-w-fit">
-              {/* Grid container with fixed column widths */}
+              {/* Column Headers */}
               <div 
-                className="grid sticky top-0 z-10 bg-slate-50 dark:bg-slate-800 border-b-2 border-slate-200 dark:border-slate-700 shadow-sm"
-                style={{ gridTemplateColumns: '1fr 80px 100px 100px 70px 60px 70px 60px 140px 150px' }}
+                className="grid bg-slate-100 dark:bg-slate-800/50 border-b border-slate-300 dark:border-slate-600 sticky top-0 z-10 shadow-sm"
+                style={{ gridTemplateColumns: '2fr 100px 120px 120px 100px 100px' }}
               >
-                {/* Level 1: Main Groups */}
-                <div className="col-span-4 px-3 py-2 text-center font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px] border-r-2 border-slate-400 dark:border-slate-600">
-                  ИНСТРУМЕНТ
-                </div>
-                <div className="col-span-2 px-3 py-2 text-center font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px] border-r-2 border-slate-400 dark:border-slate-600">
-                  КОМИССИЯ MAKER (Лимитка) 0.02%
-                </div>
-                <div className="col-span-2 px-3 py-2 text-center font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px] border-r-2 border-slate-400 dark:border-slate-600">
-                  КОМИССИЯ TAKER (Рыночная) 0.045%
-                </div>
-                <div className="col-span-2 px-3 py-2 text-center font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px]">
-                  ЛИКВИДНОСТЬ
-                </div>
-              </div>
-
-              {/* Level 2: Column Headers */}
-              <div 
-                className="grid bg-slate-100 dark:bg-slate-800/50 border-b border-slate-300 dark:border-slate-600 sticky top-[36px] z-10 shadow-sm"
-                style={{ gridTemplateColumns: '1fr 80px 100px 100px 70px 60px 70px 60px 140px 150px' }}
-              >
-                {/* Инструмент */}
+                {/* Тикер / Название */}
                 <div 
                   onClick={() => handleSort('secId')}
-                  className="sticky left-0 z-20 px-4 py-2 text-left font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none bg-slate-100 dark:bg-slate-800/50"
+                  className="sticky left-0 z-20 px-4 py-3 text-left font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none bg-slate-100 dark:bg-slate-800/50"
                 >
                   <div className="flex items-center gap-1.5">
-                    <span>Инструмент</span>
+                    <span>Тикер / Название</span>
                     {sortConfig.key === 'secId' && (
                       sortConfig.direction === 'asc' 
                         ? <ChevronUp className="w-3 h-3 text-blue-500" />
@@ -292,27 +328,27 @@ export const SpecificationsPage: React.FC = () => {
                     )}
                   </div>
                 </div>
-                {/* Лот */}
+                {/* Цена */}
                 <div 
-                  onClick={() => handleSort('lotSize')}
-                  className="px-4 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
+                  onClick={() => handleSort('last')}
+                  className="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
                 >
                   <div className="flex items-center justify-end gap-1.5">
-                    <span>Лот</span>
-                    {sortConfig.key === 'lotSize' && (
+                    <span>Цена</span>
+                    {sortConfig.key === 'last' && (
                       sortConfig.direction === 'asc' 
                         ? <ChevronUp className="w-3 h-3 text-blue-500" />
                         : <ChevronDown className="w-3 h-3 text-blue-500" />
                     )}
                   </div>
                 </div>
-                {/* Шаг */}
+                {/* Шаг цены - ВЫДЕЛЕН ЖИРНЫМ */}
                 <div 
                   onClick={() => handleSort('minStep')}
-                  className="px-4 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
+                  className="px-4 py-3 text-right font-bold text-slate-700 dark:text-slate-200 border-r border-slate-300 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
                 >
                   <div className="flex items-center justify-end gap-1.5">
-                    <span>Шаг</span>
+                    <span>Шаг цены</span>
                     {sortConfig.key === 'minStep' && (
                       sortConfig.direction === 'asc' 
                         ? <ChevronUp className="w-3 h-3 text-blue-500" />
@@ -320,13 +356,13 @@ export const SpecificationsPage: React.FC = () => {
                     )}
                   </div>
                 </div>
-                {/* Цена ш. */}
+                {/* Стоимость шага */}
                 <div 
                   onClick={() => handleSort('costOfStep')}
-                  className="px-4 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r-2 border-slate-400 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
+                  className="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none bg-blue-50/50 dark:bg-blue-900/10"
                 >
                   <div className="flex items-center justify-end gap-1.5">
-                    <span>Цена ш.</span>
+                    <span>Стоимость шага</span>
                     {sortConfig.key === 'costOfStep' && (
                       sortConfig.direction === 'asc' 
                         ? <ChevronUp className="w-3 h-3 text-blue-500" />
@@ -334,84 +370,28 @@ export const SpecificationsPage: React.FC = () => {
                     )}
                   </div>
                 </div>
-                {/* Maker ₽ */}
+                {/* Размер лота */}
                 <div 
-                  onClick={() => handleSort('makerCommission')}
-                  className="px-3 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
+                  onClick={() => handleSort('lotSize')}
+                  className="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
                 >
                   <div className="flex items-center justify-end gap-1.5">
-                    <span>₽</span>
-                    {sortConfig.key === 'makerCommission' && (
+                    <span>Размер лота</span>
+                    {sortConfig.key === 'lotSize' && (
                       sortConfig.direction === 'asc' 
                         ? <ChevronUp className="w-3 h-3 text-blue-500" />
                         : <ChevronDown className="w-3 h-3 text-blue-500" />
                     )}
                   </div>
                 </div>
-                {/* Maker п. */}
+                {/* Сделок за день */}
                 <div 
-                  onClick={() => handleSort('makerSteps')}
-                  className="px-3 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r-2 border-slate-400 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
+                  onClick={() => handleSort('numTrades')}
+                  className="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-400 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
                 >
                   <div className="flex items-center justify-end gap-1.5">
-                    <span>п.</span>
-                    {sortConfig.key === 'makerSteps' && (
-                      sortConfig.direction === 'asc' 
-                        ? <ChevronUp className="w-3 h-3 text-blue-500" />
-                        : <ChevronDown className="w-3 h-3 text-blue-500" />
-                    )}
-                  </div>
-                </div>
-                {/* Taker ₽ */}
-                <div 
-                  onClick={() => handleSort('takerCommission')}
-                  className="px-3 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
-                >
-                  <div className="flex items-center justify-end gap-1.5">
-                    <span>₽</span>
-                    {sortConfig.key === 'takerCommission' && (
-                      sortConfig.direction === 'asc' 
-                        ? <ChevronUp className="w-3 h-3 text-blue-500" />
-                        : <ChevronDown className="w-3 h-3 text-blue-500" />
-                    )}
-                  </div>
-                </div>
-                {/* Taker п. */}
-                <div 
-                  onClick={() => handleSort('takerSteps')}
-                  className="px-3 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r-2 border-slate-400 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
-                >
-                  <div className="flex items-center justify-end gap-1.5">
-                    <span>п.</span>
-                    {sortConfig.key === 'takerSteps' && (
-                      sortConfig.direction === 'asc' 
-                        ? <ChevronUp className="w-3 h-3 text-blue-500" />
-                        : <ChevronDown className="w-3 h-3 text-blue-500" />
-                    )}
-                  </div>
-                </div>
-                {/* Оборот */}
-                <div 
-                  onClick={() => handleSort('valToday')}
-                  className="px-4 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 border-r border-slate-300 dark:border-slate-600 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
-                >
-                  <div className="flex items-center justify-end gap-1.5">
-                    <span>Оборот</span>
-                    {sortConfig.key === 'valToday' && (
-                      sortConfig.direction === 'asc' 
-                        ? <ChevronUp className="w-3 h-3 text-blue-500" />
-                        : <ChevronDown className="w-3 h-3 text-blue-500" />
-                    )}
-                  </div>
-                </div>
-                {/* 1% Лот */}
-                <div 
-                  onClick={() => handleSort('largeLot1Pct')}
-                  className="px-4 py-2 text-right font-semibold text-slate-600 dark:text-slate-400 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors select-none"
-                >
-                  <div className="flex items-center justify-end gap-1.5">
-                    <span>1% Лот</span>
-                    {sortConfig.key === 'largeLot1Pct' && (
+                    <span>Сделок за день</span>
+                    {sortConfig.key === 'numTrades' && (
                       sortConfig.direction === 'asc' 
                         ? <ChevronUp className="w-3 h-3 text-blue-500" />
                         : <ChevronDown className="w-3 h-3 text-blue-500" />
@@ -424,9 +404,9 @@ export const SpecificationsPage: React.FC = () => {
               {sortedStocks.length === 0 ? (
                 <div 
                   className="grid px-4 py-8 text-center text-slate-500 text-sm"
-                  style={{ gridTemplateColumns: '1fr 80px 100px 100px 70px 60px 70px 60px 140px 150px' }}
+                  style={{ gridTemplateColumns: '2fr 100px 120px 120px 100px 100px' }}
                 >
-                  <div className="col-span-10">
+                  <div className="col-span-6">
                     Нет данных для отображения
                   </div>
                 </div>
@@ -446,18 +426,18 @@ export const SpecificationsPage: React.FC = () => {
                       {showDivider && (
                         <div 
                           className="grid border-b border-dashed border-gray-700 dark:border-slate-600"
-                          style={{ gridTemplateColumns: '1fr 80px 100px 100px 70px 60px 70px 60px 140px 150px' }}
+                          style={{ gridTemplateColumns: '2fr 100px 120px 120px 100px 100px' }}
                         >
-                          <div className="col-span-10 h-0"></div>
+                          <div className="col-span-6 h-0"></div>
                         </div>
                       )}
                       <div
                         onClick={() => setSelectedStock(stock)}
                         className={`grid border-b border-slate-200 dark:border-slate-800 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800/50 cursor-pointer ${rowBgClass}`}
-                        style={{ gridTemplateColumns: '1fr 80px 100px 100px 70px 60px 70px 60px 140px 150px' }}
+                        style={{ gridTemplateColumns: '2fr 100px 120px 120px 100px 100px' }}
                       >
-                      {/* Инструмент - Тикер + Название (sticky) */}
-                      <div className={`sticky left-0 z-10 px-3 py-2 text-left border-r border-slate-300 dark:border-slate-600 ${rowBgClass}`}>
+                      {/* Тикер / Название (sticky) */}
+                      <div className={`sticky left-0 z-10 px-4 py-3 text-left border-r border-slate-300 dark:border-slate-600 ${rowBgClass}`}>
                         <div className="flex flex-col gap-0.5">
                           <span className="text-sm font-bold text-slate-900 dark:text-white">{stock.secId}</span>
                           {stock.shortName && (
@@ -467,41 +447,25 @@ export const SpecificationsPage: React.FC = () => {
                           )}
                         </div>
                       </div>
-                      {/* Лот */}
-                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">
-                        {formatLargeNumber(stock.lotSize)}
+                      {/* Цена */}
+                      <div className="px-4 py-3 text-right font-mono text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">
+                        {formatNumber(stock.last, 2)}
                       </div>
-                      {/* Шаг */}
-                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">
+                      {/* Шаг цены - ВЫДЕЛЕН ЖИРНЫМ */}
+                      <div className="px-4 py-3 text-right font-mono font-bold text-slate-900 dark:text-slate-100 border-r border-slate-200 dark:border-slate-700">
                         {formatNumber(stock.minStep, 2)}
                       </div>
-                      {/* Цена шага */}
-                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r-2 border-slate-400 dark:border-slate-600">
-                        {formatNumber(stock.costOfStep, 2)}
+                      {/* Стоимость шага */}
+                      <div className="px-4 py-3 text-right font-mono text-blue-600 dark:text-blue-400 border-r border-slate-200 dark:border-slate-700 bg-blue-50/30 dark:bg-blue-900/10">
+                        {formatNumber(stock.costOfStep, 2)} ₽
                       </div>
-                      {/* Maker Commission - ₽ */}
-                      <div className="px-3 py-2 text-right font-mono text-yellow-500 font-semibold border-r border-slate-200 dark:border-slate-700">
-                        {formatNumber(stock.makerCommission, 2)}
+                      {/* Размер лота */}
+                      <div className="px-4 py-3 text-right font-mono text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">
+                        {formatLargeNumber(stock.lotSize)}
                       </div>
-                      {/* Maker Commission - п. */}
-                      <div className="px-3 py-2 text-right font-mono text-yellow-500 font-semibold border-r-2 border-slate-400 dark:border-slate-600">
-                        {formatNumber(stock.makerSteps, 1)}
-                      </div>
-                      {/* Taker Commission - ₽ */}
-                      <div className="px-3 py-2 text-right font-mono text-yellow-500 font-semibold border-r border-slate-200 dark:border-slate-700">
-                        {formatNumber(stock.takerCommission, 2)}
-                      </div>
-                      {/* Taker Commission - п. */}
-                      <div className="px-3 py-2 text-right font-mono text-yellow-500 font-semibold border-r-2 border-slate-400 dark:border-slate-600">
-                        {formatNumber(stock.takerSteps, 1)}
-                      </div>
-                      {/* Оборот */}
-                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">
-                        {Math.round(stock.valToday).toLocaleString('ru-RU', { maximumFractionDigits: 0 })}
-                      </div>
-                      {/* 1% Лот */}
-                      <div className="px-3 py-2 text-right font-mono text-slate-700 dark:text-slate-300 w-[150px]">
-                        {Math.round(stock.largeLot1Pct).toLocaleString('ru-RU', { maximumFractionDigits: 0 })}
+                      {/* Сделок за день */}
+                      <div className="px-4 py-3 text-right font-mono text-slate-700 dark:text-slate-300">
+                        {stock.numTrades ? formatLargeNumber(stock.numTrades) : '-'}
                       </div>
                     </div>
                     </React.Fragment>
@@ -515,17 +479,16 @@ export const SpecificationsPage: React.FC = () => {
           <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
             <div className="flex flex-col gap-1 text-xs text-slate-600 dark:text-slate-400">
               <p>
-                <span className="font-semibold text-emerald-400">Maker (Лимитка) 0.02%</span> — комиссия для лимитных заявок.
+                <span className="font-semibold">Шаг цены</span> — минимальное изменение цены инструмента (выделено жирным, так как это ключевой параметр для риск-менеджмента).
               </p>
               <p>
-                <span className="font-semibold text-rose-400">Taker (Рыночная) 0.045%</span> — комиссия для рыночных заявок.
+                <span className="font-semibold text-blue-600 dark:text-blue-400">Стоимость шага</span> — сумма в рублях, которую трейдер потеряет/заработает за 1 тик на 1 лот. Формула: <span className="font-mono">Шаг цены × Размер лота</span>.
               </p>
-              <p>
-                <span className="font-semibold">Пункты (п.)</span> — количество минимальных шагов цены, которое нужно пройти инструменту, чтобы окупить комиссию за одну сторону сделки. Формула: Комиссия в рублях / Цена шага.
-              </p>
-              <p>
-                <span className="font-semibold">1% лот</span> — расчетное количество лотов, составляющее 1% от оборота за предыдущий торговый день.
-              </p>
+              {isBeginnerMode && (
+                <p className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                  🐣 Режим "Для новичков" активен: отображаются только инструменты с шагом цены ≤ 0.1, более 1000 сделок и объемом более 1 млн ₽.
+                </p>
+              )}
             </div>
           </div>
 
@@ -533,7 +496,12 @@ export const SpecificationsPage: React.FC = () => {
           {sortedStocks.length > 0 && (
             <div className="px-4 py-2 border-t border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 text-center bg-slate-50 dark:bg-slate-800">
               Показано {sortedStocks.length} из {stocks.length} инструмент{stocks.length === 1 ? '' : stocks.length < 5 ? 'ов' : 'ов'}
-              {sortConfig.key && (
+              {isBeginnerMode && (
+                <span className="ml-2 text-emerald-500">
+                  • Режим новичка: сортировка по стоимости шага (от дешевых к дорогим)
+                </span>
+              )}
+              {!isBeginnerMode && sortConfig.key && (
                 <span className="ml-2 text-blue-500">
                   • Сортировка: {sortConfig.key} ({sortConfig.direction === 'asc' ? 'по возрастанию' : 'по убыванию'})
                 </span>

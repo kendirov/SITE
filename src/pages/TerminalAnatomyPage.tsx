@@ -1,5 +1,5 @@
 import React from 'react';
-import TerminalAnatomy from '../components/TerminalAnatomy';
+import { TerminalAnatomy } from '../components/TerminalAnatomy';
 
 const TerminalAnatomyPage: React.FC = () => {
   return <TerminalAnatomy />;

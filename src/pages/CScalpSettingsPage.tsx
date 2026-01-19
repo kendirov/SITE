@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Sliders, Copy, Check, AlertCircle, Loader2, Search, TrendingDown, Download } from 'lucide-react';
+import { Sliders, Copy, Check, AlertCircle, Loader2, Search, TrendingDown, Download, ChevronUp, ChevronDown } from 'lucide-react';
 import { fetchStocksSpecifications, ProcessedStockSpec } from '../api/stocks';
 
 interface WorkingVolumes {
@@ -304,10 +304,7 @@ export const CScalpSettingsPage: React.FC = () => {
             return 0;
         }
         
-        if (sortConfig.key !== 'secId') {
-          return sortConfig.direction === 'asc' ? aVal - bVal : bVal - aVal;
-        }
-        return 0;
+        return sortConfig.direction === 'asc' ? aVal - bVal : bVal - aVal;
       });
     }
     
@@ -478,7 +475,7 @@ export const CScalpSettingsPage: React.FC = () => {
                             if (item === 'C') {
                               setRiskParams(prev => ({ ...prev, dailyDrawdown: 0 }));
                             } else {
-                              setRiskParams(prev => ({ ...prev, dailyDrawdown: prev.dailyDrawdown * 10 + item }));
+                              setRiskParams(prev => ({ ...prev, dailyDrawdown: prev.dailyDrawdown * 10 + (typeof item === 'number' ? item : 0) }));
                             }
                           }}
                           className="px-3 py-2 bg-slate-800 border border-slate-700 rounded hover:bg-slate-700 active:bg-slate-600 transition-colors font-mono text-sm font-semibold text-white"
@@ -493,7 +490,7 @@ export const CScalpSettingsPage: React.FC = () => {
                             if (item === '⌫') {
                               setRiskParams(prev => ({ ...prev, dailyDrawdown: Math.floor(prev.dailyDrawdown / 10) }));
                             } else {
-                              setRiskParams(prev => ({ ...prev, dailyDrawdown: prev.dailyDrawdown * 10 + item }));
+                              setRiskParams(prev => ({ ...prev, dailyDrawdown: prev.dailyDrawdown * 10 + (typeof item === 'number' ? item : 0) }));
                             }
                           }}
                           className="px-3 py-2 bg-slate-800 border border-slate-700 rounded hover:bg-slate-700 active:bg-slate-600 transition-colors font-mono text-sm font-semibold text-white"
