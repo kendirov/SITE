@@ -1,0 +1,752 @@
+2026-02-01 10:04:15,305 [INFO] eatventure_bot | Eatventure Bot started
+2026-02-01 10:04:15,424 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): best match 0.653 < 0.800
+2026-02-01 10:04:15,485 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_upgrade_arrow_20260201_100415.png
+2026-02-01 10:04:15,485 [WARNING] eatventure_bot | upgrade_station: upgrade_arrow not found
+2026-02-01 10:04:16,562 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): best match 0.653 < 0.800
+2026-02-01 10:04:16,616 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_upgrade_arrow_20260201_100416.png
+2026-02-01 10:04:16,616 [WARNING] eatventure_bot | upgrade_station: upgrade_arrow not found
+2026-02-01 10:04:17,713 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): best match 0.679 < 0.800
+2026-02-01 10:04:17,771 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_upgrade_arrow_20260201_100417.png
+2026-02-01 10:04:17,771 [WARNING] eatventure_bot | upgrade_station: upgrade_arrow not found
+2026-02-01 10:04:18,840 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): best match 0.653 < 0.800
+2026-02-01 10:04:18,895 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_upgrade_arrow_20260201_100418.png
+2026-02-01 10:04:18,895 [WARNING] eatventure_bot | upgrade_station: upgrade_arrow not found
+2026-02-01 10:04:19,977 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): best match 0.653 < 0.800
+2026-02-01 10:04:20,035 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_upgrade_arrow_20260201_100419.png
+2026-02-01 10:04:20,035 [WARNING] eatventure_bot | upgrade_station: upgrade_arrow not found
+2026-02-01 10:04:21,119 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): best match 0.691 < 0.800
+2026-02-01 10:04:21,175 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_upgrade_arrow_20260201_100421.png
+2026-02-01 10:04:21,175 [WARNING] eatventure_bot | upgrade_station: upgrade_arrow not found
+2026-02-01 10:04:22,274 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): best match 0.653 < 0.800
+2026-02-01 10:04:22,327 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_upgrade_arrow_20260201_100422.png
+2026-02-01 10:04:22,327 [WARNING] eatventure_bot | upgrade_station: upgrade_arrow not found
+2026-02-01 10:05:41,110 [INFO] eatventure_bot | Eatventure Bot started
+2026-02-01 10:05:41,214 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): best match 0.741 < 0.800
+2026-02-01 10:05:41,270 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_upgrade_arrow_20260201_100541.png
+2026-02-01 10:05:41,270 [WARNING] eatventure_bot | upgrade_station: upgrade_arrow not found
+2026-02-01 10:05:42,372 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): best match 0.741 < 0.800
+2026-02-01 10:05:42,429 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_upgrade_arrow_20260201_100542.png
+2026-02-01 10:05:42,429 [WARNING] eatventure_bot | upgrade_station: upgrade_arrow not found
+2026-02-01 10:05:43,536 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): best match 0.741 < 0.800
+2026-02-01 10:05:43,593 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_upgrade_arrow_20260201_100543.png
+2026-02-01 10:05:43,593 [WARNING] eatventure_bot | upgrade_station: upgrade_arrow not found
+2026-02-01 10:05:44,698 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): best match 0.741 < 0.800
+2026-02-01 10:05:44,754 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_upgrade_arrow_20260201_100544.png
+2026-02-01 10:05:44,754 [WARNING] eatventure_bot | upgrade_station: upgrade_arrow not found
+2026-02-01 10:05:45,867 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): best match 0.741 < 0.800
+2026-02-01 10:05:45,923 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_upgrade_arrow_20260201_100545.png
+2026-02-01 10:05:45,924 [WARNING] eatventure_bot | upgrade_station: upgrade_arrow not found
+2026-02-01 10:05:47,031 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): best match 0.741 < 0.800
+2026-02-01 10:05:47,085 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_upgrade_arrow_20260201_100547.png
+2026-02-01 10:05:47,085 [WARNING] eatventure_bot | upgrade_station: upgrade_arrow not found
+2026-02-01 10:10:29,386 [INFO] eatventure_bot | Eatventure Bot started
+2026-02-01 10:10:29,513 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): match at logical (354, 35) size (11, 11) conf=0.737
+2026-02-01 10:10:29,514 [INFO] eatventure_bot | upgrade_station: arrow at (359,40), station click (379,90)
+2026-02-01 10:10:29,514 [INFO] eatventure_bot | Clicked [station_open] at (376, 88)
+2026-02-01 10:10:29,514 [DEBUG] eatventure_bot | click_element: raw center (379, 90) -> (376, 88)
+2026-02-01 10:10:29,738 [DEBUG] eatventure_bot | find_template('btn_buy'): match at logical (169, 260) size (31, 49) conf=0.772
+2026-02-01 10:10:29,738 [INFO] eatventure_bot | wait_for_image('btn_buy'): found
+2026-02-01 10:10:29,738 [INFO] eatventure_bot | Upgrading station...
+2026-02-01 10:10:29,738 [INFO] eatventure_bot | Held click [btn_buy] at (184, 284) for 1.5s
+2026-02-01 10:10:31,575 [INFO] eatventure_bot | Clicked [station_close] at (378, 92)
+2026-02-01 10:10:31,575 [DEBUG] eatventure_bot | click_element: raw center (379, 90) -> (378, 92)
+2026-02-01 10:10:31,698 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:10:32,795 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): match at logical (354, 35) size (11, 11) conf=0.737
+2026-02-01 10:10:32,795 [INFO] eatventure_bot | upgrade_station: arrow at (359,40), station click (379,90)
+2026-02-01 10:10:32,796 [INFO] eatventure_bot | Clicked [station_open] at (379, 93)
+2026-02-01 10:10:32,796 [DEBUG] eatventure_bot | click_element: raw center (379, 90) -> (379, 93)
+2026-02-01 10:10:32,990 [DEBUG] eatventure_bot | find_template('btn_buy'): match at logical (175, 260) size (31, 49) conf=0.769
+2026-02-01 10:10:32,990 [INFO] eatventure_bot | wait_for_image('btn_buy'): found
+2026-02-01 10:10:32,990 [INFO] eatventure_bot | Upgrading station...
+2026-02-01 10:10:32,990 [INFO] eatventure_bot | Held click [btn_buy] at (190, 284) for 1.5s
+2026-02-01 10:10:34,831 [INFO] eatventure_bot | Clicked [station_close] at (381, 91)
+2026-02-01 10:10:34,832 [DEBUG] eatventure_bot | click_element: raw center (379, 90) -> (381, 91)
+2026-02-01 10:10:34,947 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:10:36,043 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): best match 0.570 < 0.700
+2026-02-01 10:10:36,161 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_upgrade_arrow_20260201_101036.png
+2026-02-01 10:10:36,161 [WARNING] eatventure_bot | upgrade_station: upgrade_arrow not found
+2026-02-01 10:10:37,263 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): match at logical (213, 189) size (11, 11) conf=0.737
+2026-02-01 10:10:37,263 [INFO] eatventure_bot | upgrade_station: arrow at (218,194), station click (238,244)
+2026-02-01 10:10:37,263 [INFO] eatventure_bot | Clicked [station_open] at (240, 241)
+2026-02-01 10:10:37,263 [DEBUG] eatventure_bot | click_element: raw center (238, 244) -> (240, 241)
+2026-02-01 10:10:37,465 [DEBUG] eatventure_bot | find_template('btn_buy'): match at logical (175, 260) size (31, 49) conf=0.769
+2026-02-01 10:10:37,465 [INFO] eatventure_bot | wait_for_image('btn_buy'): found
+2026-02-01 10:10:37,465 [INFO] eatventure_bot | Upgrading station...
+2026-02-01 10:10:37,465 [INFO] eatventure_bot | Held click [btn_buy] at (190, 284) for 1.5s
+2026-02-01 10:10:39,313 [INFO] eatventure_bot | Clicked [station_close] at (236, 245)
+2026-02-01 10:10:39,313 [DEBUG] eatventure_bot | click_element: raw center (238, 244) -> (236, 245)
+2026-02-01 10:10:39,426 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:10:40,532 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): match at logical (354, 35) size (11, 11) conf=0.737
+2026-02-01 10:10:40,532 [INFO] eatventure_bot | upgrade_station: arrow at (359,40), station click (379,90)
+2026-02-01 10:10:40,533 [INFO] eatventure_bot | Clicked [station_open] at (379, 88)
+2026-02-01 10:10:40,533 [DEBUG] eatventure_bot | click_element: raw center (379, 90) -> (379, 88)
+2026-02-01 10:10:40,723 [DEBUG] eatventure_bot | find_template('btn_buy'): match at logical (121, 275) size (31, 49) conf=0.767
+2026-02-01 10:10:40,723 [INFO] eatventure_bot | wait_for_image('btn_buy'): found
+2026-02-01 10:10:40,723 [INFO] eatventure_bot | Upgrading station...
+2026-02-01 10:10:40,723 [INFO] eatventure_bot | Held click [btn_buy] at (136, 299) for 1.5s
+2026-02-01 10:10:42,561 [INFO] eatventure_bot | Clicked [station_close] at (382, 90)
+2026-02-01 10:10:42,561 [DEBUG] eatventure_bot | click_element: raw center (379, 90) -> (382, 90)
+2026-02-01 10:10:42,675 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:10:43,775 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): match at logical (354, 35) size (11, 11) conf=0.737
+2026-02-01 10:10:43,776 [INFO] eatventure_bot | upgrade_station: arrow at (359,40), station click (379,90)
+2026-02-01 10:10:43,776 [INFO] eatventure_bot | Clicked [station_open] at (378, 89)
+2026-02-01 10:10:43,776 [DEBUG] eatventure_bot | click_element: raw center (379, 90) -> (378, 89)
+2026-02-01 10:10:43,974 [DEBUG] eatventure_bot | find_template('btn_buy'): match at logical (175, 260) size (31, 49) conf=0.769
+2026-02-01 10:10:43,974 [INFO] eatventure_bot | wait_for_image('btn_buy'): found
+2026-02-01 10:10:43,974 [INFO] eatventure_bot | Upgrading station...
+2026-02-01 10:10:43,974 [INFO] eatventure_bot | Held click [btn_buy] at (190, 284) for 1.5s
+2026-02-01 10:10:45,814 [INFO] eatventure_bot | Clicked [station_close] at (381, 91)
+2026-02-01 10:10:45,814 [DEBUG] eatventure_bot | click_element: raw center (379, 90) -> (381, 91)
+2026-02-01 10:10:45,932 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:10:47,026 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): best match 0.570 < 0.700
+2026-02-01 10:10:47,148 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_upgrade_arrow_20260201_101047.png
+2026-02-01 10:10:47,148 [WARNING] eatventure_bot | upgrade_station: upgrade_arrow not found
+2026-02-01 10:10:48,251 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): match at logical (358, 52) size (11, 11) conf=0.745
+2026-02-01 10:10:48,252 [INFO] eatventure_bot | upgrade_station: arrow at (363,57), station click (383,107)
+2026-02-01 10:10:48,252 [INFO] eatventure_bot | Clicked [station_open] at (386, 104)
+2026-02-01 10:10:48,252 [DEBUG] eatventure_bot | click_element: raw center (383, 107) -> (386, 104)
+2026-02-01 10:10:48,435 [DEBUG] eatventure_bot | find_template('btn_buy'): best match 0.667 < 0.700
+2026-02-01 10:10:48,533 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_101048.png
+2026-02-01 10:10:49,136 [DEBUG] eatventure_bot | find_template('btn_buy'): best match 0.602 < 0.700
+2026-02-01 10:10:49,247 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_101049.png
+2026-02-01 10:10:49,851 [DEBUG] eatventure_bot | find_template('btn_buy'): best match 0.602 < 0.700
+2026-02-01 10:10:49,969 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_101049.png
+2026-02-01 10:10:50,470 [WARNING] eatventure_bot | wait_for_image('btn_buy'): timeout
+2026-02-01 10:10:50,626 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/timeout_btn_buy_20260201_101050.png
+2026-02-01 10:10:50,626 [DEBUG] eatventure_bot | upgrade_station: btn_buy not found, skipping hold
+2026-02-01 10:10:50,626 [INFO] eatventure_bot | Clicked [station_close] at (381, 105)
+2026-02-01 10:10:50,626 [DEBUG] eatventure_bot | click_element: raw center (383, 107) -> (381, 105)
+2026-02-01 10:10:50,745 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:10:51,839 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): match at logical (357, 52) size (11, 11) conf=0.737
+2026-02-01 10:10:51,839 [INFO] eatventure_bot | upgrade_station: arrow at (362,57), station click (382,107)
+2026-02-01 10:10:51,839 [INFO] eatventure_bot | Clicked [station_open] at (385, 106)
+2026-02-01 10:10:51,839 [DEBUG] eatventure_bot | click_element: raw center (382, 107) -> (385, 106)
+2026-02-01 10:10:52,036 [DEBUG] eatventure_bot | find_template('btn_buy'): match at logical (121, 275) size (31, 49) conf=0.767
+2026-02-01 10:10:52,036 [INFO] eatventure_bot | wait_for_image('btn_buy'): found
+2026-02-01 10:10:52,036 [INFO] eatventure_bot | Upgrading station...
+2026-02-01 10:10:52,036 [INFO] eatventure_bot | Held click [btn_buy] at (136, 299) for 1.5s
+2026-02-01 10:10:53,879 [INFO] eatventure_bot | Clicked [station_close] at (382, 110)
+2026-02-01 10:10:53,879 [DEBUG] eatventure_bot | click_element: raw center (382, 107) -> (382, 110)
+2026-02-01 10:10:53,993 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:10:55,102 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): match at logical (357, 52) size (11, 11) conf=0.737
+2026-02-01 10:10:55,102 [INFO] eatventure_bot | upgrade_station: arrow at (362,57), station click (382,107)
+2026-02-01 10:10:55,102 [INFO] eatventure_bot | Clicked [station_open] at (381, 107)
+2026-02-01 10:10:55,102 [DEBUG] eatventure_bot | click_element: raw center (382, 107) -> (381, 107)
+2026-02-01 10:10:55,293 [DEBUG] eatventure_bot | find_template('btn_buy'): match at logical (175, 260) size (31, 49) conf=0.769
+2026-02-01 10:10:55,293 [INFO] eatventure_bot | wait_for_image('btn_buy'): found
+2026-02-01 10:10:55,293 [INFO] eatventure_bot | Upgrading station...
+2026-02-01 10:10:55,293 [INFO] eatventure_bot | Held click [btn_buy] at (190, 284) for 1.5s
+2026-02-01 10:10:57,135 [INFO] eatventure_bot | Clicked [station_close] at (385, 104)
+2026-02-01 10:10:57,136 [DEBUG] eatventure_bot | click_element: raw center (382, 107) -> (385, 104)
+2026-02-01 10:10:57,249 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:10:58,346 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): match at logical (539, 36) size (11, 11) conf=0.739
+2026-02-01 10:10:58,347 [INFO] eatventure_bot | upgrade_station: arrow at (544,41), station click (564,91)
+2026-02-01 10:10:58,347 [INFO] eatventure_bot | Clicked [station_open] at (566, 91)
+2026-02-01 10:10:58,347 [DEBUG] eatventure_bot | click_element: raw center (564, 91) -> (566, 91)
+2026-02-01 10:10:58,531 [DEBUG] eatventure_bot | find_template('btn_buy'): match at logical (168, 260) size (31, 49) conf=0.768
+2026-02-01 10:10:58,531 [INFO] eatventure_bot | wait_for_image('btn_buy'): found
+2026-02-01 10:10:58,531 [INFO] eatventure_bot | Upgrading station...
+2026-02-01 10:10:58,531 [INFO] eatventure_bot | Held click [btn_buy] at (183, 284) for 1.5s
+2026-02-01 10:11:00,375 [INFO] eatventure_bot | Clicked [station_close] at (566, 91)
+2026-02-01 10:11:00,375 [DEBUG] eatventure_bot | click_element: raw center (564, 91) -> (566, 91)
+2026-02-01 10:11:00,490 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:11:01,584 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): match at logical (354, 35) size (11, 11) conf=0.737
+2026-02-01 10:11:01,585 [INFO] eatventure_bot | upgrade_station: arrow at (359,40), station click (379,90)
+2026-02-01 10:11:01,585 [INFO] eatventure_bot | Clicked [station_open] at (379, 87)
+2026-02-01 10:11:01,585 [DEBUG] eatventure_bot | click_element: raw center (379, 90) -> (379, 87)
+2026-02-01 10:11:01,771 [DEBUG] eatventure_bot | find_template('btn_buy'): match at logical (121, 275) size (31, 49) conf=0.767
+2026-02-01 10:11:01,771 [INFO] eatventure_bot | wait_for_image('btn_buy'): found
+2026-02-01 10:11:01,771 [INFO] eatventure_bot | Upgrading station...
+2026-02-01 10:11:01,771 [INFO] eatventure_bot | Held click [btn_buy] at (136, 299) for 1.5s
+2026-02-01 10:11:03,616 [INFO] eatventure_bot | Clicked [station_close] at (382, 88)
+2026-02-01 10:11:03,616 [DEBUG] eatventure_bot | click_element: raw center (379, 90) -> (382, 88)
+2026-02-01 10:11:03,729 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:11:04,819 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): match at logical (357, 52) size (11, 11) conf=0.728
+2026-02-01 10:11:04,819 [INFO] eatventure_bot | upgrade_station: arrow at (362,57), station click (382,107)
+2026-02-01 10:11:04,819 [INFO] eatventure_bot | Clicked [station_open] at (384, 107)
+2026-02-01 10:11:04,819 [DEBUG] eatventure_bot | click_element: raw center (382, 107) -> (384, 107)
+2026-02-01 10:11:05,011 [DEBUG] eatventure_bot | find_template('btn_buy'): best match 0.667 < 0.700
+2026-02-01 10:11:05,123 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_101105.png
+2026-02-01 10:11:05,731 [DEBUG] eatventure_bot | find_template('btn_buy'): best match 0.602 < 0.700
+2026-02-01 10:11:05,843 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_101105.png
+2026-02-01 10:11:06,455 [DEBUG] eatventure_bot | find_template('btn_buy'): best match 0.602 < 0.700
+2026-02-01 10:11:06,573 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_101106.png
+2026-02-01 10:11:07,074 [WARNING] eatventure_bot | wait_for_image('btn_buy'): timeout
+2026-02-01 10:11:07,237 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/timeout_btn_buy_20260201_101107.png
+2026-02-01 10:11:07,237 [DEBUG] eatventure_bot | upgrade_station: btn_buy not found, skipping hold
+2026-02-01 10:11:07,237 [INFO] eatventure_bot | Clicked [station_close] at (385, 110)
+2026-02-01 10:11:07,237 [DEBUG] eatventure_bot | click_element: raw center (382, 107) -> (385, 110)
+2026-02-01 10:11:07,350 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:17:16,442 [INFO] eatventure_bot | Eatventure Bot started
+2026-02-01 10:17:16,548 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): match at logical (536, 247) size (11, 11) conf=0.741
+2026-02-01 10:17:16,549 [INFO] eatventure_bot | upgrade_station: arrow at (541,252), station click (561,302)
+2026-02-01 10:17:16,549 [INFO] eatventure_bot | Clicked [station_open] at (560, 299)
+2026-02-01 10:17:16,549 [DEBUG] eatventure_bot | click_element: raw center (561, 302) -> (560, 299)
+2026-02-01 10:23:48,276 [INFO] eatventure_bot | Eatventure Bot started
+2026-02-01 10:23:48,409 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): match at logical (536, 247) size (11, 11) conf=0.741
+2026-02-01 10:23:48,409 [INFO] eatventure_bot | upgrade_station: arrow at (541,252), station click (551,268)
+2026-02-01 10:23:48,409 [INFO] eatventure_bot | Clicked [station_open] at (547, 268)
+2026-02-01 10:23:48,409 [DEBUG] eatventure_bot | click_element: raw center (551, 268) -> (547, 268)
+2026-02-01 10:23:48,605 [DEBUG] eatventure_bot | find_template('btn_buy'): match at logical (175, 260) size (31, 49) conf=0.735
+2026-02-01 10:23:48,606 [INFO] eatventure_bot | wait_for_image('btn_buy'): found
+2026-02-01 10:23:48,606 [INFO] eatventure_bot | Upgrading station...
+2026-02-01 10:23:48,606 [INFO] eatventure_bot | Held click [btn_buy] at (190, 284) for 2.0s
+2026-02-01 10:23:50,955 [INFO] eatventure_bot | Clicked [station_close] at (550, 270)
+2026-02-01 10:23:50,955 [DEBUG] eatventure_bot | click_element: raw center (551, 268) -> (550, 270)
+2026-02-01 10:23:51,068 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:23:52,172 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): match at logical (536, 247) size (11, 11) conf=0.741
+2026-02-01 10:23:52,172 [INFO] eatventure_bot | upgrade_station: arrow at (541,252), station click (551,268)
+2026-02-01 10:23:52,172 [INFO] eatventure_bot | Clicked [station_open] at (555, 265)
+2026-02-01 10:23:52,172 [DEBUG] eatventure_bot | click_element: raw center (551, 268) -> (555, 265)
+2026-02-01 10:23:52,374 [DEBUG] eatventure_bot | find_template('btn_buy'): match at logical (175, 260) size (31, 49) conf=0.726
+2026-02-01 10:23:52,374 [INFO] eatventure_bot | wait_for_image('btn_buy'): found
+2026-02-01 10:23:52,374 [INFO] eatventure_bot | Upgrading station...
+2026-02-01 10:23:52,374 [INFO] eatventure_bot | Held click [btn_buy] at (190, 284) for 2.0s
+2026-02-01 10:23:54,723 [INFO] eatventure_bot | Clicked [station_close] at (549, 268)
+2026-02-01 10:23:54,723 [DEBUG] eatventure_bot | click_element: raw center (551, 268) -> (549, 268)
+2026-02-01 10:23:54,836 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:23:55,934 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): match at logical (140, 90) size (11, 11) conf=0.762
+2026-02-01 10:23:55,934 [INFO] eatventure_bot | upgrade_station: arrow at (145,95), station click (155,111)
+2026-02-01 10:23:55,934 [INFO] eatventure_bot | Clicked [station_open] at (157, 111)
+2026-02-01 10:23:55,934 [DEBUG] eatventure_bot | click_element: raw center (155, 111) -> (157, 111)
+2026-02-01 10:23:56,133 [DEBUG] eatventure_bot | find_template('btn_buy'): match at logical (175, 260) size (31, 49) conf=0.726
+2026-02-01 10:23:56,133 [INFO] eatventure_bot | wait_for_image('btn_buy'): found
+2026-02-01 10:23:56,133 [INFO] eatventure_bot | Upgrading station...
+2026-02-01 10:23:56,133 [INFO] eatventure_bot | Held click [btn_buy] at (190, 284) for 2.0s
+2026-02-01 10:23:58,472 [INFO] eatventure_bot | Clicked [station_close] at (153, 107)
+2026-02-01 10:23:58,473 [DEBUG] eatventure_bot | click_element: raw center (155, 111) -> (153, 107)
+2026-02-01 10:23:58,588 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:23:59,690 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): match at logical (56, 105) size (11, 11) conf=0.751
+2026-02-01 10:23:59,690 [INFO] eatventure_bot | upgrade_station: arrow at (61,110), station click (71,126)
+2026-02-01 10:23:59,690 [INFO] eatventure_bot | Clicked [station_open] at (68, 130)
+2026-02-01 10:23:59,690 [DEBUG] eatventure_bot | click_element: raw center (71, 126) -> (68, 130)
+2026-02-01 10:23:59,893 [DEBUG] eatventure_bot | find_template('btn_buy'): match at logical (175, 260) size (31, 49) conf=0.726
+2026-02-01 10:23:59,893 [INFO] eatventure_bot | wait_for_image('btn_buy'): found
+2026-02-01 10:23:59,893 [INFO] eatventure_bot | Upgrading station...
+2026-02-01 10:23:59,893 [INFO] eatventure_bot | Held click [btn_buy] at (190, 284) for 2.0s
+2026-02-01 10:24:02,235 [INFO] eatventure_bot | Clicked [station_close] at (70, 124)
+2026-02-01 10:24:02,235 [DEBUG] eatventure_bot | click_element: raw center (71, 126) -> (70, 124)
+2026-02-01 10:24:02,348 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:24:03,455 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): match at logical (536, 247) size (11, 11) conf=0.741
+2026-02-01 10:24:03,455 [INFO] eatventure_bot | upgrade_station: arrow at (541,252), station click (551,268)
+2026-02-01 10:24:03,455 [INFO] eatventure_bot | Clicked [station_open] at (547, 267)
+2026-02-01 10:24:03,455 [DEBUG] eatventure_bot | click_element: raw center (551, 268) -> (547, 267)
+2026-02-01 10:24:03,642 [DEBUG] eatventure_bot | find_template('btn_buy'): match at logical (175, 260) size (31, 49) conf=0.726
+2026-02-01 10:24:03,642 [INFO] eatventure_bot | wait_for_image('btn_buy'): found
+2026-02-01 10:24:03,642 [INFO] eatventure_bot | Upgrading station...
+2026-02-01 10:24:03,642 [INFO] eatventure_bot | Held click [btn_buy] at (190, 284) for 2.0s
+2026-02-01 10:24:05,988 [INFO] eatventure_bot | Clicked [station_close] at (548, 272)
+2026-02-01 10:24:05,988 [DEBUG] eatventure_bot | click_element: raw center (551, 268) -> (548, 272)
+2026-02-01 10:24:06,101 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:24:31,363 [INFO] eatventure_bot | Eatventure Bot started
+2026-02-01 10:24:31,468 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): match at logical (536, 247) size (11, 11) conf=0.741
+2026-02-01 10:24:31,469 [INFO] eatventure_bot | upgrade_station: arrow at (541,252), station click (551,268)
+2026-02-01 10:24:31,469 [INFO] eatventure_bot | Clicked [station_open] at (556, 265)
+2026-02-01 10:24:31,469 [DEBUG] eatventure_bot | click_element: raw center (551, 268) -> (556, 265)
+2026-02-01 10:24:31,673 [DEBUG] eatventure_bot | find_template('btn_buy'): match at logical (175, 260) size (31, 49) conf=0.769
+2026-02-01 10:24:31,673 [INFO] eatventure_bot | wait_for_image('btn_buy'): found
+2026-02-01 10:24:31,673 [INFO] eatventure_bot | Upgrading station...
+2026-02-01 10:24:31,673 [INFO] eatventure_bot | Held click [btn_buy] at (190, 284) for 2.0s
+2026-02-01 10:24:34,016 [INFO] eatventure_bot | Clicked [station_close] at (546, 265)
+2026-02-01 10:24:34,016 [DEBUG] eatventure_bot | click_element: raw center (551, 268) -> (546, 265)
+2026-02-01 10:24:34,130 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:24:35,236 [DEBUG] eatventure_bot | find_template('upgrade_arrow'): match at logical (536, 247) size (11, 11) conf=0.741
+2026-02-01 10:24:35,236 [INFO] eatventure_bot | upgrade_station: arrow at (541,252), station click (551,268)
+2026-02-01 10:24:35,237 [INFO] eatventure_bot | Clicked [station_open] at (552, 268)
+2026-02-01 10:24:35,237 [DEBUG] eatventure_bot | click_element: raw center (551, 268) -> (552, 268)
+2026-02-01 10:24:35,428 [DEBUG] eatventure_bot | find_template('btn_buy'): match at logical (175, 260) size (31, 49) conf=0.769
+2026-02-01 10:24:35,428 [INFO] eatventure_bot | wait_for_image('btn_buy'): found
+2026-02-01 10:24:35,428 [INFO] eatventure_bot | Upgrading station...
+2026-02-01 10:24:35,428 [INFO] eatventure_bot | Held click [btn_buy] at (190, 284) for 2.0s
+2026-02-01 10:24:37,771 [INFO] eatventure_bot | Clicked [station_close] at (548, 265)
+2026-02-01 10:24:37,772 [DEBUG] eatventure_bot | click_element: raw center (551, 268) -> (548, 265)
+2026-02-01 10:54:04,062 [INFO] eatventure_bot | Eatventure Bot started
+2026-02-01 10:54:04,171 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 17 matches at scale 0.5 conf=0.960
+2026-02-01 10:54:04,172 [INFO] eatventure_bot | upgrade_station: arrow at (260,377), station click (270,393)
+2026-02-01 10:54:04,172 [INFO] eatventure_bot | Clicked [station_open] at (272, 390)
+2026-02-01 10:54:04,172 [DEBUG] eatventure_bot | click_element: raw center (270, 393) -> (272, 390)
+2026-02-01 10:54:04,605 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (204, 318) size (31, 49) conf=0.982 scale=0.5
+2026-02-01 10:54:04,606 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 10:54:04,606 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (219, 342), max 2.0s
+2026-02-01 10:54:05,040 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:05,215 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:05,397 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:05,571 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:05,745 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:05,920 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:06,092 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:06,267 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:06,445 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:06,618 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:06,796 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:06,970 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:07,084 [INFO] eatventure_bot | Held [btn_buy] for 2.24s
+2026-02-01 10:54:07,084 [INFO] eatventure_bot | Clicked [station_close] at (273, 398)
+2026-02-01 10:54:07,084 [DEBUG] eatventure_bot | click_element: raw center (270, 393) -> (273, 398)
+2026-02-01 10:54:07,206 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:54:08,298 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 11 matches at scale 0.5 conf=0.956
+2026-02-01 10:54:08,298 [INFO] eatventure_bot | upgrade_station: arrow at (320,482), station click (330,498)
+2026-02-01 10:54:08,298 [INFO] eatventure_bot | Clicked [station_open] at (333, 500)
+2026-02-01 10:54:08,298 [DEBUG] eatventure_bot | click_element: raw center (330, 498) -> (333, 500)
+2026-02-01 10:54:08,704 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (216, 423) size (31, 49) conf=0.981 scale=0.5
+2026-02-01 10:54:08,704 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 10:54:08,704 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (231, 447), max 2.0s
+2026-02-01 10:54:09,130 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:09,298 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:09,478 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:09,652 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:09,832 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:10,016 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:10,199 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:10,384 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:10,564 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:10,748 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:10,931 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:11,043 [INFO] eatventure_bot | Held [btn_buy] for 2.11s
+2026-02-01 10:54:11,043 [INFO] eatventure_bot | Clicked [station_close] at (325, 497)
+2026-02-01 10:54:11,043 [DEBUG] eatventure_bot | click_element: raw center (330, 498) -> (325, 497)
+2026-02-01 10:54:11,160 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:54:12,253 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 6 matches at scale 0.5 conf=0.895
+2026-02-01 10:54:12,253 [INFO] eatventure_bot | upgrade_station: arrow at (230,612), station click (240,628)
+2026-02-01 10:54:12,253 [INFO] eatventure_bot | Clicked [station_open] at (240, 633)
+2026-02-01 10:54:12,253 [DEBUG] eatventure_bot | click_element: raw center (240, 628) -> (240, 633)
+2026-02-01 10:54:12,666 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (174, 553) size (31, 49) conf=0.971 scale=0.5
+2026-02-01 10:54:12,666 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 10:54:12,666 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (189, 577), max 2.0s
+2026-02-01 10:54:13,089 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:13,264 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:13,445 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:13,619 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:13,796 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:13,972 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:14,145 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:14,313 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:14,485 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:14,663 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:14,838 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:15,012 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:15,124 [INFO] eatventure_bot | Held [btn_buy] for 2.23s
+2026-02-01 10:54:15,125 [INFO] eatventure_bot | Clicked [station_close] at (235, 630)
+2026-02-01 10:54:15,125 [DEBUG] eatventure_bot | click_element: raw center (240, 628) -> (235, 630)
+2026-02-01 10:54:15,241 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:54:17,414 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 5 matches at scale 0.5 conf=0.956
+2026-02-01 10:54:17,414 [DEBUG] eatventure_bot | upgrade_station: all arrows on cooldown
+2026-02-01 10:54:18,506 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 7 matches at scale 0.5 conf=0.956
+2026-02-01 10:54:18,506 [INFO] eatventure_bot | upgrade_station: arrow at (173,218), station click (183,234)
+2026-02-01 10:54:18,506 [INFO] eatventure_bot | Clicked [station_open] at (186, 237)
+2026-02-01 10:54:18,506 [DEBUG] eatventure_bot | click_element: raw center (183, 234) -> (186, 237)
+2026-02-01 10:54:18,914 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:18,914 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 10:54:18,914 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (54, 377), max 2.0s
+2026-02-01 10:54:19,330 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:19,504 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:19,679 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:19,854 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:20,029 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:20,201 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:20,379 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:20,553 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:20,729 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:20,904 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:21,077 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:21,250 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:21,363 [INFO] eatventure_bot | Held [btn_buy] for 2.22s
+2026-02-01 10:54:21,363 [INFO] eatventure_bot | Clicked [station_close] at (188, 238)
+2026-02-01 10:54:21,363 [DEBUG] eatventure_bot | click_element: raw center (183, 234) -> (188, 238)
+2026-02-01 10:54:21,476 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:54:22,565 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 6 matches at scale 0.5 conf=0.864
+2026-02-01 10:54:22,565 [INFO] eatventure_bot | upgrade_station: arrow at (230,612), station click (240,628)
+2026-02-01 10:54:22,565 [INFO] eatventure_bot | Clicked [station_open] at (245, 633)
+2026-02-01 10:54:22,565 [DEBUG] eatventure_bot | click_element: raw center (240, 628) -> (245, 633)
+2026-02-01 10:54:22,974 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (174, 553) size (31, 49) conf=0.971 scale=0.5
+2026-02-01 10:54:22,974 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 10:54:22,974 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (189, 577), max 2.0s
+2026-02-01 10:54:23,400 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:23,581 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:23,764 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:23,948 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:24,123 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:24,297 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:24,470 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:24,645 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:24,818 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:24,997 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:25,170 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:25,345 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:25,458 [INFO] eatventure_bot | Held [btn_buy] for 2.25s
+2026-02-01 10:54:25,458 [INFO] eatventure_bot | Clicked [station_close] at (242, 632)
+2026-02-01 10:54:25,458 [DEBUG] eatventure_bot | click_element: raw center (240, 628) -> (242, 632)
+2026-02-01 10:54:25,574 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:54:26,665 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 6 matches at scale 0.5 conf=0.942
+2026-02-01 10:54:26,665 [INFO] eatventure_bot | upgrade_station: arrow at (320,482), station click (330,498)
+2026-02-01 10:54:26,665 [INFO] eatventure_bot | Clicked [station_open] at (325, 493)
+2026-02-01 10:54:26,665 [DEBUG] eatventure_bot | click_element: raw center (330, 498) -> (325, 493)
+2026-02-01 10:54:27,073 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (216, 423) size (31, 49) conf=0.985 scale=0.5
+2026-02-01 10:54:27,074 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 10:54:27,074 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (231, 447), max 2.0s
+2026-02-01 10:54:27,501 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:27,681 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:27,844 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:28,016 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:28,198 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:28,381 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:28,563 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:28,739 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:28,913 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:29,088 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:29,261 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:29,428 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:29,540 [INFO] eatventure_bot | Held [btn_buy] for 2.24s
+2026-02-01 10:54:29,541 [INFO] eatventure_bot | Clicked [station_close] at (325, 497)
+2026-02-01 10:54:29,541 [DEBUG] eatventure_bot | click_element: raw center (330, 498) -> (325, 497)
+2026-02-01 10:54:29,658 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:54:38,330 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 2 matches at scale 0.5 conf=0.755
+2026-02-01 10:54:38,330 [INFO] eatventure_bot | upgrade_station: arrow at (184,264), station click (194,280)
+2026-02-01 10:54:38,330 [INFO] eatventure_bot | Clicked [station_open] at (189, 277)
+2026-02-01 10:54:38,330 [DEBUG] eatventure_bot | click_element: raw center (194, 280) -> (189, 277)
+2026-02-01 10:54:38,739 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:38,739 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 10:54:38,739 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (54, 377), max 2.0s
+2026-02-01 10:54:39,165 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:39,340 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:39,506 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:39,678 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:39,850 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:40,030 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:40,204 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 353) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:40,378 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 369) size (31, 49) conf=0.798 scale=0.5
+2026-02-01 10:54:40,551 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 381) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:40,730 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 381) size (31, 49) conf=0.798 scale=0.5
+2026-02-01 10:54:40,903 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 372) size (31, 49) conf=0.799 scale=0.5
+2026-02-01 10:54:41,077 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 364) size (31, 49) conf=0.800 scale=0.5
+2026-02-01 10:54:41,190 [INFO] eatventure_bot | Held [btn_buy] for 2.22s
+2026-02-01 10:54:41,191 [INFO] eatventure_bot | Clicked [station_close] at (189, 284)
+2026-02-01 10:54:41,191 [DEBUG] eatventure_bot | click_element: raw center (194, 280) -> (189, 284)
+2026-02-01 10:54:41,306 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:54:44,542 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 8 matches at scale 0.5 conf=0.954
+2026-02-01 10:54:44,542 [INFO] eatventure_bot | upgrade_station: arrow at (321,492), station click (331,508)
+2026-02-01 10:54:44,542 [INFO] eatventure_bot | Clicked [station_open] at (330, 513)
+2026-02-01 10:54:44,542 [DEBUG] eatventure_bot | click_element: raw center (331, 508) -> (330, 513)
+2026-02-01 10:54:44,949 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (216, 433) size (31, 49) conf=0.988 scale=0.5
+2026-02-01 10:54:44,949 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 10:54:44,949 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (231, 457), max 2.0s
+2026-02-01 10:54:45,386 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 363) size (31, 49) conf=0.800 scale=0.5
+2026-02-01 10:54:45,564 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 363) size (31, 49) conf=0.800 scale=0.5
+2026-02-01 10:54:45,738 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 363) size (31, 49) conf=0.800 scale=0.5
+2026-02-01 10:54:45,912 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (39, 363) size (31, 49) conf=0.800 scale=0.5
+2026-02-01 10:57:40,178 [INFO] eatventure_bot | Eatventure Bot started
+2026-02-01 10:57:40,281 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 13 matches at scale 0.5 conf=0.972
+2026-02-01 10:57:40,281 [INFO] eatventure_bot | upgrade_station: arrow at (51,459), station click (61,475)
+2026-02-01 10:57:40,281 [INFO] eatventure_bot | Clicked [station_open] at (60, 476)
+2026-02-01 10:57:40,281 [DEBUG] eatventure_bot | click_element: raw center (61, 475) -> (60, 476)
+2026-02-01 10:57:40,703 [DEBUG] eatventure_bot | find_image('btn_buy'): no match above 0.760
+2026-02-01 10:57:40,764 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_105740.png
+2026-02-01 10:57:40,764 [DEBUG] eatventure_bot | upgrade_station: btn_buy not found, skipping hold
+2026-02-01 10:57:40,764 [INFO] eatventure_bot | Clicked [station_close] at (57, 479)
+2026-02-01 10:57:40,764 [DEBUG] eatventure_bot | click_element: raw center (61, 475) -> (57, 479)
+2026-02-01 10:57:40,876 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:57:41,972 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 9 matches at scale 0.5 conf=0.972
+2026-02-01 10:57:41,972 [INFO] eatventure_bot | upgrade_station: arrow at (151,487), station click (161,503)
+2026-02-01 10:57:41,972 [INFO] eatventure_bot | Clicked [station_open] at (159, 505)
+2026-02-01 10:57:41,972 [DEBUG] eatventure_bot | click_element: raw center (161, 503) -> (159, 505)
+2026-02-01 10:57:42,383 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 428) size (31, 49) conf=0.976 scale=0.5
+2026-02-01 10:57:42,383 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 10:57:42,383 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (111, 452), max 2.0s
+2026-02-01 10:57:42,813 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 429) size (31, 49) conf=0.771 scale=0.5
+2026-02-01 10:57:42,995 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 429) size (31, 49) conf=0.771 scale=0.5
+2026-02-01 10:57:43,176 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 429) size (31, 49) conf=0.771 scale=0.5
+2026-02-01 10:57:43,351 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 429) size (31, 49) conf=0.771 scale=0.5
+2026-02-01 10:57:43,527 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 429) size (31, 49) conf=0.771 scale=0.5
+2026-02-01 10:57:43,699 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 429) size (31, 49) conf=0.760 scale=0.5
+2026-02-01 10:57:43,877 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 429) size (31, 49) conf=0.763 scale=0.5
+2026-02-01 10:57:44,052 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 429) size (31, 49) conf=0.763 scale=0.5
+2026-02-01 10:57:44,227 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 429) size (31, 49) conf=0.771 scale=0.5
+2026-02-01 10:57:44,401 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 429) size (31, 49) conf=0.771 scale=0.5
+2026-02-01 10:57:44,580 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 429) size (31, 49) conf=0.771 scale=0.5
+2026-02-01 10:57:44,761 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 429) size (31, 49) conf=0.760 scale=0.5
+2026-02-01 10:57:44,874 [INFO] eatventure_bot | Held [btn_buy] for 2.26s
+2026-02-01 10:57:44,874 [INFO] eatventure_bot | Clicked [station_close] at (162, 508)
+2026-02-01 10:57:44,874 [DEBUG] eatventure_bot | click_element: raw center (161, 503) -> (162, 508)
+2026-02-01 10:57:44,988 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:57:46,082 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 13 matches at scale 0.5 conf=0.971
+2026-02-01 10:57:46,082 [INFO] eatventure_bot | upgrade_station: arrow at (85,602), station click (95,618)
+2026-02-01 10:57:46,082 [INFO] eatventure_bot | Clicked [station_open] at (94, 620)
+2026-02-01 10:57:46,082 [DEBUG] eatventure_bot | click_element: raw center (95, 618) -> (94, 620)
+2026-02-01 10:57:46,492 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (42, 543) size (31, 49) conf=0.964 scale=0.5
+2026-02-01 10:57:46,492 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 10:57:46,492 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (57, 567), max 2.0s
+2026-02-01 10:57:46,901 [DEBUG] eatventure_bot | find_image('btn_buy'): no match above 0.760
+2026-02-01 10:57:46,958 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_105746.png
+2026-02-01 10:57:47,070 [INFO] eatventure_bot | Held [btn_buy] for 0.35s
+2026-02-01 10:57:47,070 [INFO] eatventure_bot | Clicked [station_close] at (95, 620)
+2026-02-01 10:57:47,070 [DEBUG] eatventure_bot | click_element: raw center (95, 618) -> (95, 620)
+2026-02-01 10:57:47,188 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:57:48,278 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 13 matches at scale 0.5 conf=0.926
+2026-02-01 10:57:48,278 [INFO] eatventure_bot | Arrows found but ignored (Cooldown active)
+2026-02-01 10:57:48,278 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 10:57:49,371 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 13 matches at scale 0.5 conf=0.972
+2026-02-01 10:57:49,371 [INFO] eatventure_bot | Arrows found but ignored (Cooldown active)
+2026-02-01 10:57:49,371 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 10:57:50,464 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 14 matches at scale 0.5 conf=0.933
+2026-02-01 10:57:50,464 [INFO] eatventure_bot | upgrade_station: arrow at (51,459), station click (61,475)
+2026-02-01 10:57:50,464 [INFO] eatventure_bot | Clicked [station_open] at (63, 474)
+2026-02-01 10:57:50,464 [DEBUG] eatventure_bot | click_element: raw center (61, 475) -> (63, 474)
+2026-02-01 10:57:50,857 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (46, 400) size (31, 49) conf=0.975 scale=0.5
+2026-02-01 10:57:50,857 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 10:57:50,857 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (61, 424), max 2.0s
+2026-02-01 10:57:51,269 [DEBUG] eatventure_bot | find_image('btn_buy'): no match above 0.760
+2026-02-01 10:57:51,326 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_105751.png
+2026-02-01 10:57:51,439 [INFO] eatventure_bot | Held [btn_buy] for 0.35s
+2026-02-01 10:57:51,439 [INFO] eatventure_bot | Clicked [station_close] at (60, 477)
+2026-02-01 10:57:51,439 [DEBUG] eatventure_bot | click_element: raw center (61, 475) -> (60, 477)
+2026-02-01 10:57:51,552 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:57:52,643 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 14 matches at scale 0.5 conf=0.972
+2026-02-01 10:57:52,643 [INFO] eatventure_bot | upgrade_station: arrow at (68,179), station click (78,195)
+2026-02-01 10:57:52,643 [INFO] eatventure_bot | Clicked [station_open] at (83, 196)
+2026-02-01 10:57:52,643 [DEBUG] eatventure_bot | click_element: raw center (78, 195) -> (83, 196)
+2026-02-01 10:57:53,037 [DEBUG] eatventure_bot | find_image('btn_buy'): no match above 0.760
+2026-02-01 10:57:53,095 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_105753.png
+2026-02-01 10:57:53,095 [DEBUG] eatventure_bot | upgrade_station: btn_buy not found, skipping hold
+2026-02-01 10:57:53,095 [INFO] eatventure_bot | Clicked [station_close] at (74, 200)
+2026-02-01 10:57:53,095 [DEBUG] eatventure_bot | click_element: raw center (78, 195) -> (74, 200)
+2026-02-01 10:57:53,208 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:57:54,299 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 14 matches at scale 0.5 conf=0.937
+2026-02-01 10:57:54,299 [INFO] eatventure_bot | upgrade_station: arrow at (151,487), station click (161,503)
+2026-02-01 10:57:54,299 [INFO] eatventure_bot | Clicked [station_open] at (159, 500)
+2026-02-01 10:57:54,299 [DEBUG] eatventure_bot | click_element: raw center (161, 503) -> (159, 500)
+2026-02-01 10:57:54,710 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 428) size (31, 49) conf=0.976 scale=0.5
+2026-02-01 10:57:54,710 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 10:57:54,710 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (111, 452), max 2.0s
+2026-02-01 10:57:55,135 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 429) size (31, 49) conf=0.771 scale=0.5
+2026-02-01 10:57:55,311 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 429) size (31, 49) conf=0.771 scale=0.5
+2026-02-01 10:57:55,484 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 429) size (31, 49) conf=0.771 scale=0.5
+2026-02-01 10:57:55,648 [DEBUG] eatventure_bot | find_image('btn_buy'): no match above 0.760
+2026-02-01 10:57:55,705 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_105755.png
+2026-02-01 10:57:55,822 [INFO] eatventure_bot | Held [btn_buy] for 0.88s
+2026-02-01 10:57:55,822 [INFO] eatventure_bot | Clicked [station_close] at (166, 499)
+2026-02-01 10:57:55,822 [DEBUG] eatventure_bot | click_element: raw center (161, 503) -> (166, 499)
+2026-02-01 10:57:55,938 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:57:57,029 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 9 matches at scale 0.5 conf=0.927
+2026-02-01 10:57:57,029 [INFO] eatventure_bot | upgrade_station: arrow at (85,602), station click (95,618)
+2026-02-01 10:57:57,029 [INFO] eatventure_bot | Clicked [station_open] at (95, 617)
+2026-02-01 10:57:57,029 [DEBUG] eatventure_bot | click_element: raw center (95, 618) -> (95, 617)
+2026-02-01 10:57:57,436 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (42, 543) size (31, 49) conf=0.964 scale=0.5
+2026-02-01 10:57:57,436 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 10:57:57,436 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (57, 567), max 2.0s
+2026-02-01 10:57:57,849 [DEBUG] eatventure_bot | find_image('btn_buy'): no match above 0.760
+2026-02-01 10:57:57,906 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_105757.png
+2026-02-01 10:57:58,018 [INFO] eatventure_bot | Held [btn_buy] for 0.35s
+2026-02-01 10:57:58,019 [INFO] eatventure_bot | Clicked [station_close] at (90, 613)
+2026-02-01 10:57:58,019 [DEBUG] eatventure_bot | click_element: raw center (95, 618) -> (90, 613)
+2026-02-01 10:57:58,134 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:57:59,230 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 10 matches at scale 0.5 conf=0.927
+2026-02-01 10:57:59,230 [INFO] eatventure_bot | Arrows found but ignored (Cooldown active)
+2026-02-01 10:57:59,230 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 10:58:00,320 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 10 matches at scale 0.5 conf=0.927
+2026-02-01 10:58:00,320 [INFO] eatventure_bot | Arrows found but ignored (Cooldown active)
+2026-02-01 10:58:00,320 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 10:58:01,415 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 14 matches at scale 0.5 conf=0.972
+2026-02-01 10:58:01,415 [INFO] eatventure_bot | upgrade_station: arrow at (51,459), station click (61,475)
+2026-02-01 10:58:01,415 [INFO] eatventure_bot | Clicked [station_open] at (57, 470)
+2026-02-01 10:58:01,415 [DEBUG] eatventure_bot | click_element: raw center (61, 475) -> (57, 470)
+2026-02-01 10:58:01,826 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (46, 400) size (31, 49) conf=0.977 scale=0.5
+2026-02-01 10:58:01,826 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 10:58:01,826 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (61, 424), max 2.0s
+2026-02-01 10:58:02,236 [DEBUG] eatventure_bot | find_image('btn_buy'): no match above 0.760
+2026-02-01 10:58:02,292 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_105802.png
+2026-02-01 10:58:02,405 [INFO] eatventure_bot | Held [btn_buy] for 0.35s
+2026-02-01 10:58:02,405 [INFO] eatventure_bot | Clicked [station_close] at (61, 471)
+2026-02-01 10:58:02,405 [DEBUG] eatventure_bot | click_element: raw center (61, 475) -> (61, 471)
+2026-02-01 10:58:02,521 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:58:03,613 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 12 matches at scale 0.5 conf=0.920
+2026-02-01 10:58:03,613 [INFO] eatventure_bot | Arrows found but ignored (Cooldown active)
+2026-02-01 10:58:03,613 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 10:58:04,718 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 15 matches at scale 0.5 conf=0.971
+2026-02-01 10:58:04,718 [INFO] eatventure_bot | upgrade_station: arrow at (68,178), station click (78,194)
+2026-02-01 10:58:04,718 [INFO] eatventure_bot | Clicked [station_open] at (76, 194)
+2026-02-01 10:58:04,718 [DEBUG] eatventure_bot | click_element: raw center (78, 194) -> (76, 194)
+2026-02-01 10:58:05,110 [DEBUG] eatventure_bot | find_image('btn_buy'): no match above 0.760
+2026-02-01 10:58:05,169 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_105805.png
+2026-02-01 10:58:05,169 [DEBUG] eatventure_bot | upgrade_station: btn_buy not found, skipping hold
+2026-02-01 10:58:05,169 [INFO] eatventure_bot | Clicked [station_close] at (83, 198)
+2026-02-01 10:58:05,170 [DEBUG] eatventure_bot | click_element: raw center (78, 194) -> (83, 198)
+2026-02-01 10:58:05,283 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:58:06,382 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 11 matches at scale 0.5 conf=0.926
+2026-02-01 10:58:06,382 [INFO] eatventure_bot | upgrade_station: arrow at (151,487), station click (161,503)
+2026-02-01 10:58:06,382 [INFO] eatventure_bot | Clicked [station_open] at (166, 508)
+2026-02-01 10:58:06,382 [DEBUG] eatventure_bot | click_element: raw center (161, 503) -> (166, 508)
+2026-02-01 10:58:06,797 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 428) size (31, 49) conf=0.976 scale=0.5
+2026-02-01 10:58:06,797 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 10:58:06,797 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (111, 452), max 2.0s
+2026-02-01 10:58:07,237 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 429) size (31, 49) conf=0.771 scale=0.5
+2026-02-01 10:58:07,415 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (96, 429) size (31, 49) conf=0.771 scale=0.5
+2026-02-01 10:58:07,581 [DEBUG] eatventure_bot | find_image('btn_buy'): no match above 0.760
+2026-02-01 10:58:07,638 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_105807.png
+2026-02-01 10:58:07,754 [INFO] eatventure_bot | Held [btn_buy] for 0.72s
+2026-02-01 10:58:07,754 [INFO] eatventure_bot | Clicked [station_close] at (160, 501)
+2026-02-01 10:58:07,754 [DEBUG] eatventure_bot | click_element: raw center (161, 503) -> (160, 501)
+2026-02-01 10:58:07,867 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 10:58:08,941 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 9 matches at scale 0.5 conf=0.926
+2026-02-01 10:58:08,942 [INFO] eatventure_bot | upgrade_station: arrow at (85,602), station click (95,618)
+2026-02-01 10:58:08,942 [INFO] eatventure_bot | Clicked [station_open] at (97, 618)
+2026-02-01 10:58:08,942 [DEBUG] eatventure_bot | click_element: raw center (95, 618) -> (97, 618)
+2026-02-01 10:58:09,349 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (42, 543) size (31, 49) conf=0.964 scale=0.5
+2026-02-01 10:58:09,349 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 10:58:09,349 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (57, 567), max 2.0s
+2026-02-01 10:58:09,755 [DEBUG] eatventure_bot | find_image('btn_buy'): no match above 0.760
+2026-02-01 10:58:09,818 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_105809.png
+2026-02-01 10:58:09,931 [INFO] eatventure_bot | Held [btn_buy] for 0.36s
+2026-02-01 10:58:09,931 [INFO] eatventure_bot | Clicked [station_close] at (97, 619)
+2026-02-01 10:58:09,931 [DEBUG] eatventure_bot | click_element: raw center (95, 618) -> (97, 619)
+2026-02-01 10:58:10,044 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 11:00:59,233 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 11 matches at scale 0.5 conf=0.927
+2026-02-01 11:03:46,146 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 4 matches at scale 0.5 conf=0.901
+2026-02-01 11:03:55,319 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 5 matches at scale 0.5 conf=0.901
+2026-02-01 11:04:06,875 [INFO] eatventure_bot | Eatventure Bot started
+2026-02-01 11:04:06,978 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 4 matches at scale 0.5 conf=0.900
+2026-02-01 11:04:06,978 [INFO] eatventure_bot | upgrade_station: arrow at (51,449), station click (61,465)
+2026-02-01 11:04:06,978 [INFO] eatventure_bot | Clicked [station_open] at (60, 468)
+2026-02-01 11:04:06,978 [DEBUG] eatventure_bot | click_element: raw center (61, 465) -> (60, 468)
+2026-02-01 11:04:07,382 [DEBUG] eatventure_bot | find_image('btn_buy'): no match above 0.850
+2026-02-01 11:04:07,438 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_110407.png
+2026-02-01 11:04:07,438 [DEBUG] eatventure_bot | upgrade_station: btn_buy not found, skipping hold
+2026-02-01 11:04:07,438 [INFO] eatventure_bot | Clicked [station_close] at (57, 466)
+2026-02-01 11:04:07,438 [DEBUG] eatventure_bot | click_element: raw center (61, 465) -> (57, 466)
+2026-02-01 11:04:07,550 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 11:04:08,642 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 3 matches at scale 0.5 conf=0.917
+2026-02-01 11:04:08,642 [INFO] eatventure_bot | upgrade_station: arrow at (84,593), station click (94,609)
+2026-02-01 11:04:08,642 [INFO] eatventure_bot | Clicked [station_open] at (94, 614)
+2026-02-01 11:04:08,642 [DEBUG] eatventure_bot | click_element: raw center (94, 609) -> (94, 614)
+2026-02-01 11:04:09,050 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.962 scale=0.5
+2026-02-01 11:04:09,050 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 11:04:09,050 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (56, 558), max 2.0s
+2026-02-01 11:04:09,484 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.762 scale=0.5
+2026-02-01 11:04:09,660 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.762 scale=0.5
+2026-02-01 11:04:09,840 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.754 scale=0.5
+2026-02-01 11:04:10,015 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.752 scale=0.5
+2026-02-01 11:04:10,190 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.762 scale=0.5
+2026-02-01 11:04:10,356 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.757 scale=0.5
+2026-02-01 11:04:10,526 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.762 scale=0.5
+2026-02-01 11:04:10,710 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.762 scale=0.5
+2026-02-01 11:04:10,887 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.759 scale=0.5
+2026-02-01 11:04:11,061 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.762 scale=0.5
+2026-02-01 11:04:11,239 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.762 scale=0.5
+2026-02-01 11:04:11,413 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.762 scale=0.5
+2026-02-01 11:04:11,526 [INFO] eatventure_bot | Held [btn_buy] for 2.25s
+2026-02-01 11:04:11,526 [INFO] eatventure_bot | Clicked [station_close] at (89, 610)
+2026-02-01 11:04:11,526 [DEBUG] eatventure_bot | click_element: raw center (94, 609) -> (89, 610)
+2026-02-01 11:04:11,639 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 11:04:12,716 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 7 matches at scale 0.5 conf=0.917
+2026-02-01 11:04:12,716 [INFO] eatventure_bot | Arrows found but ignored (Cooldown active)
+2026-02-01 11:04:12,716 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:13,807 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 7 matches at scale 0.5 conf=0.917
+2026-02-01 11:04:13,807 [INFO] eatventure_bot | Arrows found but ignored (Cooldown active)
+2026-02-01 11:04:13,807 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:14,891 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:14,891 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:15,995 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 7 matches at scale 0.5 conf=0.917
+2026-02-01 11:04:15,995 [INFO] eatventure_bot | Arrows found but ignored (Cooldown active)
+2026-02-01 11:04:15,995 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:17,096 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 7 matches at scale 0.5 conf=0.912
+2026-02-01 11:04:17,096 [INFO] eatventure_bot | Arrows found but ignored (Cooldown active)
+2026-02-01 11:04:17,096 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:18,194 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 7 matches at scale 0.5 conf=0.917
+2026-02-01 11:04:18,195 [INFO] eatventure_bot | upgrade_station: arrow at (51,449), station click (61,465)
+2026-02-01 11:04:18,195 [INFO] eatventure_bot | Clicked [station_open] at (59, 467)
+2026-02-01 11:04:18,195 [DEBUG] eatventure_bot | click_element: raw center (61, 465) -> (59, 467)
+2026-02-01 11:04:18,605 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (46, 390) size (31, 49) conf=0.985 scale=0.5
+2026-02-01 11:04:18,605 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 11:04:18,605 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (61, 414), max 2.0s
+2026-02-01 11:04:19,032 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (46, 391) size (31, 49) conf=0.763 scale=0.5
+2026-02-01 11:04:19,207 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (46, 391) size (31, 49) conf=0.763 scale=0.5
+2026-02-01 11:04:19,382 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (46, 391) size (31, 49) conf=0.763 scale=0.5
+2026-02-01 11:04:19,555 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (46, 391) size (31, 49) conf=0.763 scale=0.5
+2026-02-01 11:04:19,728 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (46, 391) size (31, 49) conf=0.763 scale=0.5
+2026-02-01 11:04:19,911 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (46, 391) size (31, 49) conf=0.763 scale=0.5
+2026-02-01 11:04:20,090 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (46, 391) size (31, 49) conf=0.763 scale=0.5
+2026-02-01 11:04:20,266 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (46, 391) size (31, 49) conf=0.763 scale=0.5
+2026-02-01 11:04:20,439 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (45, 390) size (31, 49) conf=0.755 scale=0.5
+2026-02-01 11:04:20,614 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (45, 390) size (31, 49) conf=0.750 scale=0.5
+2026-02-01 11:04:20,789 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (45, 390) size (31, 49) conf=0.751 scale=0.5
+2026-02-01 11:04:20,949 [DEBUG] eatventure_bot | find_image('btn_buy'): no match above 0.600
+2026-02-01 11:04:21,014 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_110420.png
+2026-02-01 11:04:21,126 [INFO] eatventure_bot | Held [btn_buy] for 2.29s
+2026-02-01 11:04:21,126 [INFO] eatventure_bot | Clicked [station_close] at (65, 467)
+2026-02-01 11:04:21,126 [DEBUG] eatventure_bot | click_element: raw center (61, 465) -> (65, 467)
+2026-02-01 11:04:21,249 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 11:04:22,340 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 3 matches at scale 0.5 conf=0.917
+2026-02-01 11:04:22,340 [INFO] eatventure_bot | upgrade_station: arrow at (84,593), station click (94,609)
+2026-02-01 11:04:22,340 [INFO] eatventure_bot | Clicked [station_open] at (92, 611)
+2026-02-01 11:04:22,340 [DEBUG] eatventure_bot | click_element: raw center (94, 609) -> (92, 611)
+2026-02-01 11:04:22,737 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (42, 534) size (31, 49) conf=0.964 scale=0.5
+2026-02-01 11:04:22,737 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 11:04:22,737 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (57, 558), max 2.0s
+2026-02-01 11:04:23,165 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.762 scale=0.5
+2026-02-01 11:04:23,341 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.762 scale=0.5
+2026-02-01 11:04:23,513 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.762 scale=0.5
+2026-02-01 11:04:23,689 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.762 scale=0.5
+2026-02-01 11:04:23,862 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.762 scale=0.5
+2026-02-01 11:04:24,045 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.762 scale=0.5
+2026-02-01 11:04:24,224 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.757 scale=0.5
+2026-02-01 11:04:24,403 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.762 scale=0.5
+2026-02-01 11:04:24,564 [DEBUG] eatventure_bot | find_image('btn_buy'): no match above 0.600
+2026-02-01 11:04:24,619 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_110424.png
+2026-02-01 11:04:24,734 [INFO] eatventure_bot | Held [btn_buy] for 1.77s
+2026-02-01 11:04:24,734 [INFO] eatventure_bot | Clicked [station_close] at (98, 609)
+2026-02-01 11:04:24,734 [DEBUG] eatventure_bot | click_element: raw center (94, 609) -> (98, 609)
+2026-02-01 11:04:24,847 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 11:04:25,926 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:25,926 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:27,018 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:27,018 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:28,098 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:28,098 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:29,185 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:29,185 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:30,267 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:30,267 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:31,350 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:31,350 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:32,434 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:32,434 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:33,514 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:33,514 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:34,602 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:34,602 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:35,681 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:35,681 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:36,761 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:36,761 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:37,842 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:37,842 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:38,935 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:38,935 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:40,015 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:40,015 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:41,101 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:41,101 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:42,183 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:42,183 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:43,243 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:43,243 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:44,303 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:44,303 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:45,366 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:45,366 [INFO] eatventure_bot | IDLE: Searching...
+2026-02-01 11:04:46,433 [DEBUG] eatventure_bot | find_all_images('upgrade_arrow'): 3 matches at scale 0.5 conf=0.917
+2026-02-01 11:04:46,433 [INFO] eatventure_bot | upgrade_station: arrow at (84,593), station click (94,609)
+2026-02-01 11:04:46,433 [INFO] eatventure_bot | Clicked [station_open] at (95, 611)
+2026-02-01 11:04:46,433 [DEBUG] eatventure_bot | click_element: raw center (94, 609) -> (95, 611)
+2026-02-01 11:04:46,822 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.949 scale=0.5
+2026-02-01 11:04:46,822 [INFO] eatventure_bot | Upgrading station (Smart Hold)...
+2026-02-01 11:04:46,822 [INFO] eatventure_bot | hold_until_condition [btn_buy] at (56, 558), max 2.0s
+2026-02-01 11:04:47,237 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (41, 534) size (31, 49) conf=0.752 scale=0.5
+2026-02-01 11:04:47,414 [DEBUG] eatventure_bot | find_image('btn_buy'): match at logical (258, 368) size (31, 49) conf=0.631 scale=0.5
+2026-02-01 11:04:47,568 [DEBUG] eatventure_bot | find_image('btn_buy'): no match above 0.600
+2026-02-01 11:04:47,628 [DEBUG] eatventure_bot | Saved debug screenshot: /Users/kendirov/App/Eat/debug/screenshots/low_confidence_btn_buy_20260201_110447.png
+2026-02-01 11:04:47,741 [INFO] eatventure_bot | Held [btn_buy] for 0.69s
+2026-02-01 11:04:47,741 [INFO] eatventure_bot | Clicked [station_close] at (99, 614)
+2026-02-01 11:04:47,741 [DEBUG] eatventure_bot | click_element: raw center (94, 609) -> (99, 614)
+2026-02-01 11:04:47,853 [INFO] eatventure_bot | upgrade_station: cycle done
+2026-02-01 11:04:48,933 [INFO] eatventure_bot | No arrows found (screen is clear)
+2026-02-01 11:04:48,933 [INFO] eatventure_bot | IDLE: Searching...
