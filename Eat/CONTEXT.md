@@ -21,11 +21,23 @@ This file serves as the **Memory** for future coding sessions to prevent regress
 
 - `GAME_REGION` = (18, 70, 359, 723)
 - `STATION_OFFSET` = X:10, Y:16
-- `CONFIDENCE` = 0.70
+- `CONFIDENCE_THRESHOLD` = 0.85 (strict find — avoids exclamation marks)
+- `HOLD_THRESHOLD` = 0.60 (loose hold — button darkens when pressed)
 
 ---
 
-## 3. FILE STRUCTURE
+## 3. STABLE MODULES (DO NOT MODIFY)
+
+These modules are **production ready**. Do not edit unless critical (e.g. security or game-breaking bug).
+
+| Module | Purpose | Winning settings |
+|--------|---------|------------------|
+| `src/features/upgrader.py` | Station upgrade cycle, Smart Hold, cooldowns | Uses CONFIDENCE 0.85, HOLD_THRESHOLD 0.60 |
+| `src/core/vision.py` | Region crop, multi-scale matching, find_image / find_all_images | CONFIDENCE_THRESHOLD 0.85 (global find) |
+
+---
+
+## 4. FILE STRUCTURE
 
 - `src/core/`: Contains the immutable engine (vision, input, config).
 - `src/features/`: Contains game logic (upgrader).
