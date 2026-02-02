@@ -26,14 +26,17 @@ This file serves as the **Memory** for future coding sessions to prevent regress
 
 ---
 
-## 3. STABLE MODULES (DO NOT MODIFY)
+## 3. STABLE MODULES (DO NOT EDIT)
 
-These modules are **production ready**. Do not edit unless critical (e.g. security or game-breaking bug).
+These modules are **frozen**. Do not edit unless critical (e.g. security or game-breaking bug).
 
-| Module | Purpose | Winning settings |
-|--------|---------|------------------|
-| `src/features/upgrader.py` | Station upgrade cycle, Smart Hold, cooldowns | Uses CONFIDENCE 0.85, HOLD_THRESHOLD 0.60 |
-| `src/core/vision.py` | Region crop, multi-scale matching, find_image / find_all_images | CONFIDENCE_THRESHOLD 0.85 (global find) |
+1. **`src/features/upgrader.py`**
+   - **Status:** GOLD MASTER.
+   - **Logic:** Search >0.85, Hold >0.60 (Hysteresis), Smart Release.
+
+2. **`src/core/vision.py`**
+   - **Status:** STABLE.
+   - **Logic:** Multi-scale matching + Region Cropping.
 
 ---
 

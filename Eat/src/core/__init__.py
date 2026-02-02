@@ -2,7 +2,7 @@
 from .config import ASSETS_PATH, DEBUG_PATH, SCALE_FACTOR, CONFIDENCE_THRESHOLD
 from .logger import get_logger, save_debug_screenshot
 from .vision import find_template, find_image, find_all_images, wait_for_image
-from .input import click_element, long_click, hold_until_condition
+from .input import click_element, click_exact, long_click, hold_until_condition
 
 __all__ = [
     "ASSETS_PATH",
@@ -16,6 +16,7 @@ __all__ = [
     "find_all_images",
     "wait_for_image",
     "click_element",
+    "click_exact",
     "long_click",
     "hold_until_condition",
 ]

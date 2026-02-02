@@ -13,6 +13,10 @@ import pyautogui
 from .config import CLICK_OFFSET_MAX
 from .logger import get_logger
 
+# Safety settings (macOS-compatible)
+pyautogui.FAILSAFE = True
+pyautogui.PAUSE = 0.05
+
 
 def click_element(
     coordinates: Tuple[int, int, int, int] | Tuple[int, int],
@@ -47,6 +51,13 @@ def click_element(
     pyautogui.click(final_x, final_y)
 
 
+def click_exact(x: int, y: int, element_name: str = "element") -> None:
+    """Click exact coordinates (no random offset). For toggle/precision actions."""
+    log = get_logger()
+    log.debug("Exact click [%s] at (%d, %d)", element_name, x, y)
+    pyautogui.click(x, y)
+
+
 def long_click(x: int, y: int, duration: float, element_name: str = "element") -> None:
     """
     Move to (x, y), press mouse down, hold for duration, then release.
@@ -63,6 +74,23 @@ def long_click(x: int, y: int, duration: float, element_name: str = "element") -
     pyautogui.mouseDown()
     time.sleep(duration)
     pyautogui.mouseUp()
+
+
+def swipe(
+    x1: int, y1: int, x2: int, y2: int, duration: float = 0.6,
+) -> None:
+    """
+    Swipe from (x1, y1) to (x2, y2) over the given duration.
+    Uses dragRel for more reliable swiping on macOS Retina displays.
+    Coordinates must be in LOGICAL pixels.
+    """
+    log = get_logger()
+    log.debug("swipe (%d,%d) -> (%d,%d) duration=%.2f", x1, y1, x2, y2, duration)
+    pyautogui.moveTo(x1, y1)
+    dx = x2 - x1
+    dy = y2 - y1
+    pyautogui.dragRel(dx, dy, duration=duration, button="left")
+    time.sleep(0.2)
 
 
 def hold_until_condition(

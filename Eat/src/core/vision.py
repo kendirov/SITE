@@ -18,9 +18,9 @@ import numpy as np
 from .config import (
     ASSETS_PATH,
     SCALE_FACTOR,
-    GAME_REGION,
     CONFIDENCE_THRESHOLD,
 )
+from .config import GAME_REGION as _GAME_REGION
 from .logger import get_logger, save_debug_screenshot
 
 try:
@@ -31,10 +31,11 @@ except ImportError:
 
 def _physical_crop_box() -> tuple[int, int, int, int]:
     """Return (left, top, w, h) in physical pixels for GAME_REGION."""
-    left = int(GAME_REGION[0] * SCALE_FACTOR)
-    top = int(GAME_REGION[1] * SCALE_FACTOR)
-    w = int(GAME_REGION[2] * SCALE_FACTOR)
-    h = int(GAME_REGION[3] * SCALE_FACTOR)
+    region = _GAME_REGION
+    left = int(region[0] * SCALE_FACTOR)
+    top = int(region[1] * SCALE_FACTOR)
+    w = int(region[2] * SCALE_FACTOR)
+    h = int(region[3] * SCALE_FACTOR)
     return left, top, w, h
 
 
@@ -49,6 +50,11 @@ def _capture_game_region() -> np.ndarray | None:
         shot = sct.grab(box)
         frame = np.array(shot)
         return cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
+
+
+def capture_screenshot() -> np.ndarray | None:
+    """Capture the game region as BGR numpy array. Returns None on failure."""
+    return _capture_game_region()
 
 
 def _resolve_template_path(image_name: str) -> str:
