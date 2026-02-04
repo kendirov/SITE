@@ -1,0 +1,339 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║         EatventureBot - ИСПРАВЛЕНО РАСПОЗНАВАНИЕ КНОПКИ OPEN             ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+🐛 ПРОБЛЕМА
+═══════════════════════════════════════════════════════════════════════════
+
+На экране видна кнопка "Open", но бот её НЕ НАХОДИТ!
+
+Логи показывают:
+  20:13:21 [INFO] [STARTUP] Step 2: 🏗️  Checking LEVEL PROGRESSION...
+  20:13:21 [INFO] [STARTUP] Step 3: 💎 ОБЩИЕ УЛУЧШЕНИЯ...
+  
+  ❌ НЕТ логов:
+     - "🏗️  РЕНОВАЦИЯ: Ищем кнопку OPEN..."
+     - "🏗️  РЕНОВАЦИЯ: Найдена кнопка OPEN!"
+
+Причины:
+  1. Порог распознавания слишком высокий (был 0.85)
+  2. Бот искал Open только ПОСЛЕ Renovate
+  3. Кнопка Open может появиться САМОСТОЯТЕЛЬНО (без Renovate)
+
+═══════════════════════════════════════════════════════════════════════════
+
+✅ РЕШЕНИЕ
+═══════════════════════════════════════════════════════════════════════════
+
+1. ПОНИЖЕНЫ ПОРОГИ РАСПОЗНАВАНИЯ
+   
+   Было в config.py:
+     "btn_open": 0.85  # Слишком высокий!
+     "btn_renovate": 0.85
+     "btn_confirm_renovate": 0.85
+   
+   Стало:
+     "btn_open": 0.70  # Понижен до 70%!
+     "btn_renovate": 0.75  # Понижен до 75%
+     "btn_confirm_renovate": 0.75  # Понижен до 75%
+   
+   Теперь бот будет ЛЕГЧЕ находить кнопки!
+
+2. ДОБАВЛЕНА ПРОВЕРКА OPEN КАК САМОСТОЯТЕЛЬНОЙ КНОПКИ
+   
+   Было:
+     - Open искался только ПОСЛЕ Renovate
+     - Если Renovate нет → Open не ищется
+   
+   Стало:
+     - Open ищется СРАЗУ в check_level_progression()
+     - НЕЗАВИСИМО от Renovate
+     - Может появиться САМОСТОЯТЕЛЬНО
+   
+   Новая логика:
+     1. Ищем btn_renovate
+     2. Если НЕТ → Ищем btn_open (standalone!)
+     3. Если btn_open найден → Нажимаем → Ждем → Продолжаем
+
+3. ДОБАВЛЕНЫ DEBUG ЛОГИ
+   
+   Теперь бот выводит:
+     [DEBUG] 🔍 Level Progression: Checking for btn_renovate, btn_fly, btn_open...
+     [INFO] 🏗️  OPEN: Найдена кнопка OPEN (standalone)!
+     [INFO] 🏗️  OPEN: Позиция кнопки: (150, 400)
+     [INFO] 🏗️  OPEN: ✅ Новый уровень открыт!
+   
+   Теперь видно что именно ищет бот!
+
+═══════════════════════════════════════════════════════════════════════════
+
+🎯 НОВАЯ ЛОГИКА check_level_progression()
+═══════════════════════════════════════════════════════════════════════════
+
+```python
+def check_level_progression(self) -> bool:
+    screenshot = self.vision.capture_screen()
+    
+    # DEBUG: Что ищем
+    logger.debug("🔍 Level Progression: Checking for btn_renovate, btn_fly, btn_open...")
+    
+    # 1. Ищем Renovate (полная цепочка)
+    renovate_pos = self.vision.find_template("btn_renovate", screenshot=screenshot)
+    if renovate_pos:
+        logger.info("🏗️  РЕНОВАЦИЯ: Найдена кнопка реновации!")
+        # ... полная цепочка реновации ...
+        return True
+    
+    # 2. НОВОЕ: Ищем Open САМОСТОЯТЕЛЬНО (может быть без Renovate!)
+    open_pos = self.vision.find_template("btn_open", screenshot=screenshot)
+    if open_pos:
+        logger.info("🏗️  OPEN: Найдена кнопка OPEN (standalone)!")
+        logger.info(f"🏗️  OPEN: Позиция кнопки: {open_pos}")
+        self.input.human_click(open_pos[0], open_pos[1])
+        time.sleep(1.0)
+        
+        logger.info("🏗️  OPEN: ✅ Новый уровень открыт! Ждем первого покупателя...")
+        time.sleep(2.0)
+        
+        self.state.on_level_change()
+        self.state.total_renovations += 1
+        logger.info("🏗️  OPEN: ✅ Открытие завершено!")
+        return True
+    
+    # 3. Ищем Fly (перелёт)
+    fly_pos = self.vision.find_template("btn_fly", screenshot=screenshot)
+    if fly_pos:
+        # ... логика перелета ...
+        return True
+    
+    return False
+```
+
+Особенности:
+  ✅ Open ищется НЕЗАВИСИМО от Renovate
+  ✅ Может быть найден САМОСТОЯТЕЛЬНО
+  ✅ Работает с любого места
+  ✅ Подробные логи с позицией кнопки
+
+═══════════════════════════════════════════════════════════════════════════
+
+⚙️  НОВЫЕ ПОРОГИ РАСПОЗНАВАНИЯ
+═══════════════════════════════════════════════════════════════════════════
+
+config.py → THRESHOLDS:
+
+  Критичные (высокие пороги):
+    • btn_buy: 0.93  - Очень строго (чтобы не кликнуть на рекламу)
+  
+  Обычные (средние пороги):
+    • upgrade_arrow: 0.85
+    • icon_upgrades: 0.85
+    • blue_button: 0.85
+    • btn_close_x: 0.85
+  
+  Level Progression (ПОНИЖЕННЫЕ пороги):
+    • btn_renovate: 0.75  ← Было 0.85
+    • btn_confirm_renovate: 0.75  ← Было 0.85
+    • btn_open: 0.70  ← КРИТИЧНО! Было 0.85
+    • btn_fly: 0.75  ← Было 0.85
+    • btn_fly_confirm: 0.75  ← Было 0.85
+  
+  Collectibles (низкие пороги):
+    • box_floor: 0.80
+    • tip_coin: 0.80
+
+Почему пониженные:
+  ✅ Кнопки реновации КРИТИЧНЫ для прогресса
+  ✅ Лучше найти ложный позитив, чем пропустить
+  ✅ Кнопки появляются редко
+  ✅ Легко проверить (бот нажмет и увидит результат)
+
+═══════════════════════════════════════════════════════════════════════════
+
+📊 НОВЫЕ ЛОГИ
+═══════════════════════════════════════════════════════════════════════════
+
+Startup:
+  [STARTUP] Step 2: 🏗️  Checking LEVEL PROGRESSION (Реновация/Fly)...
+  [DEBUG] 🔍 Level Progression: Checking for btn_renovate, btn_fly, btn_open...
+  [INFO] 🏗️  OPEN: Найдена кнопка OPEN (standalone)!
+  [INFO] 🏗️  OPEN: Позиция кнопки: (195, 456)
+  [INFO] 🏗️  OPEN: ✅ Новый уровень открыт! Ждем первого покупателя...
+  [INFO] 🏗️  OPEN: ✅ Открытие завершено!
+  [INFO] 🏗️  Level progression detected - handled!
+  ✓ Level progression обработан
+  [STARTUP] Step 3: 💎 ОБЩИЕ УЛУЧШЕНИЯ (icon_upgrades)...
+
+Main Loop:
+  [Loop 15]
+  [DEBUG] 🔍 Level Progression: Checking for btn_renovate, btn_fly, btn_open...
+  [INFO] 🏗️  OPEN: Найдена кнопка OPEN (standalone)!
+  [INFO] 🏗️  OPEN: Позиция кнопки: (195, 456)
+  [INFO] 🏗️  OPEN: ✅ Новый уровень открыт!
+  [INFO] 🏗️  OPEN: ✅ Открытие завершено!
+
+Если НЕ найдено (теперь видно):
+  [DEBUG] 🔍 Level Progression: Checking for btn_renovate, btn_fly, btn_open...
+  (Нет логов о находке → значит НЕ нашли)
+
+═══════════════════════════════════════════════════════════════════════════
+
+🚀 ТЕСТИРОВАНИЕ
+═══════════════════════════════════════════════════════════════════════════
+
+СЦЕНАРИЙ 1: Кнопка Open на экране (как у вас сейчас)
+
+$ python3 run.py
+
+Ожидаемые логи:
+  [STARTUP] ⏳ Ждем 3 секунды (переключитесь на игру)...
+  [STARTUP] Step 1: Activating game window...
+  [STARTUP] Step 2: 🏗️  Checking LEVEL PROGRESSION (Реновация/Fly)...
+  [DEBUG] 🔍 Level Progression: Checking for btn_renovate, btn_fly, btn_open...
+  [INFO] 🏗️  OPEN: Найдена кнопка OPEN (standalone)!
+  [INFO] 🏗️  OPEN: Позиция кнопки: (195, 456)
+  [INFO] 🏗️  OPEN: ✅ Новый уровень открыт! Ждем первого покупателя...
+  [INFO] 🏗️  OPEN: ✅ Открытие завершено!
+  ✓ Level progression обработан
+
+Что должно произойти:
+  1. Бот дождется 3 секунды
+  2. Активирует окно игры
+  3. Найдет кнопку Open
+  4. Кликнет на неё
+  5. Подождет 3 секунды (2s wait + 1s after click)
+  6. Продолжит работу
+  7. Найдет upgrade_arrow (первый покупатель)
+
+СЦЕНАРИЙ 2: Если НЕ НАШЕЛ Open (проблема с порогом)
+
+Логи:
+  [DEBUG] 🔍 Level Progression: Checking for btn_renovate, btn_fly, btn_open...
+  [STARTUP] Step 3: 💎 ОБЩИЕ УЛУЧШЕНИЯ...
+  (Нет логов о находке!)
+
+Решение:
+  1. Откройте config.py
+  2. Найдите THRESHOLDS → "btn_open"
+  3. Уменьшите ещё: 0.70 → 0.65 или 0.60
+  4. Сохраните и перезапустите
+
+СЦЕНАРИЙ 3: Ложный позитив (нашел что-то не то)
+
+Логи:
+  [INFO] 🏗️  OPEN: Найдена кнопка OPEN (standalone)!
+  [INFO] 🏗️  OPEN: Позиция кнопки: (50, 100)  ← Странная позиция!
+
+Решение:
+  1. Откройте config.py
+  2. Увеличьте порог: 0.70 → 0.75
+  3. Запустите tools/capture_tool.py
+  4. Заново вырежьте кнопку Open
+  5. Сохраните как assets/Open_btn.png
+
+═══════════════════════════════════════════════════════════════════════════
+
+🔧 ДОПОЛНИТЕЛЬНАЯ ОТЛАДКА
+═══════════════════════════════════════════════════════════════════════════
+
+Если бот всё ещё НЕ НАХОДИТ Open:
+
+1. Включите DEBUG логи:
+   
+   В config.py измените:
+     LOG_LEVEL = "INFO"  →  LOG_LEVEL = "DEBUG"
+   
+   Перезапустите бота.
+   
+   Теперь будет МНОГО логов:
+     [DEBUG] 🔍 Level Progression: Checking for btn_renovate, btn_fly, btn_open...
+     [DEBUG] 📸 Захватываем новый скриншот...
+     [DEBUG] 🔎 Ищем шаблон 'btn_open'...
+     ...
+
+2. Сделайте скриншот:
+   
+   $ python3 tools/capture_tool.py
+   
+   Откроется reference_screen.png - проверьте:
+   ✅ Видна ли кнопка Open?
+   ✅ Четкая ли она?
+   ✅ Совпадает ли с Open_btn.png?
+
+3. Заново вырежьте кнопку:
+   
+   Если кнопка выглядит иначе:
+   - Вырежьте её из reference_screen.png
+   - Сохраните как assets/Open_btn.png
+   - Перезапустите бота
+
+4. Проверьте загрузку шаблона:
+   
+   $ cd /Users/kendirov/App/E3
+   $ source .venv/bin/activate
+   $ python3 -c "
+   from core.vision import VisionSystem
+   vision = VisionSystem()
+   if 'btn_open' in vision.template_cache:
+       print('✅ btn_open загружен!')
+       import cv2
+       template = vision.template_cache['btn_open']
+       print(f'Размер: {template.shape}')
+   else:
+       print('❌ btn_open НЕ загружен!')
+   "
+
+═══════════════════════════════════════════════════════════════════════════
+
+📁 ИЗМЕНЕННЫЕ ФАЙЛЫ
+═══════════════════════════════════════════════════════════════════════════
+
+config.py
+  THRESHOLDS:
+    ✅ Понижены пороги для Level Progression:
+       • btn_open: 0.85 → 0.70 (КРИТИЧНО!)
+       • btn_renovate: 0.85 → 0.75
+       • btn_confirm_renovate: 0.85 → 0.75
+       • btn_fly: 0.85 → 0.75
+       • btn_fly_confirm: 0.85 → 0.75
+
+core/logic.py
+  Метод: check_level_progression()
+    ✅ Добавлен DEBUG лог: "🔍 Level Progression: Checking..."
+    ✅ Добавлена проверка Open STANDALONE
+    ✅ Open ищется НЕЗАВИСИМО от Renovate
+    ✅ Подробные логи с позицией кнопки
+
+Документация:
+  ИСПРАВЛЕНИЕ_OPEN_DETECTION.txt  - Этот файл
+
+═══════════════════════════════════════════════════════════════════════════
+
+🎯 ИТОГО
+═══════════════════════════════════════════════════════════════════════════
+
+Версия: V3.7
+Изменение: Исправлено распознавание Open
+Статус: ✅ Ready to Test!
+
+Что исправлено:
+  1. ✅ Понижены пороги распознавания (0.70 для Open!)
+  2. ✅ Open ищется НЕЗАВИСИМО от Renovate
+  3. ✅ Может быть найден САМОСТОЯТЕЛЬНО
+  4. ✅ Добавлены DEBUG логи
+  5. ✅ Работает с любого места
+
+Результат:
+  ✅ Бот должен НАЙТИ кнопку Open
+  ✅ Кликнет на неё
+  ✅ Откроет новый уровень
+  ✅ Продолжит работу
+  ✅ Найдет первого покупателя
+
+Если НЕ РАБОТАЕТ:
+  1. Включите DEBUG логи (LOG_LEVEL = "DEBUG")
+  2. Запустите tools/capture_tool.py
+  3. Заново вырежьте кнопку Open
+  4. Уменьшите порог ещё (0.65 или 0.60)
+
+╚══════════════════════════════════════════════════════════════════════════╝

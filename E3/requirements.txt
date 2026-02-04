@@ -1,0 +1,16 @@
+# EatventureBot V3 - Dependencies
+# Python 3.8+ required
+
+# Computer Vision
+opencv-python>=4.8.0
+numpy>=1.24.0
+
+# Screen Capture
+mss>=9.0.0
+
+# Input Control
+pyautogui>=0.9.54
+pynput>=1.7.6
+
+# Utilities
+pillow>=10.0.0

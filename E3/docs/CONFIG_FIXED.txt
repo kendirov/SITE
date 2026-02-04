@@ -1,0 +1,153 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║                    CONFIG IMPORT BUG - RESOLVED                          ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+THE BUG
+═══════════════════════════════════════════════════════════════════════════
+
+User ran: python tools/setup_zones.py
+Config generated: GAME_REGION = (23, 38, 349, 748)
+
+Bot logs showed: [INFO] ✓ Game region: 0, 0, 1920x1080
+                                           ^^^^^^^^^^^^^^^^ WRONG!
+
+Root Cause:
+  - config.py had duplicate GAME_REGION definitions
+  - Line 8: User's actual values (23, 38, 349, 748)
+  - Line 50: Default template (0, 0, 1920, 1080)
+  - Typing import was at line 42 (AFTER first definition)
+  - Python got NameError on line 8, used line 50 instead
+
+═══════════════════════════════════════════════════════════════════════════
+
+THE FIX
+═══════════════════════════════════════════════════════════════════════════
+
+1. Cleaned config.py
+   ✓ Typing imports FIRST (line 9)
+   ✓ Zone configuration SECOND (line 11+)
+   ✓ Removed duplicate GAME_REGION (line 50 deleted)
+   ✓ Single source of truth
+
+2. Enhanced run.py validation
+   ✓ Imports GAME_REGION directly for validation
+   ✓ Logs config.py values at startup
+   ✓ Warns if using defaults
+   ✓ Shows all zone configuration
+
+3. Fixed setup_zones.py generator
+   ✓ Generates complete file with imports first
+   ✓ Preserves DETECTION THRESHOLDS section
+   ✓ No more manual editing needed
+
+═══════════════════════════════════════════════════════════════════════════
+
+VERIFICATION (Already Tested)
+═══════════════════════════════════════════════════════════════════════════
+
+Test Command:
+$ python3 -c "from config import GAME_REGION; print(GAME_REGION)"
+
+Result:
+(23, 38, 349, 748)  ✅ CORRECT!
+
+Full Zone Test:
+$ python3 -c "from config import GAME_REGION, STATION_SEARCH_REGION_RELATIVE, DANGER_ZONE_CENTER; print(f'GAME: {GAME_REGION}'); print(f'KITCHEN: {STATION_SEARCH_REGION_RELATIVE}'); print(f'BURGER: {DANGER_ZONE_CENTER}')"
+
+Result:
+GAME: (23, 38, 349, 748)         ✅
+KITCHEN: (12, 133, 315, 510)     ✅
+BURGER: (52, 663)                ✅
+
+═══════════════════════════════════════════════════════════════════════════
+
+MAIN LOOP REORDERED
+═══════════════════════════════════════════════════════════════════════════
+
+Before:
+  1. Safety (ads)
+  2. Level Progression
+  3. Station Upgrades
+  4. General Upgrades (every 10 loops)  ← LOW PRIORITY
+  5. Collect Items
+  6. Navigate
+
+After:
+  1. Safety (ads)
+  2. General Upgrades (every 5 loops)   ← HIGH PRIORITY NOW!
+  3. Level Progression
+  4. Station Upgrades
+  5. Collect Items
+  6. Navigate
+
+Changes:
+  ✓ General Upgrades moved to position #2 (was #4)
+  ✓ Frequency: Every 5 loops (was 10)
+  ✓ Runs BEFORE level progression and stations
+
+═══════════════════════════════════════════════════════════════════════════
+
+WHAT TO EXPECT NOW
+═══════════════════════════════════════════════════════════════════════════
+
+When you run: python3 run.py
+
+You'll see:
+  [INFO] Validating configuration...
+  [INFO] 📍 GAME_REGION from config.py: (23, 38, 349, 748)  ✅
+  [INFO] Initializing bot systems...
+  [INFO] ✓ Loaded X templates
+  [INFO] ✓ Game region: X=23, Y=38, Size=349x748  ✅
+  [INFO] ✓ Click offsets: +20, +60
+  [INFO] ✓ Safe Zoning enabled (Kitchen Floor detection)
+  [INFO] ✓ Kitchen Floor: (12, 133, 315, 510)
+  [INFO] ✓ Burger button (danger): (52, 663)
+  [INFO] ✓ Safety radius: 60px
+  [INFO] 🚀 Bot started! Running main loop...
+
+Loop behavior:
+  Loop 5:  General Upgrades run (Blue button spam)
+  Loop 10: General Upgrades run
+  Loop 15: General Upgrades run
+  ...
+
+═══════════════════════════════════════════════════════════════════════════
+
+FILES MODIFIED
+═══════════════════════════════════════════════════════════════════════════
+
+config.py
+  ✓ Removed duplicate GAME_REGION
+  ✓ Fixed import order (typing first)
+  ✓ Clean structure
+
+run.py
+  ✓ Added config validation
+  ✓ Enhanced logging (shows actual values)
+  ✓ Reordered main loop (General first)
+  ✓ Increased General frequency (every 5 loops)
+
+tools/setup_zones.py
+  ✓ Fixed config generation logic
+  ✓ Now preserves existing sections properly
+  ✓ Generates complete file with imports first
+
+═══════════════════════════════════════════════════════════════════════════
+
+READY TO USE
+═══════════════════════════════════════════════════════════════════════════
+
+Run: python3 run.py
+
+Your bot will now:
+  ✅ Use YOUR game window coordinates (23, 38, 349x748)
+  ✅ Search only Kitchen Floor for arrows
+  ✅ Avoid Burger button with 60px safety
+  ✅ Prioritize General Upgrades (every 5 loops, position #2)
+  ✅ Show detailed config status at startup
+
+═══════════════════════════════════════════════════════════════════════════
+
+BUG STATUS: RESOLVED ✅
+
+╚══════════════════════════════════════════════════════════════════════════╝
