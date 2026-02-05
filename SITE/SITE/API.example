@@ -1,0 +1,43 @@
+# MOEX API Keys Template
+# 
+# Скопируйте этот файл как "API" (без расширения) в корневую папку
+# Затем заполните своими ключами
+#
+# ВАЖНО: Файл "API" добавлен в .gitignore и не будет коммититься в Git
+
+# MOEX ISS API Base URL
+MOEX_API_BASE_URL=https://iss.moex.com
+
+# Ваши API ключи MOEX
+# Получить можно на https://www.moex.com/
+MOEX_API_KEY=your_key_here
+MOEX_API_SECRET=your_secret_here
+
+# Опционально: лимит запросов в минуту
+API_RATE_LIMIT=100
+
+# ====================================
+# Инструкция по использованию:
+# ====================================
+#
+# 1. Переименуйте этот файл в "API" (удалите .example)
+# 2. Замените your_key_here и your_secret_here на реальные значения
+# 3. Также создайте .env файл:
+#    copy .env.example .env
+# 4. Скопируйте эти же значения в .env с префиксом VITE_:
+#
+#    VITE_MOEX_API_BASE_URL=https://iss.moex.com
+#    VITE_MOEX_API_KEY=your_key_here
+#    VITE_MOEX_API_SECRET=your_secret_here
+#
+# 5. Запустите проект: npm run dev
+#
+# ====================================
+# Безопасность:
+# ====================================
+#
+# ✅ Файл "API" добавлен в .gitignore
+# ✅ Файл ".env" добавлен в .gitignore
+# ❌ НИКОГДА не коммитьте файлы с ключами в Git!
+# ❌ НИКОГДА не публикуйте ключи в открытом доступе!
+#
