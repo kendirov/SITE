@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# Конфигурация зоны
+zone_config.json
+test_zone.png
+
+# Отладочные файлы
+debug/
+*.log
+bot_log.txt
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS
+.DS_Store

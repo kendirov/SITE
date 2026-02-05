@@ -1,0 +1,251 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║          EatventureBot - Исправлен Спам в Логах (WARNING)                ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+🐛 ПРОБЛЕМА
+═══════════════════════════════════════════════════════════════════════════
+
+В логах ПОСТОЯННЫЙ спам:
+  [WARNING] Template not loaded: box_floor
+  [WARNING] Template not loaded: btn_ad_close_x
+  [WARNING] Template not loaded: ad_close_x_gray
+  [WARNING] Template not loaded: btn_renovate
+  [WARNING] Template not loaded: btn_fly
+  [WARNING] Template not loaded: btn_open
+  
+  Повторяется КАЖДЫЙ цикл (каждые 0.1с)!
+
+Причина:
+  • В config.py указаны файлы которых НЕТ в assets/
+  • vision.py пытается их загрузить каждый раз
+  • Выводит WARNING каждый цикл
+
+Последствия:
+  • Засоряются логи (невозможно читать)
+  • Замедляется работа
+  • Невозможно найти важные сообщения
+
+═══════════════════════════════════════════════════════════════════════════
+
+✅ РЕШЕНИЕ
+═══════════════════════════════════════════════════════════════════════════
+
+1. Исправлен config.py
+   
+   Было:
+     ASSETS = {
+         "box_floor": "box_floor.png",  ← НЕТ такого файла!
+         "btn_ad_close_x": "btn_ad_close_x.png",  ← НЕТ!
+         "btn_renovate": "btn_renovate.png",  ← НЕТ!
+         ...
+     }
+   
+   Стало:
+     ASSETS = {
+         "box_floor": "box_btn.png",  ← Правильное имя!
+         # Removed: все файлы которых нет
+     }
+   
+   Убрано из config.py:
+     ❌ btn_ad_close_x.png (нет файла)
+     ❌ ad_close_x_gray.png (нет файла)
+     ❌ btn_renovate.png (нет файла)
+     ❌ btn_fly.png (нет файла)
+     ❌ btn_open.png (нет файла)
+     ❌ btn_okay.png (нет файла)
+     ❌ btn_fly_confirm.png (нет файла)
+     ❌ btn_confirm_renovate.png (нет файла)
+     ❌ btn_ad_play.png (нет файла)
+
+2. Исправлен core/vision.py
+   
+   Было:
+     def _load_templates():
+         for name, filename in ASSETS.items():
+             if not exists:
+                 logger.warning(f"Template file not found: {path}")
+                 # WARNING каждый раз!
+   
+   Стало:
+     def _load_templates():
+         missing_templates = []
+         
+         for name, filename in ASSETS.items():
+             if not exists:
+                 missing_templates.append(f"{name} ({filename})")
+         
+         # WARNING только ОДИН раз при инициализации!
+         if missing_templates:
+             logger.warning(f"⚠️  Missing templates: {', '.join(missing_templates)}")
+     
+     def find_template():
+         if template_name not in self.template_cache:
+             # НЕ выводим WARNING - уже вывели при инициализации
+             return None
+
+3. Что Осталось в assets/
+   
+   ✅ Реально существующие файлы:
+     • icon_upgrades.png  - иконка общих улучшений
+     • upgrade_arrow.png  - стрелка над станцией
+     • box_btn.png        - боксы (не box_floor!)
+     • tip_coin.png       - чаевые
+     • btn_buy.png        - кнопка покупки
+     • blue_button.png    - синяя кнопка (монетки)
+     • btn_close_x.png    - кнопка закрытия
+
+═══════════════════════════════════════════════════════════════════════════
+
+📊 РЕЗУЛЬТАТ
+═══════════════════════════════════════════════════════════════════════════
+
+Было (КАЖДЫЙ цикл):
+  19:51:32 [WARNING] Template not loaded: box_floor
+  19:51:32 [WARNING] Template not loaded: btn_ad_close_x
+  19:51:32 [WARNING] Template not loaded: ad_close_x_gray
+  19:51:32 [WARNING] Template not loaded: btn_renovate
+  19:51:32 [WARNING] Template not loaded: btn_fly
+  19:51:32 [WARNING] Template not loaded: btn_open
+  19:51:32 [INFO] ✓ Найдено 0 стрелок...
+  19:51:32 [WARNING] Template not loaded: box_floor  ← СПАМ!
+  19:51:32 [WARNING] Template not loaded: btn_ad_close_x
+  ...
+  (повторяется бесконечно)
+
+Стало (ОДИН раз при запуске):
+  [INFO] ✓ Loaded 7 templates
+  [WARNING] ⚠️  Missing templates (will be skipped): (ЕСЛИ ЕСТЬ)
+  
+  Main Loop:
+  19:51:32 [INFO] ✓ Найдено 0 стрелок...
+  19:51:32 [INFO] 💎 Проверяем ОБЩИЕ УЛУЧШЕНИЯ...
+  19:51:33 [INFO] ✓ Найдено 0 стрелок...
+  (чистые логи, без спама!)
+
+═══════════════════════════════════════════════════════════════════════════
+
+✅ ЧТО УЛУЧШИЛОСЬ
+═══════════════════════════════════════════════════════════════════════════
+
+Читаемость:
+  ✅ Нет спама WARNING
+  ✅ Видны важные сообщения
+  ✅ Легко читать логи
+
+Производительность:
+  ✅ Не тратит время на WARNING
+  ✅ Быстрее работает
+
+Диагностика:
+  ✅ WARNING только один раз (при старте)
+  ✅ Понятно какие файлы отсутствуют
+  ✅ Можно добавить файлы если нужно
+
+═══════════════════════════════════════════════════════════════════════════
+
+🔧 КАК ДОБАВИТЬ НЕДОСТАЮЩИЕ ФАЙЛЫ (если нужно)
+═══════════════════════════════════════════════════════════════════════════
+
+Если вам нужны отсутствующие файлы:
+
+1. Сделать скриншот:
+   $ python3 tools/capture_tool.py
+   
+2. Открыть reference_screen.png
+
+3. Вырезать нужный элемент:
+   Например: кнопку "Renovate" или "Fly"
+
+4. Сохранить в assets/:
+   assets/btn_renovate.png
+   assets/btn_fly.png
+   ...
+
+5. Добавить в config.py:
+   ASSETS = {
+       ...
+       "btn_renovate": "btn_renovate.png",
+       "btn_fly": "btn_fly.png",
+   }
+   
+   THRESHOLDS = {
+       ...
+       "btn_renovate": 0.85,
+       "btn_fly": 0.85,
+   }
+
+6. Перезапустить бота
+
+Сейчас работают:
+  ✅ Общие улучшения (icon_upgrades + blue_button)
+  ✅ Стрелки станций (upgrade_arrow + btn_buy)
+  ✅ Боксы (box_btn)
+  ✅ Чаевые (tip_coin)
+  ✅ Закрытие меню (btn_close_x)
+
+Не работают (нет файлов):
+  ❌ Прогресс уровня (btn_renovate, btn_fly, btn_open)
+  ❌ Реклама (btn_ad_close_x, ad_close_x_gray, btn_ad_play)
+
+═══════════════════════════════════════════════════════════════════════════
+
+📁 ИЗМЕНЕННЫЕ ФАЙЛЫ
+═══════════════════════════════════════════════════════════════════════════
+
+config.py
+  Изменено: ASSETS
+    • box_floor.png → box_btn.png (правильное имя)
+    • Убраны файлы которых нет
+
+core/vision.py
+  Изменено: _load_templates()
+    • WARNING только один раз при старте
+    • Список отсутствующих файлов
+  
+  Изменено: find_template()
+    • НЕ спамит WARNING каждый цикл
+
+Документация:
+  ИСПРАВЛЕН_СПАМ_ЛОГОВ.txt  - Этот файл
+
+═══════════════════════════════════════════════════════════════════════════
+
+🚀 ЗАПУСК
+═══════════════════════════════════════════════════════════════════════════
+
+$ cd /Users/kendirov/App/E3
+$ python3 run.py
+
+Теперь логи чистые:
+  [INFO] ✓ Loaded 7 templates
+  [STARTUP] Step 1: 💎 ОБЩИЕ УЛУЧШЕНИЯ - ПЕРВЫМ ДЕЛОМ!
+  [INFO] 💎 Проверяем ОБЩИЕ УЛУЧШЕНИЯ (icon_upgrades) - ПРИОРИТЕТ!
+  [DEBUG] ❌ Иконка общих улучшений не найдена
+  [STARTUP] Step 2: Checking station arrows...
+  [INFO] ✓ Найдено 0 стрелок улучшений в зоне Kitchen Floor
+  [INFO] ✓ Найдено 0 стрелок улучшений в зоне Kitchen Floor
+  ...
+  (без спама WARNING!)
+
+═══════════════════════════════════════════════════════════════════════════
+
+🎯 ИТОГО
+═══════════════════════════════════════════════════════════════════════════
+
+Версия: V3.4+
+Изменение: Исправлен спам логов
+Статус: ✅ Ready
+
+Исправлено:
+  1. box_floor → box_btn (правильное имя файла)
+  2. Убраны несуществующие файлы из ASSETS
+  3. WARNING только один раз (при старте)
+  4. Чистые логи без спама
+
+Результат:
+  ✅ Чистые логи
+  ✅ Легко читать
+  ✅ Быстрее работает
+  ✅ Понятная диагностика
+
+╚══════════════════════════════════════════════════════════════════════════╝

@@ -192,6 +192,29 @@ class GameLogic:
         )
         return True, distance
     
+    def _get_ad_close_region(self, ad_button: str) -> Tuple[int, int, int, int]:
+        """
+        Возвращает область поиска крестиков рекламы.
+        Крестики почти всегда в верхней части экрана, поэтому ограничиваемся верхней полосой.
+        Для белых крестиков (btn_ad_close_x, ad_close_x1) — верхний правый угол,
+        для серого (ad_close_x_gray) — верхний левый угол.
+        """
+        # Верхняя полоска, где реально появляются крестики на видео.
+        top_h = int(self.input.game_h * 0.15)  # верхние ~15% окна
+        if ad_button == "ad_close_x_gray":
+            # Серый крестик чаще слева, ближе к краю.
+            region_x = int(self.input.game_w * 0.02)
+            region_y = 0
+            region_w = int(self.input.game_w * 0.35)
+            region_h = top_h
+        else:
+            # Белые крестики (btn_ad_close_x, ad_close_x1) — правый верхний угол.
+            region_x = int(self.input.game_w * 0.60)
+            region_y = 0
+            region_w = self.input.game_w - region_x
+            region_h = top_h
+        return region_x, region_y, region_w, region_h
+
     def check_and_close_ads(self) -> bool:
         """
         Check for ad close buttons and click them immediately.
@@ -199,9 +222,14 @@ class GameLogic:
         """
         screenshot = self.vision.capture_screen()
         
-        # Check for ad close buttons
-        for ad_button in ["btn_ad_close_x", "ad_close_x_gray"]:
-            pos = self.vision.find_template(ad_button, screenshot=screenshot)
+        # Check for ad close buttons (в верхней части экрана)
+        for ad_button in ["btn_ad_close_x", "ad_close_x_gray", "ad_close_x1"]:
+            region = self._get_ad_close_region(ad_button)
+            pos = self.vision.find_template_in_region(
+                ad_button,
+                region,
+                screenshot=screenshot,
+            )
             if pos:
                 logger.warning(f"РЕКЛАМА: закрываем ({ad_button})")
                 self.input.human_click(pos[0], pos[1])
@@ -217,7 +245,20 @@ class GameLogic:
         Returns True если крестик найден и нажат.
         """
         screenshot = self.vision.capture_screen()
-        close_pos = self.vision.find_template("btn_close_x", screenshot=screenshot)
+
+        # Важно: ищем крестик ТОЛЬКО в верхней правой части окна игры,
+        # где реально находится закрытие окна клуба/бургер-меню.
+        # Это уменьшает шанс случайно кликнуть по другим крестикам/иконкам.
+        region_x = int(self.input.game_w * 0.55)
+        region_y = 0
+        region_w = self.input.game_w - region_x
+        region_h = int(self.input.game_h * 0.35)
+
+        close_pos = self.vision.find_template_in_region(
+            "btn_close_x",
+            (region_x, region_y, region_w, region_h),
+            screenshot=screenshot,
+        )
         if close_pos:
             logger.info("❌ Крестик найден — закрываем окно (бургер/клуб)")
             self.input.human_click(close_pos[0], close_pos[1])
@@ -237,6 +278,333 @@ class GameLogic:
         if pos:
             logger.warning("РЕКЛАМА: обнаружена кнопка запуска — избегаем кликов рядом")
             return True
+        return False
+
+    def run_ad_boost_cycle(self, debug_screenshot_dir: str | None = None) -> bool:
+        """
+        Тестовый цикл для рекламы/бустов.
+        
+        Логика:
+        1. Находим значок буста (Boost.png) или кнопку запуска рекламы (btn_ad_play).
+        2. Кликаем по нему и входим в рекламу.
+        3. В течение AD_MAX_DURATION секунд сканируем экран на наличие кнопок закрытия
+           ('btn_ad_close_x', 'ad_close_x_gray') и по очереди кликаем по ним.
+        4. Подробно логируем каждый шаг.
+        
+        Возвращает:
+            True  - если удалось запустить и отработать хотя бы один цикл рекламы
+            False - если значок рекламы/буста не найден
+        """
+        logger.info("🎥 РЕЖИМ РЕКЛАМЫ: начинаем поиск значка буста/кнопки рекламы...")
+
+        # 1. Делаем скриншот текущего экрана
+        screenshot = self.vision.capture_screen()
+
+        # Пытаемся найти значок буста по шаблону boost_ready (assets/ads/boost_ready.png)
+        # Кнопка буста находится в САМОМ НИЗУ экрана, поэтому ищем только в нижней полосе.
+        bottom_h = int(self.input.game_h * 0.22)  # ~нижние 20% окна
+        region_x = 0
+        region_y = self.input.game_h - bottom_h
+        region_w = self.input.game_w
+        region_h = bottom_h
+        boost_pos = self.vision.find_template_in_region(
+            "boost_ready",
+            (region_x, region_y, region_w, region_h),
+            screenshot=screenshot,
+        )
+        if boost_pos:
+            logger.info(
+                f"🎥 РЕЖИМ РЕКЛАМЫ: найден значок буста boost_ready at {boost_pos}, кликаем и ждём рекламу"
+            )
+            self.input.human_click(boost_pos[0], boost_pos[1])
+            # Даём рекламе стартовать, не ищем отдельную кнопку Play — просто ждём крестики
+            time.sleep(3.0)
+
+            # При первом входе можно сохранить скриншот для анализа
+            if debug_screenshot_dir:
+                try:
+                    ts = time.strftime("%Y%m%d_%H%M%S")
+                    filename = os.path.join(debug_screenshot_dir, f"ad_start_{ts}.png")
+                    self.vision.save_debug_screenshot(filename)
+                    logger.info(
+                        f"🎥 РЕЖИМ РЕКЛАМЫ: сохранён скрин старта рекламы: {filename}"
+                    )
+                except Exception as e:
+                    logger.debug(
+                        f"РЕЖИМ РЕКЛАМЫ: не удалось сохранить скрин старта рекламы: {e}"
+                    )
+
+            logger.info("🎥 РЕЖИМ РЕКЛАМЫ: ждём появления кнопок закрытия (X / skip)...")
+        else:
+            # Буст не найден. Либо его нет, либо мы УЖЕ находимся внутри рекламы.
+            # 1) Логируем для отладки порогов.
+            best = self.vision.get_template_max_confidence(
+                "boost_ready", screenshot=screenshot
+            )
+            thr = THRESHOLDS.get("boost_ready", THRESHOLDS["default"])
+            if best is not None:
+                logger.info(
+                    f"🎥 РЕЖИМ РЕКЛАМЫ: значок буста (boost_ready) не найден "
+                    f"(лучшая похожесть: {best:.2f}, порог: {thr:.2f})"
+                )
+            else:
+                logger.info(
+                    "🎥 РЕЖИМ РЕКЛАМЫ: значок буста (boost_ready) не найден вообще (нет шаблона)"
+                )
+
+            # 2) Сохраняем скрин для сравнения
+            try:
+                project_root = os.path.dirname(
+                    os.path.dirname(os.path.abspath(__file__))
+                )
+                debug_dir = os.path.join(project_root, "debug", "ads")
+                os.makedirs(debug_dir, exist_ok=True)
+                ts = time.strftime("%Y%m%d_%H%M%S")
+                dbg_path = os.path.join(debug_dir, f"boost_not_found_{ts}.png")
+                self.vision.save_debug_screenshot(dbg_path)
+                logger.info(
+                    f"🎥 РЕЖИМ РЕКЛАМЫ: сохранён скрин, когда boost_ready не найден: {dbg_path}"
+                )
+            except Exception as e:
+                logger.debug(
+                    f"РЕЖИМ РЕКЛАМЫ: не удалось сохранить debug-скрин для boost_ready: {e}"
+                )
+
+            # 3) Пробуем считать, что МЫ УЖЕ В РЕКЛАМЕ и сразу ищем крестики.
+            logger.info(
+                "🎥 РЕЖИМ РЕКЛАМЫ: boost не найден, предполагаем что уже в рекламе — начинаем сразу искать крестики..."
+            )
+
+        max_duration = float(TIMERS.get("AD_MAX_DURATION", 35.0))
+        poll_interval = float(TIMERS.get("AD_POLL_INTERVAL", 0.7))
+        deadline = time.monotonic() + max_duration
+        close_clicks = 0
+        ever_seen_close = False  # хотя бы раз увидели кнопку закрытия
+        clicked_any_close = False  # кликнули хотя бы один раз по крестику
+
+        # Память о точках, по которым уже сделали «двойной клик» и
+        # куда не надо возвращаться в течение 5 секунд:
+        # (x_raw, y_raw, cooldown_until_monotonic)
+        cooldown_spots: List[Tuple[int, int, float]] = []
+
+        AD_TEMPLATES = [
+            "btn_ad_close_x",
+            "ad_close_x_gray",
+            "ad_close_x1",
+            # Дополнительные пользовательские шаблоны ad1–ad10
+            "ad1",
+            "ad2",
+            "ad3",
+            "ad4",
+            "ad5",
+            "ad6",
+            "ad7",
+            "ad8",
+            "ad9",
+            "ad10",
+        ]
+
+        # Радиус исключённой области (пиксели): после клика сюда не возвращаемся,
+        # ищем крестики только в других местах. ~40px покрывает один крестик и мелкий джиттер.
+        AD_CLOSE_EXCLUDE_RADIUS_PX = 40
+
+        def _is_in_cooldown_zone(gx: int, gy: int) -> bool:
+            """Проверяет, попадает ли точка (gx, gy) в зону любого активного охлаждения."""
+            for px, py, t_until in cooldown_spots:
+                if t_until <= now:
+                    continue
+                if math.hypot(gx - px, gy - py) <= AD_CLOSE_EXCLUDE_RADIUS_PX:
+                    return True
+            return False
+
+        def _find_best_close_button(frame) -> Optional[Tuple[str, Tuple[int, int], float]]:
+            """
+            Многостадийный поиск крестика:
+            1) сначала углы (верхний левый и правый),
+            2) если ничего — вся верхняя полоса 30%.
+            Учитывает охлаждение: возвращает лучший крестик ВНЕ уже кликнутых зон,
+            чтобы не тыкать в один и тот же (ложный) крестик, а искать другой.
+            """
+            h, w = frame.shape[:2]
+            corner_w = int(w * 0.25)
+            corner_h = int(h * 0.25)
+            upper_h = int(h * 0.30)
+
+            def scan_regions(regions):
+                best_name: Optional[str] = None
+                best_pos: Optional[Tuple[int, int]] = None
+                best_score: float = 0.0
+                for (rx1, ry1, rx2, ry2) in regions:
+                    crop = frame[ry1:ry2, rx1:rx2]
+                    if crop.size == 0:
+                        continue
+                    for ad_button in AD_TEMPLATES:
+                        thr = THRESHOLDS.get(ad_button, THRESHOLDS["default"])
+                        score = self.vision.get_template_max_confidence(
+                            ad_button, screenshot=crop
+                        )
+                        if score is None:
+                            continue
+                        logger.debug(
+                            f"🎥 РЕКЛАМА: зона ({rx1},{ry1})-({rx2},{ry2}), '{ad_button}' "
+                            f"— похожесть {score:.2f} (порог {thr:.2f})"
+                        )
+                        if score >= thr and score > best_score:
+                            pos_local = self.vision.find_template(
+                                ad_button,
+                                screenshot=crop,
+                                threshold=thr,
+                                find_all=False,
+                            )
+                            if pos_local:
+                                gx = rx1 + pos_local[0]
+                                gy = ry1 + pos_local[1]
+                                # Игнорируем кандидата, если он в уже кликнутой зоне
+                                if _is_in_cooldown_zone(gx, gy):
+                                    continue
+                                best_name = ad_button
+                                best_pos = (gx, gy)
+                                best_score = score
+                if best_name and best_pos:
+                    return best_name, best_pos, best_score
+                return None
+
+            # Pass 1: только углы 25% x 25%
+            corner_regions = [
+                (0, 0, corner_w, corner_h),           # top-left
+                (w - corner_w, 0, w, corner_h),       # top-right
+            ]
+            result = scan_regions(corner_regions)
+            if result:
+                return result
+
+            # Pass 2: вся верхняя полоса 30%
+            upper_regions = [(0, 0, w, upper_h)]
+            return scan_regions(upper_regions)
+
+        while time.monotonic() < deadline:
+            now = time.monotonic()
+
+            # Чистим устаревшие точки из «охлаждения»
+            if cooldown_spots:
+                cooldown_spots = [
+                    (x, y, t_until)
+                    for (x, y, t_until) in cooldown_spots
+                    if t_until > now
+                ]
+
+            screenshot = self.vision.capture_screen()
+            best = _find_best_close_button(screenshot)
+
+            # Если ни одна кнопка не прошла порог — просто ждём следующую проверку
+            if not best:
+                logger.debug("🎥 РЕКЛАМА: подходящих кнопок закрытия пока нет, ждём...")
+                time.sleep(poll_interval)
+                continue
+
+            best_button, (cx_raw, cy_raw), best_score = best
+            # best уже гарантированно вне зон охлаждения (фильтр внутри _find_best_close_button)
+            if cooldown_spots:
+                logger.info(
+                    "🎥 РЕКЛАМА: выбран другой крестик (вне уже кликнутых зон), кликаем."
+                )
+
+            ever_seen_close = True
+            clicked_any_close = True
+
+            # Масштабируем координаты под логические (DPI-fix) перед передачей в InputController
+            cx, cy = self.vision.scale_point_for_input(cx_raw, cy_raw)
+
+            # --- ДВОЙНОЙ КЛИК ПО ТОЧКЕ, А ПОТОМ 5 СЕКУНД НЕ ВОЗВРАЩАЕМСЯ СЮДА ---
+            # Первый клик
+            close_clicks += 1
+            logger.info(
+                f"🎥 РЕКЛАМА: клик по кнопке закрытия #{close_clicks} "
+                f"({best_button}) at ({cx}, {cy}), похожесть {best_score:.2f}"
+            )
+            self.input.human_click(cx, cy)
+
+            # Сохраняем скрин после первого клика
+            if debug_screenshot_dir:
+                try:
+                    ts = time.strftime("%Y%m%d_%H%M%S")
+                    filename = os.path.join(
+                        debug_screenshot_dir,
+                        f"ad_click_{close_clicks}_1st_{ts}.png",
+                    )
+                    self.vision.save_debug_screenshot_with_rect(
+                        filename, (cx_raw, cy_raw)
+                    )
+                except Exception as e:
+                    logger.debug(
+                        f"РЕКЛАМА: не удалось сохранить скрин после первого клика: {e}"
+                    )
+
+            # Ждём 1 секунду и кликаем по этому же месту ещё раз
+            time.sleep(1.0)
+
+            close_clicks += 1
+            logger.info(
+                f"🎥 РЕКЛАМА: второй клик по той же кнопке закрытия #{close_clicks} "
+                f"({best_button}) at ({cx}, {cy}) для надёжности."
+            )
+            self.input.human_click(cx, cy)
+
+            # Сохраняем скрин после второго клика
+            if debug_screenshot_dir:
+                try:
+                    ts = time.strftime("%Y%m%d_%H%M%S")
+                    filename = os.path.join(
+                        debug_screenshot_dir,
+                        f"ad_click_{close_clicks}_2nd_{ts}.png",
+                    )
+                    self.vision.save_debug_screenshot_with_rect(
+                        filename, (cx_raw, cy_raw)
+                    )
+                except Exception as e:
+                    logger.debug(
+                        f"РЕКЛАМА: не удалось сохранить скрин после второго клика: {e}"
+                    )
+
+            # Добавляем эту точку в список охлаждения на 5 секунд
+            cooldown_until = time.monotonic() + 5.0
+            cooldown_spots.append((cx_raw, cy_raw, cooldown_until))
+            logger.info(
+                "🎥 РЕКЛАМА: точка добавлена в охлаждение на 5 секунд — "
+                "в ближайшее время сюда больше не кликаем."
+            )
+
+            # Проверяем, остались ли ещё крестики
+            screenshot = self.vision.capture_screen()
+            any_close_left = False
+            for ad_button in AD_TEMPLATES:
+                if self.vision.find_template(ad_button, screenshot=screenshot):
+                    any_close_left = True
+                    break
+
+            # Дополнительный критерий выхода: появление статичной иконки на главном меню.
+            # Это может быть либо шестерёнка настроек (icon_gear), либо монетка (icon_coin).
+            gear_pos = self.vision.find_template("icon_gear", screenshot=screenshot)
+            coin_pos = self.vision.find_template("icon_coin", screenshot=screenshot)
+            if clicked_any_close and (gear_pos is not None or coin_pos is not None):
+                which = "icon_gear" if gear_pos is not None else "icon_coin"
+                pos = gear_pos if gear_pos is not None else coin_pos
+                logger.info(
+                    f"🎥 РЕКЛАМА: обнаружен главный индикатор {which} at {pos} "
+                    f"после {close_clicks} кликов — возвращаемся в игру и завершаем цикл рекламы"
+                )
+                return True
+
+            # Если крестиков больше не видно, но шестерёнка ещё не появилась,
+            # это может быть пауза/таймер в рекламе — НЕ выходим, просто ждём дальше
+            # до появления icon_gear или до общего таймаута AD_MAX_DURATION.
+
+            # Иначе ждём и продолжаем цикл
+            time.sleep(poll_interval)
+
+        logger.warning(
+            f"🎥 РЕКЛАМА: превышен лимит ожидания {max_duration:.0f}с, реклама не закрылась до конца"
+        )
         return False
     
     # ===== RENOVATOR (Level Progression) =====
@@ -325,21 +693,15 @@ class GameLogic:
         # но когда появилась — кликаем первым делом, без проверки no_click.
         renovate_pos = self.vision.find_template("btn_renovate", screenshot=screenshot)
         if not renovate_pos:
-            # Отладка: раз в 15 с логируем лучшее совпадение, если реновация «горит», но не найдена
+            # В лог-файл (DEBUG) — для отладки; в терминал не пишем «не найдена»
             now = time.time()
             if now - self.state.last_renovate_debug_log_time >= 15.0:
                 best = self.vision.get_template_max_confidence("btn_renovate", screenshot)
                 if best is not None:
                     thr = THRESHOLDS.get("btn_renovate", 0.70)
-                    # В файл пишем всегда (даже если низкая похожесть), чтобы можно было понять, почему не видит.
                     logger.debug(
-                        f"🏗️  Реновация: не найдена (лучшее совпадение: {best:.3f}, порог: {thr})"
+                        f"🏗️  Реновация: не найдена (лучшее: {best:.3f}, порог: {thr})"
                     )
-                    # В терминал (INFO) выводим только если есть хоть какая-то похожесть, чтобы не шуметь.
-                    if best >= 0.30:
-                        logger.info(
-                            f"🏗️  Реновация: не найдена (похожесть: {best:.2f}, порог: {thr})"
-                        )
                 self.state.last_renovate_debug_log_time = now
         if renovate_pos:
             logger.info("🏗️  РЕНОВАЦИЯ: Найдена кнопка реновации!")
@@ -578,21 +940,16 @@ class GameLogic:
                 self.state.total_upgrades += 1
                 continue  # Переходим к следующей станции
             
-            # STEP 7: Look for buy button with STRICT threshold (0.93 to avoid ads)
-            buy_pos = self.vision.find_template("btn_buy", threshold=0.93)
+            # STEP 7: Кнопка покупки в попапе станции — КАК БЫЛО: один шаблон btn_buy
+            thr_buy = THRESHOLDS.get("btn_buy", 0.93)
+            buy_pos = self.vision.find_template("btn_buy", threshold=thr_buy)
             
             if buy_pos:
                 buy_x, buy_y = buy_pos
                 
-                # Triple safety check
-                # 1. Not an ad trigger
-                # 2. Not in danger zone
-                # 3. Confidence is high enough (already checked by threshold)
-                
                 if self.is_ad_trigger():
                     logger.warning("⚠️  Ad trigger detected near buy button - ABORT")
                 else:
-                    # Check if buy button is in danger zone
                     is_safe, distance = self.is_safe_click(buy_x, buy_y, log_prefix="Buy button")
                     
                     if not is_safe:
@@ -601,36 +958,33 @@ class GameLogic:
                             f"({distance:.1f}px from danger) - ABORT"
                         )
                     else:
-                        # All safety checks passed - УМНОЕ ЗАЖАТИЕ
                         logger.info(
-                            f"✓ Buy button found at ({buy_x}, {buy_y}) "
+                            f"✓ Кнопка улучшения станции at ({buy_x}, {buy_y}) "
                             f"[{distance:.1f}px from danger] - УМНОЕ ЗАЖАТИЕ"
                         )
                         
-                        # Функция проверки: активна ли кнопка покупки
+                        # КАК БЫЛО: одна кнопка покупки, длительность зажатия управляется BUY_LONG_PRESS
                         def is_buy_button_active():
-                            """Проверяет наличие кнопки покупки (активна ли она)."""
-                            # ПОВЫШЕН ПОРОГ! 0.80 → 0.88 чтобы ТОЧНО определять когда кнопка неактивна
-                            pos = self.vision.find_template("btn_buy", threshold=0.88)
+                            """Проверяет наличие кнопки покупки в попапе станции."""
+                            pos = self.vision.find_template("btn_buy", threshold=thr_buy - 0.05)
                             is_active = pos is not None
-                            logger.debug(f"    🔍 is_buy_button_active: {is_active} (порог 0.88)")
+                            logger.debug(f"    🔍 is_buy_button_active: {is_active}")
                             return is_active
                         
-                        # Умное зажатие - держим пока кнопка активна
                         press_duration = self.input.smart_long_press(
                             buy_x, buy_y,
                             check_callback=is_buy_button_active,
-                            max_duration=5.0  # Макс 5 секунд
+                            max_duration=TIMERS.get("BUY_LONG_PRESS", 3.0)
                         )
                         
-                        if press_duration > 0.5:  # Если держали хотя бы 0.5с = успешное улучшение
+                        if press_duration > 0.5:
                             upgraded_count += 1
                             self.state.total_upgrades += 1
                             logger.info(f"✓ Станция улучшена (зажимали {press_duration:.1f}s)")
                         
                         time.sleep(0.3)
             else:
-                logger.info("❌ Buy button не найден (станция макс улучшена или unlock_btn тоже не найден)")
+                logger.info("❌ Кнопка улучшения станции не найдена (макс улучшена или unlock тоже не найден)")
             
             # Close the menu - кликаем на ТО ЖЕ место (станцию)
             logger.info(f"Закрываем меню: клик на станцию ({station_click_x}, {station_click_y})")
@@ -664,24 +1018,21 @@ class GameLogic:
         
         logger.info(f"💎 Общие улучшения: иконка найдена ({icon_pos}) — открываем меню")
         self.input.human_click(icon_pos[0], icon_pos[1])
-        time.sleep(TIMERS["MENU_OPEN_WAIT"] + 0.2)  # Чуть дольше ждем открытия
+        # Ждём, пока меню и кнопки внутри полностью отрисуются (иначе не видит кнопки)
+        general_wait = float(TIMERS.get("GENERAL_MENU_OPEN_WAIT", 1.0))
+        time.sleep(general_wait)
         
-        # Spam blue buttons (монетки)
-        logger.info("🪙 Ищем синие кнопки (монетки) для прожатия...")
         upgrade_count = 0
-        
-        # КРИТИЧНО: Используем ВЫСОКИЙ порог (0.92) чтобы находить ТОЛЬКО синие кнопки
-        no_button_count = 0  # Счетчик неудачных попыток
+        no_button_count = 0
+        thr_blue = THRESHOLDS.get("blue_button", 0.92)
         
         for i in range(max_clicks):
-            # Look for blue purchase button (СТРОГИЙ порог!)
-            blue_btn = self.vision.find_template("blue_button", threshold=0.92)
+            screenshot = self.vision.capture_screen()
+            blue_btn = self.vision.find_template("blue_button", screenshot=screenshot, threshold=thr_blue)
             
             if blue_btn:
-                # Сброс счетчика (нашли кнопку!)
                 no_button_count = 0
-                
-                logger.info(f"🔵 Покупка #{upgrade_count+1}: Кликаем СИНЮЮ кнопку at {blue_btn}")
+                logger.info(f"🔵 Общие улучшения #{upgrade_count+1}: кликаем СИНЮЮ кнопку at {blue_btn}")
                 self.input.human_click(blue_btn[0], blue_btn[1])
                 time.sleep(0.3)
                 upgrade_count += 1
@@ -689,12 +1040,9 @@ class GameLogic:
             else:
                 no_button_count += 1
                 logger.debug(f"❌ Blue button not found (попытка {no_button_count}/3, после {upgrade_count} покупок)")
-                
-                # Если 3 раза подряд не нашли синюю кнопку = все улучшения куплены
                 if no_button_count >= 3:
                     logger.info(f"✓ Все синие кнопки куплены (после {upgrade_count} покупок)")
                     break
-                
                 time.sleep(0.2)
                 continue
         

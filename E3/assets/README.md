@@ -25,11 +25,14 @@ You **MUST** create these assets by capturing screenshots and cropping UI elemen
 
 ### High Priority (Recommended)
 
-4. **blue_button.png**
-   - Purchase button inside general upgrades menu
-   - Threshold: 0.85
+4. **Улучшение станции (попап "Level N …")** — одна кнопка с ценой, два варианта:
+   - **btn_buy.png** — стандартная синяя кнопка покупки в попапе станции
+   - **btn_buy_green_coin.png** — квестовый вариант (синяя с зелёной монеткой) в том же попапе
+5. **Общие улучшения (меню Upgrades)** — кнопки в списке, два варианта:
+   - **blue_button.png** — стандартная синяя кнопка в списке общих улучшений
+   - **blue_button_green_coin.png** — квестовый вариант (зелёная монетка в синем) в общих улучшениях
 
-5. **btn_close_x.png**
+6. **btn_close_x.png**
    - Generic X close button
    - Used to close menus
    - Threshold: 0.85

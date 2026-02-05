@@ -30,3 +30,5 @@ Thumbs.db
 
 # Bot-specific
 debug/
+logs/
+tools/output/

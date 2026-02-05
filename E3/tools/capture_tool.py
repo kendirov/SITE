@@ -68,9 +68,11 @@ def capture_screen():
         img = np.array(screenshot)
         img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
         
-        # Save with timestamp
+        # Save to tools/output/ (не засоряем корень проекта)
+        out_dir = os.path.join(os.path.dirname(__file__), "output")
+        os.makedirs(out_dir, exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"reference_screen_{timestamp}.png"
+        filename = os.path.join(out_dir, f"reference_screen_{timestamp}.png")
         
         cv2.imwrite(filename, img)
         

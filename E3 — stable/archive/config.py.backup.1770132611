@@ -1,0 +1,134 @@
+"""
+EatventureBot V3 - Configuration
+Native Resolution Approach: No coordinate scaling in code.
+Assets are captured at native resolution by the bot's own vision system.
+
+IMPORTANT: Run 'python tools/setup_zones.py' to configure zones for better accuracy!
+"""
+
+from typing import Dict, Tuple, List
+
+# ===== SAFE ZONING CONFIGURATION =====
+# Run 'python tools/setup_zones.py' to configure these automatically
+# This prevents clicking on the Burger/Investor button and false detections in UI
+
+# Game window region (screen coordinates)
+# Format: (x, y, width, height)
+GAME_REGION: Tuple[int, int, int, int] = (0, 0, 1920, 1080)
+
+# Optional: Station search area - "The Kitchen Floor" (where stations actually exist)
+# Excludes top header (Money/Gems) and bottom menu (Blue buttons)
+# Uncomment and configure after running setup_zones.py
+# STATION_SEARCH_REGION: Tuple[int, int, int, int] = (20, 80, 1880, 920)
+# STATION_SEARCH_REGION_RELATIVE: Tuple[int, int, int, int] = (20, 80, 1880, 920)
+
+# Optional: Danger zone center - "The Burger/Investor Button" (bottom-left)
+# The floating button that triggers ads when clicked
+# Uncomment and configure after running setup_zones.py
+# DANGER_ZONE_CENTER: Tuple[int, int] = (150, 950)
+# DANGER_ZONE_CENTER_RELATIVE: Tuple[int, int] = (50, 900)
+# DANGER_RADIUS: int = 60  # Don't click within 60px of the Burger button
+
+# ===== CLICK OFFSETS =====
+# When clicking upgrade arrows, we offset the click to hit the station counter (not the arrow)
+# This is crucial because the arrow might be above the Burger button
+STATION_CLICK_OFFSET_X: int = 20  # Offset right from arrow
+STATION_CLICK_OFFSET_Y: int = 60  # Offset down from arrow (to hit station counter)
+
+# ===== DETECTION THRESHOLDS =====
+# Template matching confidence levels (0.0 - 1.0)
+THRESHOLDS: Dict[str, float] = {
+    # Default high confidence
+    "default": 0.85,
+    
+    # Station triggers
+    "upgrade_arrow": 0.85,
+    
+    # General upgrades menu
+    "icon_upgrades": 0.85,
+    "blue_button": 0.85,
+    
+    # Critical actions - VERY STRICT to avoid ads
+    "btn_buy": 0.93,  # Ultra-high threshold to prevent ad clicks
+    
+    # Confirmations
+    "btn_close_x": 0.85,
+    "btn_okay": 0.85,
+    "btn_renovate": 0.85,
+    "btn_fly": 0.85,
+    "btn_open": 0.85,
+    "btn_fly_confirm": 0.85,
+    "btn_confirm_renovate": 0.85,
+    
+    # Collectibles
+    "box_floor": 0.80,
+    "tip_coin": 0.80,
+    
+    # Safety - Ad detection (lower threshold to catch variations)
+    "btn_ad_close_x": 0.80,
+    "ad_close_x_gray": 0.78,
+    "btn_ad_play": 0.80,  # We avoid clicking this
+}
+
+# ===== TIMING CONFIGURATION =====
+TIMERS: Dict[str, float] = {
+    # Spatial memory - don't click same station within this window
+    "STATION_MEMORY": 20.0,  # seconds
+    
+    # Action delays
+    "CLICK_DELAY": 0.15,  # Small delay after each click
+    "MENU_OPEN_WAIT": 0.5,  # Wait for menu to open
+    "MENU_CLOSE_WAIT": 0.3,  # Wait for menu to close
+    "BUY_LONG_PRESS": 3.0,  # Long press duration for buy button
+    "SCROLL_DURATION": 0.4,  # Scroll animation duration
+    
+    # Loop timing
+    "MAIN_LOOP_DELAY": 0.1,  # Main loop iteration delay
+    "CAMP_LOOPS": 4,  # Number of loops at bottom (Camp phase)
+    "CREEP_DISTANCE": 0.3,  # How far to scroll up (30% of screen)
+}
+
+# ===== INPUT CONFIGURATION =====
+INPUT_CONFIG: Dict[str, any] = {
+    # Random jitter for human-like clicks (±pixels)
+    "CLICK_JITTER": 3,
+    
+    # Scroll parameters
+    "SCROLL_PIXELS": 400,  # Scroll distance in pixels
+    "SCROLL_STEPS": 20,  # Number of steps for smooth scrolling
+}
+
+# ===== ASSET PATHS =====
+ASSETS_DIR = "assets"
+
+# Asset filename mapping
+ASSETS: Dict[str, str] = {
+    # Triggers (Menu Openers)
+    "icon_upgrades": "icon_upgrades.png",
+    "upgrade_arrow": "upgrade_arrow.png",
+    "box_floor": "box_floor.png",
+    "tip_coin": "tip_coin.png",
+    
+    # Actions (Clicks)
+    "btn_buy": "btn_buy.png",
+    "blue_button": "blue_button.png",
+    "btn_renovate": "btn_renovate.png",
+    "btn_fly": "btn_fly.png",
+    "btn_open": "btn_open.png",
+    
+    # Confirmations/Closing
+    "btn_close_x": "btn_close_x.png",
+    "btn_okay": "btn_okay.png",
+    "btn_fly_confirm": "btn_fly_confirm.png",
+    "btn_confirm_renovate": "btn_confirm_renovate.png",
+    
+    # Safety / Anti-Ad
+    "btn_ad_close_x": "btn_ad_close_x.png",
+    "ad_close_x_gray": "ad_close_x_gray.png",
+    "btn_ad_play": "btn_ad_play.png",
+}
+
+# ===== LOGGING =====
+LOG_LEVEL = "INFO"  # DEBUG, INFO, WARNING, ERROR
+LOG_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
+LOG_DATE_FORMAT = "%H:%M:%S"

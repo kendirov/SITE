@@ -1,0 +1,299 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║              EatventureBot - РЕНОВАЦИЯ НАСТРОЕНА И ГОТОВА!               ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+✅ ВСЕ ГОТОВО!
+═══════════════════════════════════════════════════════════════════════════
+
+Файлы изображений:
+  ✅ assets/rennovate_btn.png          - Кнопка "Реновация"
+  ✅ assets/Rennovare_apply_btn.png    - Кнопка "Apply" (подтверждение)
+
+Конфигурация:
+  ✅ config.py → ASSETS:
+     • "btn_renovate": "rennovate_btn.png"
+     • "btn_confirm_renovate": "Rennovare_apply_btn.png"
+  
+  ✅ config.py → THRESHOLDS:
+     • "btn_renovate": 0.85
+     • "btn_confirm_renovate": 0.85
+
+Логика:
+  ✅ core/logic.py → check_level_progression()
+     • Ищет btn_renovate
+     • Нажимает на неё
+     • Ждет btn_confirm_renovate
+     • Нажимает подтверждение
+     • Продолжает работу
+
+═══════════════════════════════════════════════════════════════════════════
+
+🔄 КАК ЭТО РАБОТАЕТ
+═══════════════════════════════════════════════════════════════════════════
+
+Сценарий: Все станции улучшены до максимума
+
+1. Появляется кнопка "Реновация" (rennovate_btn.png)
+   
+2. Бот видит кнопку:
+   [INFO] 🏗️  Level progression: btn_renovate found
+   
+3. Бот нажимает на кнопку реновации:
+   Click at (x, y)
+   Ждет 0.5 секунды
+   
+4. Появляется окно с кнопкой "Apply" (Rennovare_apply_btn.png)
+   
+5. Бот ищет кнопку подтверждения:
+   [INFO] Confirming with btn_confirm_renovate
+   
+6. Бот нажимает "Apply":
+   Click at (x, y)
+   Ждет 1.0 секунду (анимация)
+   
+7. Реновация выполнена!
+   [INFO] 🏗️  Level progression detected - handled!
+   state.total_renovations += 1
+   
+8. Бот продолжает работу:
+   → Проверяет общие улучшения
+   → Проверяет стрелки станций
+   → Собирает боксы
+   → И так далее...
+
+═══════════════════════════════════════════════════════════════════════════
+
+📋 ПРИОРИТЕТЫ (С РЕНОВАЦИЕЙ)
+═══════════════════════════════════════════════════════════════════════════
+
+STARTUP (При запуске):
+  0️⃣  ⏳ Ждем 3 секунды (переключение на игру)
+  1️⃣  Activate window
+  2️⃣  🏗️  LEVEL PROGRESSION (Реновация) ← ПЕРВЫЙ ПРИОРИТЕТ!
+       ├─ btn_renovate → Нажать
+       └─ btn_confirm_renovate → Нажать
+  3️⃣  💎 General Upgrades
+  4️⃣  Station Arrows
+  5️⃣  Collect Items
+
+MAIN LOOP (Каждый цикл):
+  1️⃣  Ads (safety)
+  2️⃣  🏗️  LEVEL PROGRESSION (Реновация) ← ПЕРВЫЙ!
+       ├─ btn_renovate → Нажать
+       └─ btn_confirm_renovate → Нажать
+  3️⃣  💎 General Upgrades (every 5 loops)
+  4️⃣  Station Arrows
+  5️⃣  Collect Items
+  6️⃣  🔄 Smart Navigation (every 40s)
+
+═══════════════════════════════════════════════════════════════════════════
+
+🎯 ЛОГИКА check_level_progression()
+═══════════════════════════════════════════════════════════════════════════
+
+```python
+def check_level_progression(self) -> bool:
+    """
+    Check for and handle level progression (Renovate, Fly, Open).
+    Returns True if progression was handled.
+    """
+    screenshot = self.vision.capture_screen()
+    
+    # Check for progression buttons in order
+    for button_name, confirm_name in [
+        ("btn_renovate", "btn_confirm_renovate"),  ← Реновация!
+        ("btn_fly", "btn_fly_confirm"),
+        ("btn_open", "btn_okay"),
+    ]:
+        pos = self.vision.find_template(button_name, screenshot=screenshot)
+        if pos:
+            logger.info(f"Level progression: {button_name} found")
+            self.input.human_click(pos[0], pos[1])
+            time.sleep(TIMERS["MENU_OPEN_WAIT"])  # 0.5s
+            
+            # Look for confirmation button
+            confirm_pos = self.vision.find_template(confirm_name)
+            if confirm_pos:
+                logger.info(f"Confirming with {confirm_name}")
+                self.input.human_click(confirm_pos[0], confirm_pos[1])
+                time.sleep(1.0)  # Wait for animation
+                
+                self.state.on_level_change()
+                self.state.total_renovations += 1
+                return True
+            else:
+                logger.warning(f"Confirmation button {confirm_name} not found")
+                self.input.click_safe_spot()
+    
+    return False
+```
+
+Особенности:
+  ✅ Ищет кнопки В ЛЮБОМ МЕСТЕ экрана (не зависит от позиции)
+  ✅ Ждет появления кнопки подтверждения
+  ✅ Обрабатывает анимацию (wait 1.0s)
+  ✅ Продолжает работу после реновации
+  ✅ НЕ останавливается
+
+═══════════════════════════════════════════════════════════════════════════
+
+📊 ПРИМЕРЫ ЛОГОВ
+═══════════════════════════════════════════════════════════════════════════
+
+Startup:
+  [STARTUP] ⏳ Ждем 3 секунды (переключитесь на игру)...
+  [STARTUP] Step 1: Activating game window...
+  [STARTUP] Step 2: 🏗️  Checking LEVEL PROGRESSION (Реновация/Fly)...
+  [INFO] Level progression: btn_renovate found
+  [INFO] Confirming with btn_confirm_renovate
+  [INFO] 🏗️  Level progression detected - handled!
+  ✓ Level progression обработан
+  [STARTUP] Step 3: 💎 ОБЩИЕ УЛУЧШЕНИЯ (icon_upgrades)...
+  ...
+
+Main Loop (Реновация найдена):
+  [Loop 15]
+  [INFO] Level progression: btn_renovate found
+  [INFO] Confirming with btn_confirm_renovate
+  [INFO] 🏗️  Level progression detected - handled!
+  [Loop 16]
+  [INFO] 💎 ПРИОРИТЕТНАЯ проверка: Общие Улучшения...
+  ...
+
+Main Loop (Реновация не найдена):
+  [Loop 15]
+  [INFO] Checking station upgrades...
+  [INFO] ✓ Найдено 2 стрелки улучшений в зоне Kitchen Floor
+  ...
+
+═══════════════════════════════════════════════════════════════════════════
+
+⚙️  НАСТРОЙКИ
+═══════════════════════════════════════════════════════════════════════════
+
+Detection Thresholds (Пороги распознавания):
+  • btn_renovate: 0.85 (85% совпадение)
+  • btn_confirm_renovate: 0.85 (85% совпадение)
+
+Если кнопки не распознаются:
+  1. Откройте config.py
+  2. Найдите THRESHOLDS
+  3. Уменьшите порог до 0.80 или 0.75:
+     
+     THRESHOLDS = {
+         ...
+         "btn_renovate": 0.80,  # Было 0.85
+         "btn_confirm_renovate": 0.80,  # Было 0.85
+     }
+  
+  4. Сохраните и перезапустите бота
+
+Timers:
+  • MENU_OPEN_WAIT: 0.5s - Задержка после клика реновации
+  • Animation wait: 1.0s - Задержка после подтверждения
+
+═══════════════════════════════════════════════════════════════════════════
+
+🚀 ЗАПУСК
+═══════════════════════════════════════════════════════════════════════════
+
+$ cd /Users/kendirov/App/E3
+$ python3 run.py
+
+Что произойдет:
+  1. Бот покажет заставку
+  2. ⏳ "Ждем 3 секунды" - Кликните на игру!
+  3. Активирует окно игры
+  4. 🏗️  Проверит РЕНОВАЦИЮ (ПЕРВЫМ!)
+     ├─ Если найдена btn_renovate
+     │  ├─ Нажмет на неё
+     │  ├─ Дождется btn_confirm_renovate
+     │  └─ Нажмет подтверждение
+     └─ Продолжит работу
+  5. 💎 Проверит общие улучшения
+  6. Проверит стрелки станций
+  7. Соберет боксы и чаевые
+  8. Войдет в main loop
+
+В main loop:
+  • КАЖДЫЙ цикл проверяет реновацию (ПЕРВЫМ!)
+  • Если найдена - обрабатывает
+  • Продолжает работу
+  • НЕ останавливается
+
+═══════════════════════════════════════════════════════════════════════════
+
+✅ ПРОВЕРКА
+═══════════════════════════════════════════════════════════════════════════
+
+Проверить что файлы загружены:
+
+$ cd /Users/kendirov/App/E3
+$ source .venv/bin/activate
+$ python3 -c "
+from core.vision import VisionSystem
+vision = VisionSystem()
+print('Загружено:', len(vision.template_cache), 'шаблонов')
+print('Список:', list(vision.template_cache.keys()))
+"
+
+Ожидаемый результат:
+  Загружено: 9 шаблонов
+  Список: ['icon_upgrades', 'upgrade_arrow', 'box_floor', 'tip_coin',
+           'btn_buy', 'blue_button', 'btn_renovate', 'btn_confirm_renovate',
+           'btn_close_x']
+  
+  ✅ btn_renovate есть!
+  ✅ btn_confirm_renovate есть!
+
+═══════════════════════════════════════════════════════════════════════════
+
+📁 СТРУКТУРА ФАЙЛОВ
+═══════════════════════════════════════════════════════════════════════════
+
+/Users/kendirov/App/E3/
+  assets/
+    ├─ icon_upgrades.png
+    ├─ upgrade_arrow.png
+    ├─ box_btn.png
+    ├─ tip_coin.png
+    ├─ btn_buy.png
+    ├─ blue_button.png
+    ├─ btn_close_x.png
+    ├─ rennovate_btn.png         ← Реновация
+    └─ Rennovare_apply_btn.png   ← Подтверждение (Apply)
+  
+  config.py                      ← ASSETS + THRESHOLDS
+  core/logic.py                  ← check_level_progression()
+  run.py                         ← Startup + Main Loop
+
+═══════════════════════════════════════════════════════════════════════════
+
+🎯 ИТОГО
+═══════════════════════════════════════════════════════════════════════════
+
+Версия: V3.5
+Изменение: Добавлена поддержка реновации
+Статус: ✅ Ready to Test!
+
+Добавлено:
+  1. ✅ rennovate_btn.png - Кнопка реновации
+  2. ✅ Rennovare_apply_btn.png - Кнопка подтверждения (Apply)
+  3. ✅ config.py - Добавлены в ASSETS и THRESHOLDS
+  4. ✅ Логика уже готова в check_level_progression()
+  5. ✅ Приоритет - ПЕРВЫЙ в startup и main loop
+
+Как работает:
+  1. Бот ищет кнопку реновации (ПЕРВЫМ ПРИОРИТЕТОМ!)
+  2. Находит btn_renovate → Нажимает
+  3. Ждет btn_confirm_renovate → Нажимает
+  4. Продолжает работу (НЕ останавливается)
+  5. Работает из ЛЮБОГО места экрана
+
+Результат:
+  ✅ Реновация автоматическая
+  ✅ Бот не застревает
+  ✅ Продолжает прокачку после реновации
+  ✅ Приоритет ПЕРВЫЙ
+
+╚══════════════════════════════════════════════════════════════════════════╝

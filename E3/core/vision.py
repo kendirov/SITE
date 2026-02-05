@@ -50,6 +50,13 @@ class VisionSystem:
         }
         self.template_cache = {}
         self._load_templates()
+
+        # DPI scaling (Retina): по умолчанию считаем масштаб 1.0.
+        # При первом захвате экрана автоматически определим масштаб по отношению
+        # к GAME_REGION, чтобы можно было корректно переводить координаты в InputController.
+        self.scale_x: float = 1.0
+        self.scale_y: float = 1.0
+        self._scale_initialized: bool = False
         
         # Zone configuration
         self.zones_enabled = ZONES_ENABLED
@@ -94,6 +101,29 @@ class VisionSystem:
             # Convert from BGRA to BGR
             img = np.array(screenshot)
             img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+
+            # Инициализируем масштаб DPI (Retina) один раз.
+            if not self._scale_initialized:
+                try:
+                    expected_w = GAME_REGION[2]
+                    expected_h = GAME_REGION[3]
+                    if expected_w > 0 and expected_h > 0:
+                        self.scale_x = img.shape[1] / float(expected_w)
+                        self.scale_y = img.shape[0] / float(expected_h)
+                        if (
+                            abs(self.scale_x - 1.0) > 0.01
+                            or abs(self.scale_y - 1.0) > 0.01
+                        ):
+                            logger.info(
+                                f"DPI scaling detected: scale_x={self.scale_x:.2f}, scale_y={self.scale_y:.2f}"
+                            )
+                        else:
+                            logger.debug("DPI scaling: scale_x≈1.0, scale_y≈1.0 (no scaling)")
+                    self._scale_initialized = True
+                except Exception as e:
+                    logger.debug(f"DPI scale init failed: {e}")
+                    self._scale_initialized = True
+
             return img
         except Exception as e:
             logger.error(f"Screen capture failed: {e}")
@@ -203,6 +233,24 @@ class VisionSystem:
             return float(max_val)
         except Exception:
             return None
+    
+    def scale_point_for_input(self, x: int, y: int) -> Tuple[int, int]:
+        """
+        Преобразует координаты из пикселей скриншота в логические координаты игры
+        (с учётом DPI-скейлинга, например Retina x2).
+        Если масштаб ≈1.0, возвращает координаты без изменений.
+        """
+        if self._scale_initialized and (
+            abs(self.scale_x - 1.0) > 0.01 or abs(self.scale_y - 1.0) > 0.01
+        ):
+            gx = int(round(x / self.scale_x))
+            gy = int(round(y / self.scale_y))
+            logger.debug(
+                f"scale_point_for_input: screen({x},{y}) -> game({gx},{gy}) "
+                f"[scale_x={self.scale_x:.2f}, scale_y={self.scale_y:.2f}]"
+            )
+            return gx, gy
+        return x, y
 
     def get_template_max_confidence_in_station_zone(
         self,
@@ -435,3 +483,30 @@ class VisionSystem:
                 logger.info(f"Kitchen floor zone saved: {zone_filename}")
         except Exception as e:
             logger.error(f"Failed to save debug screenshot: {e}")
+
+    def save_debug_screenshot_with_rect(
+        self,
+        filename: str,
+        center: Tuple[int, int],
+        rect_size: int = 40,
+        color: Tuple[int, int, int] = (0, 0, 255),
+        thickness: int = 2,
+    ) -> None:
+        """
+        Сохраняет скриншот с красным прямоугольником вокруг точки center.
+        Используется для отладки кликов по рекламным крестикам.
+        """
+        try:
+            img = self.capture_screen()
+            h, w = img.shape[:2]
+            cx, cy = center
+            half = rect_size // 2
+            x1 = max(0, cx - half)
+            y1 = max(0, cy - half)
+            x2 = min(w - 1, cx + half)
+            y2 = min(h - 1, cy + half)
+            cv2.rectangle(img, (x1, y1), (x2, y2), color, thickness)
+            cv2.imwrite(filename, img)
+            logger.info(f"Debug screenshot (with rect) saved: {filename}")
+        except Exception as e:
+            logger.error(f"Failed to save debug screenshot with rect: {e}")

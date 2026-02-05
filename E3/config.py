@@ -54,17 +54,21 @@ THRESHOLDS: Dict[str, float] = {
     # Station triggers (снижены: Retina/масштаб дают меньше; логируем точность при ненаходке)
     "upgrade_arrow": 0.78,
     
-    # General upgrades menu
+    # Общие улучшения (меню Upgrades) — КАК БЫЛО: одна синяя кнопка blue_button
     "icon_upgrades": 0.85,
-    "blue_button": 0.92,  # УВЕЛИЧЕН! Чтобы находить ТОЛЬКО синие кнопки (не серые!)
+    "blue_button": 0.92,  # Строгий порог, чтобы не кликать по серым/пустым
     
-    # Critical actions - VERY STRICT to avoid ads
-    "btn_buy": 0.93,  # Ultra-high threshold to prevent ad clicks
+    # Улучшение станции (попап "Level N …") — КАК БЫЛО: одна кнопка btn_buy
+    "btn_buy": 0.93,                   # Строгий порог против рекламы
     "unlock_btn": 0.78,  # СНИЖЕН! Unlock button (blue with price) - легче находить
     
     # Confirmations
     "btn_close_x": 0.85,
     "btn_okay": 0.85,
+    # Main menu static icon (шестерёнка настроек)
+    "icon_gear": 0.80,
+    # Main menu static icon (монетка на главном меню)
+    "icon_coin": 0.80,
     
     # Level Progression — шаблон с красным знаком (активная кнопка)
     "btn_renovate": 0.70,  # Снижен: Retina/масштаб дают меньше 0.78 при горящей кнопке
@@ -78,10 +82,24 @@ THRESHOLDS: Dict[str, float] = {
     "box_floor": 0.68,
     "tip_coin": 0.80,
     
-    # Safety - Ad detection (lower threshold to catch variations)
-    "btn_ad_close_x": 0.80,
-    "ad_close_x_gray": 0.78,
-    "btn_ad_play": 0.80,  # We avoid clicking this
+    # Safety - Ad detection / close buttons
+    # Порог поднят до 0.70, чтобы не кликать по похожести ~0.68
+    "btn_ad_close_x": 0.70,
+    "ad_close_x_gray": 0.70,
+    "ad_close_x1": 0.70,
+    # Дополнительные шаблоны кнопок закрытия рекламы (ad1–ad10) для ручного добавления
+    "ad1": 0.70,
+    "ad2": 0.70,
+    "ad3": 0.70,
+    "ad4": 0.70,
+    "ad5": 0.70,
+    "ad6": 0.70,
+    "ad7": 0.70,
+    "ad8": 0.70,
+    "ad9": 0.70,
+    "ad10": 0.70,
+    # Boost trigger (иконка boost_ready внизу экрана) — временно снижаем порог
+    "boost_ready": 0.42,
 }
 
 # ===== TIMING CONFIGURATION =====
@@ -92,6 +110,7 @@ TIMERS: Dict[str, float] = {
     # Action delays
     "CLICK_DELAY": 0.15,  # Small delay after each click
     "MENU_OPEN_WAIT": 0.5,  # Wait for menu to open
+    "GENERAL_MENU_OPEN_WAIT": 1.0,  # Общие улучшения: ждём дольше, чтобы меню и кнопки отрисовались
     "MENU_CLOSE_WAIT": 0.3,  # Wait for menu to close
     "BUY_LONG_PRESS": 3.0,  # Long press duration for buy button
     "SCROLL_DURATION": 0.4,  # Scroll animation duration
@@ -118,6 +137,11 @@ TIMERS: Dict[str, float] = {
     # После подтверждения реновации/флай: ждём кнопку OPEN до N секунд, опрос каждые M с
     "RENOVATE_OPEN_WAIT_MAX": 10.0,
     "RENOVATE_OPEN_POLL_INTERVAL": 0.4,
+    # Реклама: ожидание показа и частота проверки крестиков
+    "AD_MAX_DURATION": 60.0,   # максимум 60 секунд ждём, что реклама закончится
+    "AD_POLL_INTERVAL": 0.7,   # как часто проверяем наличие крестиков/кнопок закрытия
+    # Ограничение на общее число кликов по кнопкам закрытия за один ролик
+    "AD_MAX_CLOSE_CLICKS": 8,
 }
 
 # ===== INPUT CONFIGURATION =====
@@ -147,12 +171,12 @@ ASSETS: Dict[str, str] = {
     "tip_coin": "tip_coin.png",
     
     # Actions (Clicks)
-    "btn_buy": "btn_buy.png",
-    "blue_button": "blue_button.png",
-    "unlock_btn": "Unlock_btn.png",  # Кнопка разблокировки станции (синяя с ценой)
+    "btn_buy": "btn_buy.png",         # Кнопка покупки в попапе станции
+    "blue_button": "blue_button.png", # Синяя кнопка в меню общих улучшений
+    "unlock_btn": "Unlock_btn.png",   # Кнопка разблокировки станции (синяя с ценой)
     
     # Level Progression (Реновация + Перелёт после ~5 уровней)
-    "btn_renovate": "rennovate_btn.png",              # Кнопка реновации
+    "btn_renovate": "rennovate_btn.png",               # Кнопка реновации
     "btn_confirm_renovate": "Rennovare_apply_btn.png", # Кнопка подтверждения (Apply)
     "btn_open": "Open_btn.png",                        # Кнопка открытия нового уровня
     "btn_fly": "Fly_btn.png",                          # Перелёт (после ~5 уровней)
@@ -160,6 +184,28 @@ ASSETS: Dict[str, str] = {
     
     # Confirmations/Closing
     "btn_close_x": "btn_close_x.png",
+
+    # Ads-specific assets (лежат в assets/ads/)
+    "btn_ad_close_x": "ads/btn_ad_close_x.png",
+    "ad_close_x_gray": "ads/ad_close_x_gray.png",
+    "ad_close_x1": "ads/ad_close_x1.png",
+    "boost_ready": "ads/boost_ready.png",
+    # Дополнительные слоты для кнопок закрытия рекламы (ad1–ad10).
+    # Просто положи файлы ad1.png … ad10.png в assets/ads/.
+    "ad1": "ads/ad1.png",
+    "ad2": "ads/ad2.png",
+    "ad3": "ads/ad3.png",
+    "ad4": "ads/ad4.png",
+    "ad5": "ads/ad5.png",
+    "ad6": "ads/ad6.png",
+    "ad7": "ads/ad7.png",
+    "ad8": "ads/ad8.png",
+    "ad9": "ads/ad9.png",
+    "ad10": "ads/ad10.png",
+    # Static main-menu indicator (settings gear) — используется как признак, что реклама закончилась
+    "icon_gear": "icon_gear.png",
+    # Static main-menu indicator (главная монетка) — второй признак, что реклама закончилась
+    "icon_coin": "icon_coin.png",
 }
 
 # ===== LOGGING =====
